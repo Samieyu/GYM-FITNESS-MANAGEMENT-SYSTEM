@@ -2,6 +2,14 @@ import request from 'supertest';
 import app from '../app';
 
 describe('App & Health Endpoint Tests', () => {
+  it('GET / returns status 200 with online state and endpoints', async () => {
+    const res = await request(app).get('/');
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('online');
+    expect(res.body.endpoints).toHaveProperty('health');
+    expect(res.body.endpoints).toHaveProperty('apiV1');
+  });
+
   it('GET /health returns status 200 with healthy state', async () => {
     const res = await request(app).get('/health');
     expect(res.status).toBe(200);

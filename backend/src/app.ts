@@ -19,6 +19,18 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root Endpoint
+app.get('/', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'online',
+    message: 'Gym & Fitness Management System API',
+    endpoints: {
+      health: '/health',
+      apiV1: config.apiPrefix,
+    },
+  });
+});
+
 // Health Check Endpoint
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
