@@ -86,10 +86,24 @@ npm run build      # Verifies TypeScript and builds production assets
 
 ---
 
-## 5. Implementation Roadmap & Phases
+## 5. Authentication & RBAC API (Phase 2)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/register` | Public | Register new member and dispatch 24h verification email |
+| `POST` | `/api/v1/auth/login` | Public (Rate Limited) | Authenticate user; blocks unverified accounts; returns JWT pair |
+| `GET/POST`| `/api/v1/auth/verify-email` | Public | Verify token and activate user account |
+| `POST` | `/api/v1/auth/refresh` | Public | Refresh expired access token via rotating refresh token |
+| `POST` | `/api/v1/auth/logout` | Public | Revoke active refresh token |
+| `GET` | `/api/v1/auth/me` | Authenticated | Fetch current profile via Bearer access token |
+| `GET` | `/api/v1/auth/admin-check` | Admin Role Only | Verifies RBAC role enforcement |
+
+---
+
+## 6. Implementation Roadmap & Phases
 
 - [x] **Phase 1: Project Skeleton, Dev Environment & Core Database Schema**
-- [ ] **Phase 2: Authentication, RBAC & Email Verification**
+- [x] **Phase 2: Authentication, RBAC & Email Verification**
 - [ ] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
 - [ ] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
 - [ ] **Phase 5: Dynamic QR Check-In, Rotating Tokens & Attendance Engine (Rules 7, 8, 9)**
