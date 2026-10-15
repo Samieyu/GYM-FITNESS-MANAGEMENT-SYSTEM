@@ -86,6 +86,17 @@ export const verifyEmailApi = async (token: string) => {
   return json;
 };
 
+export const resendVerificationApi = async (email: string) => {
+  const res = await fetch(`${API_BASE}/resend-verification`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || 'Failed to resend verification email');
+  return json;
+};
+
 export const logoutApi = async () => {
   const refreshToken = getStoredRefreshToken();
   if (refreshToken) {

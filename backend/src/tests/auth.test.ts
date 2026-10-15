@@ -201,6 +201,7 @@ describe('Auth & RBAC Integration Tests (FR Accounts & Website)', () => {
       });
       jest.spyOn(authRepository, 'setUserVerified').mockResolvedValue();
       jest.spyOn(authRepository, 'deleteEmailVerificationToken').mockResolvedValue();
+      jest.spyOn(authRepository, 'findUserById').mockResolvedValue(mockMemberUser);
 
       const res = await request(app)
         .post('/api/v1/auth/verify-email')
@@ -209,6 +210,7 @@ describe('Auth & RBAC Integration Tests (FR Accounts & Website)', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.message).toContain('Email verified successfully');
+      expect(res.body.data.email).toBe(mockMemberUser.email);
     });
 
     it('rejects expired or non-existent token (400 Bad Request)', async () => {

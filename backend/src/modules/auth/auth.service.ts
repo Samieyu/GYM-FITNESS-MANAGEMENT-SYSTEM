@@ -84,7 +84,7 @@ export class AuthService {
     };
   }
 
-  async verifyEmail(token: string): Promise<{ message: string }> {
+  async verifyEmail(token: string): Promise<{ message: string; email?: string }> {
     const record = await authRepository.findEmailVerificationToken(token);
     if (!record) {
       throw new BadRequestError('Invalid or expired verification token');
@@ -98,7 +98,12 @@ export class AuthService {
     await authRepository.setUserVerified(record.user_id);
     await authRepository.deleteEmailVerificationToken(token);
 
-    return { message: 'Email verified successfully. You may now log in.' };
+    const user = await authRepository.findUserById(record.user_id);
+
+    return {
+      message: 'Email verified successfully. You may now log in.',
+      email: user?.email,
+    };
   }
 
   async resendVerificationEmail(email: string): Promise<{ message: string }> {

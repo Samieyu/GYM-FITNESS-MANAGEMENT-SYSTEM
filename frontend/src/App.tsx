@@ -23,23 +23,22 @@ import {
 } from 'lucide-react';
 import { 
   User, 
-  UserRole, 
   getStoredUser, 
   loginApi, 
   registerMemberApi, 
   verifyEmailApi, 
+  resendVerificationApi,
   logoutApi 
 } from './api/auth';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | null>(null);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'verification-sent' | null>(null);
   
-  // Login form state
-  const [selectedRole, setSelectedRole] = useState<UserRole>('member');
-  const [loginEmail, setLoginEmail] = useState('member@gymfitness.local');
-  const [loginPassword, setLoginPassword] = useState('Member@123456');
+  // Login form state (empty defaults - no hardcoded demo accounts exposed)
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
   // Register form state
   const [regFirstName, setRegFirstName] = useState('');
@@ -48,6 +47,7 @@ export const App: React.FC = () => {
   const [regPassword, setRegPassword] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regGoals, setRegGoals] = useState('Muscle building and stamina');
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -80,33 +80,19 @@ export const App: React.FC = () => {
     setErrorMessage(null);
     try {
       const res = await verifyEmailApi(token);
-      setSuccessMessage(res.data?.message || 'Email verified successfully! You may now log in.');
+      if (res.data?.email) {
+        setLoginEmail(res.data.email);
+      }
+      setLoginPassword('');
+      setSuccessMessage(res.data?.message || 'Email verified successfully! Please enter your password to sign in.');
       setAuthModalMode('login');
       // Clean query params from URL
-      window.history.replaceState({}, document.title, window.location.pathname);
+      window.history.replaceState({}, document.title, '/');
     } catch (err: any) {
       setErrorMessage(err.message || 'Verification token invalid or expired.');
+      setAuthModalMode('login');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleRoleQuickSelect = (role: UserRole) => {
-    setSelectedRole(role);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    if (role === 'admin') {
-      setLoginEmail('admin@gymfitness.local');
-      setLoginPassword('Admin@123456');
-    } else if (role === 'reception') {
-      setLoginEmail('reception@gymfitness.local');
-      setLoginPassword('Reception@123456');
-    } else if (role === 'trainer') {
-      setLoginEmail('trainer@gymfitness.local');
-      setLoginPassword('Trainer@123456');
-    } else {
-      setLoginEmail('member@gymfitness.local');
-      setLoginPassword('Member@123456');
     }
   };
 
@@ -122,8 +108,7 @@ export const App: React.FC = () => {
       setAuthModalMode(null);
       setSuccessMessage(`Welcome back, ${data.user.firstName}!`);
     } catch (err: any) {
-      // If backend is running and rejects (e.g., unverified email or invalid password)
-      setErrorMessage(err.message || 'Invalid credentials or unverified email.');
+      setErrorMessage(err.message || 'Invalid email or password.');
     } finally {
       setIsSubmitting(false);
     }
@@ -136,7 +121,7 @@ export const App: React.FC = () => {
     setSuccessMessage(null);
 
     try {
-      const res = await registerMemberApi({
+      await registerMemberApi({
         firstName: regFirstName,
         lastName: regLastName,
         email: regEmail,
@@ -145,12 +130,26 @@ export const App: React.FC = () => {
         fitnessGoals: regGoals,
       });
 
-      setSuccessMessage(res.data?.message || 'Registration successful! Verification email sent.');
-      setAuthModalMode('login');
+      setRegisteredEmail(regEmail);
       setLoginEmail(regEmail);
       setLoginPassword('');
+      setAuthModalMode('verification-sent');
     } catch (err: any) {
       setErrorMessage(err.message || 'Registration failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!registeredEmail) return;
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const res = await resendVerificationApi(registeredEmail);
+      setSuccessMessage(res.data?.message || 'A fresh verification link has been sent to your email.');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to resend verification link.');
     } finally {
       setIsSubmitting(false);
     }
@@ -681,56 +680,82 @@ export const App: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Modal Header */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
-                {authModalMode === 'login' ? <Lock className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
+            {/* Modal Header for Login & Register */}
+            {authModalMode !== 'verification-sent' && (
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+                  {authModalMode === 'login' ? <Lock className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">
+                    {authModalMode === 'login' ? 'Sign In to Your Account' : 'Member Registration'}
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    {authModalMode === 'login' 
+                      ? 'Enter your credentials to access your dashboard' 
+                      : 'Create an account to start training'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">
-                  {authModalMode === 'login' ? 'Sign In to Titan Portal' : 'Member Registration'}
-                </h3>
-                <p className="text-xs text-gray-400">
-                  {authModalMode === 'login' ? 'Select a role to test seeded credentials' : 'Create an account to start training'}
-                </p>
-              </div>
-            </div>
+            )}
 
-            {/* LOGIN FORM */}
-            {authModalMode === 'login' ? (
-              <div>
-                {/* Role Quick Selector */}
-                <div className="grid grid-cols-4 gap-2 mb-5">
-                  <button 
-                    type="button"
-                    onClick={() => handleRoleQuickSelect('member')}
-                    className={`py-1.5 text-xs font-semibold rounded-lg border transition ${selectedRole === 'member' ? 'bg-orange-primary text-white border-orange-primary' : 'bg-charcoal-800 text-gray-300 border-charcoal-700 hover:bg-charcoal-700'}`}
-                  >
-                    Member
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleRoleQuickSelect('trainer')}
-                    className={`py-1.5 text-xs font-semibold rounded-lg border transition ${selectedRole === 'trainer' ? 'bg-orange-primary text-white border-orange-primary' : 'bg-charcoal-800 text-gray-300 border-charcoal-700 hover:bg-charcoal-700'}`}
-                  >
-                    Trainer
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleRoleQuickSelect('reception')}
-                    className={`py-1.5 text-xs font-semibold rounded-lg border transition ${selectedRole === 'reception' ? 'bg-orange-primary text-white border-orange-primary' : 'bg-charcoal-800 text-gray-300 border-charcoal-700 hover:bg-charcoal-700'}`}
-                  >
-                    Reception
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleRoleQuickSelect('admin')}
-                    className={`py-1.5 text-xs font-semibold rounded-lg border transition ${selectedRole === 'admin' ? 'bg-orange-primary text-white border-orange-primary' : 'bg-charcoal-800 text-gray-300 border-charcoal-700 hover:bg-charcoal-700'}`}
-                  >
-                    Admin
-                  </button>
+            {/* VIEW 1: VERIFICATION EMAIL SENT */}
+            {authModalMode === 'verification-sent' ? (
+              <div className="flex flex-col items-center text-center py-2">
+                <div className="w-16 h-16 rounded-full bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4 shadow-lg shadow-orange-primary/10">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Verification Email Sent!</h3>
+                <p className="text-sm text-gray-300 mt-2 max-w-sm">
+                  We sent an activation link to <span className="font-semibold text-white">{registeredEmail}</span>.
+                </p>
+                <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  Please check your inbox and click the verification link to activate your account before signing in.
+                </p>
+                
+                <div className="mt-5 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-700 w-full text-left">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-orange-primary mb-1">
+                    <Sparkles className="w-3.5 h-3.5" /> Testing Locally?
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Verification emails are captured by Mailpit. Open your local inbox at{' '}
+                    <a 
+                      href="http://localhost:8025" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-orange-primary hover:underline font-mono"
+                    >
+                      http://localhost:8025
+                    </a>
+                  </p>
                 </div>
 
+                <div className="w-full space-y-2.5 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginEmail(registeredEmail);
+                      setLoginPassword('');
+                      setAuthModalMode('login');
+                      setErrorMessage(null);
+                    }}
+                    className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition"
+                  >
+                    Proceed to Sign In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={isSubmitting}
+                    className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 border border-charcoal-700 text-xs font-semibold transition disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Resending...' : 'Resend Verification Email'}
+                  </button>
+                </div>
+              </div>
+            ) : authModalMode === 'login' ? (
+              /* VIEW 2: LOGIN FORM (Clean, unified, no admin role buttons) */
+              <div>
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">Email Address</label>
@@ -741,6 +766,7 @@ export const App: React.FC = () => {
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         required
+                        placeholder="you@example.com"
                         className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
                       />
                     </div>
@@ -755,6 +781,7 @@ export const App: React.FC = () => {
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         required
+                        placeholder="••••••••"
                         className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
                       />
                     </div>
@@ -765,7 +792,7 @@ export const App: React.FC = () => {
                     disabled={isSubmitting}
                     className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Authenticating...' : `Sign In as ${selectedRole.toUpperCase()}`}
+                    {isSubmitting ? 'Authenticating...' : 'Sign In'}
                   </button>
                 </form>
 
@@ -781,7 +808,7 @@ export const App: React.FC = () => {
                 </div>
               </div>
             ) : (
-              /* REGISTRATION FORM */
+              /* VIEW 3: REGISTRATION FORM */
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
