@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { config } from './config';
 import { errorHandler } from './shared/middlewares/errorHandler';
+import authRoutes from './modules/auth/auth.routes';
 
 const app: Application = express();
 
@@ -49,6 +50,9 @@ app.get(`${config.apiPrefix}`, (_req: Request, res: Response) => {
     docs: `${config.apiPrefix}/docs`,
   });
 });
+
+// API Modules
+app.use(`${config.apiPrefix}/auth`, authRoutes);
 
 // Centralized Error Handler
 app.use(errorHandler);
