@@ -100,11 +100,24 @@ npm run build      # Verifies TypeScript and builds production assets
 
 ---
 
-## 6. Implementation Roadmap & Phases
+## 6. Membership Plans & Pricing Engine API (Phase 3)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/plans` | Public | List all active plans with pricing and image URLs |
+| `GET` | `/api/v1/plans/:id` | Public | Retrieve detailed plan by ID |
+| `GET` | `/api/v1/plans/admin/all` | Admin Only | List all plans (including inactive/archived) |
+| `POST` | `/api/v1/plans` | Admin Only | Create new plan; validates non-negative price; logs audit |
+| `PUT` | `/api/v1/plans/:id` | Admin Only | Update plan; logs price changes in `audit_logs` |
+| `POST` | `/api/v1/plans/:id/image` | Admin Only | Upload plan photo from local storage (Base64 decoded) |
+
+---
+
+## 7. Implementation Roadmap & Phases
 
 - [x] **Phase 1: Project Skeleton, Dev Environment & Core Database Schema**
 - [x] **Phase 2: Authentication, RBAC & Email Verification**
-- [ ] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
+- [x] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
 - [ ] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
 - [ ] **Phase 5: Dynamic QR Check-In, Rotating Tokens & Attendance Engine (Rules 7, 8, 9)**
 - [ ] **Phase 6: Walk-in Registration & Password Invitation (Rule 10)**

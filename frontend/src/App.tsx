@@ -19,7 +19,12 @@ import {
   AlertCircle,
   Clock,
   Phone,
-  Target
+  Target,
+  Plus,
+  Edit2,
+  Upload,
+  Image as ImageIcon,
+  Layers
 } from 'lucide-react';
 import { 
   User, 
@@ -30,6 +35,13 @@ import {
   resendVerificationApi,
   logoutApi 
 } from './api/auth';
+import { 
+  Plan, 
+  fetchPublicPlansApi, 
+  fetchAllAdminPlansApi, 
+  createPlanApi, 
+  updatePlanApi 
+} from './api/plans';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -48,6 +60,24 @@ export const App: React.FC = () => {
   const [regPhone, setRegPhone] = useState('');
   const [regGoals, setRegGoals] = useState('Muscle building and stamina');
   const [registeredEmail, setRegisteredEmail] = useState('');
+
+  // Membership Plans state
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [adminPlans, setAdminPlans] = useState<Plan[]>([]);
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+
+  // Plan editor modal state
+  const [planName, setPlanName] = useState('');
+  const [planDescription, setPlanDescription] = useState('');
+  const [planDuration, setPlanDuration] = useState(1);
+  const [planPrice, setPlanPrice] = useState(1500);
+  const [planIsActive, setPlanIsActive] = useState(true);
+  const [planImageBase64, setPlanImageBase64] = useState<string | null>(null);
+  const [planImageName, setPlanImageName] = useState<string | null>(null);
+  const [planImagePreview, setPlanImagePreview] = useState<string | null>(null);
+  const [planModalError, setPlanModalError] = useState<string | null>(null);
+  const [isSavingPlan, setIsSavingPlan] = useState(false);
 
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -93,6 +123,128 @@ export const App: React.FC = () => {
       setAuthModalMode('login');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const loadPlans = async () => {
+    try {
+      const data = await fetchPublicPlansApi();
+      if (Array.isArray(data)) setPlans(data);
+    } catch {
+      // Silently keep default fallback
+    }
+  };
+
+  const loadAdminPlans = async () => {
+    try {
+      const data = await fetchAllAdminPlansApi();
+      if (Array.isArray(data)) setAdminPlans(data);
+    } catch {
+      // Silently ignore if not admin
+    }
+  };
+
+  useEffect(() => {
+    loadPlans();
+  }, []);
+
+  useEffect(() => {
+    if (currentUser?.role === 'admin') {
+      loadAdminPlans();
+    }
+  }, [currentUser]);
+
+  const openCreatePlanModal = () => {
+    setEditingPlan(null);
+    setPlanName('');
+    setPlanDescription('');
+    setPlanDuration(1);
+    setPlanPrice(1500);
+    setPlanIsActive(true);
+    setPlanImageBase64(null);
+    setPlanImageName(null);
+    setPlanImagePreview(null);
+    setPlanModalError(null);
+    setIsPlanModalOpen(true);
+  };
+
+  const openEditPlanModal = (plan: Plan) => {
+    setEditingPlan(plan);
+    setPlanName(plan.name);
+    setPlanDescription(plan.description || '');
+    setPlanDuration(plan.durationMonths);
+    setPlanPrice(plan.price);
+    setPlanIsActive(plan.isActive);
+    setPlanImageBase64(null);
+    setPlanImageName(null);
+    setPlanImagePreview(plan.imageUrl || null);
+    setPlanModalError(null);
+    setIsPlanModalOpen(true);
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setPlanModalError('Please select a valid image file (PNG, JPG, WEBP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setPlanModalError('Image size exceeds 5MB limit.');
+      return;
+    }
+
+    setPlanModalError(null);
+    setPlanImageName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setPlanImageBase64(base64);
+      setPlanImagePreview(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSavePlan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingPlan(true);
+    setPlanModalError(null);
+
+    try {
+      if (editingPlan) {
+        await updatePlanApi(editingPlan.id, {
+          name: planName,
+          description: planDescription,
+          durationMonths: planDuration,
+          price: planPrice,
+          isActive: planIsActive,
+          imageBase64: planImageBase64,
+          imageName: planImageName,
+        });
+        setSuccessMessage(`Plan "${planName}" updated successfully.`);
+      } else {
+        await createPlanApi({
+          name: planName,
+          description: planDescription,
+          durationMonths: planDuration,
+          price: planPrice,
+          isActive: planIsActive,
+          imageBase64: planImageBase64,
+          imageName: planImageName,
+        });
+        setSuccessMessage(`Plan "${planName}" created successfully.`);
+      }
+
+      await loadPlans();
+      await loadAdminPlans();
+      setIsPlanModalOpen(false);
+    } catch (err: any) {
+      setPlanModalError(err.message || 'Failed to save plan.');
+    } finally {
+      setIsSavingPlan(false);
     }
   };
 
@@ -419,40 +571,88 @@ export const App: React.FC = () => {
             )}
 
             {currentUser.role === 'admin' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <h3 className="text-lg font-bold text-white">Plans & Pricing Engine</h3>
-                  <p className="text-xs text-gray-400 mt-1">Only Admin can create and modify membership plan pricing.</p>
-                  <div className="mt-6 space-y-2 text-xs">
-                    <div className="flex justify-between py-1 border-b border-charcoal-800">
-                      <span>Standard Monthly</span>
-                      <span className="font-bold text-white">1,500 ETB</span>
+              <div className="space-y-6">
+                {/* Admin Plans & Pricing Management Panel */}
+                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-5 h-5 text-orange-primary" />
+                        <h3 className="text-xl font-bold text-white">Plans & Pricing Engine</h3>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Business Rule 1: Only Admin creates tiers, modifies pricing, and uploads plan imagery from local storage.
+                      </p>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-charcoal-800">
-                      <span>Quarterly Fitness</span>
-                      <span className="font-bold text-white">4,000 ETB</span>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <span>Annual VIP Elite</span>
-                      <span className="font-bold text-white">14,000 ETB</span>
-                    </div>
+
+                    <button
+                      type="button"
+                      onClick={openCreatePlanModal}
+                      className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                    >
+                      <Plus className="w-4 h-4" /> Create New Plan
+                    </button>
+                  </div>
+
+                  {/* Plans Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {(adminPlans.length > 0 ? adminPlans : plans).map((p) => (
+                      <div key={p.id} className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-charcoal-700 transition">
+                        <div>
+                          {p.imageUrl ? (
+                            <div className="w-full h-32 rounded-lg overflow-hidden mb-3 bg-charcoal-950 border border-charcoal-800">
+                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-32 rounded-lg mb-3 bg-charcoal-800/50 border border-dashed border-charcoal-700 flex flex-col items-center justify-center text-gray-500">
+                              <ImageIcon className="w-6 h-6 mb-1 text-gray-400" />
+                              <span className="text-[10px]">No image uploaded</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-bold text-white text-sm">{p.name}</h4>
+                            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${p.isActive ? 'bg-green-950 text-green-400 border border-green-800' : 'bg-charcoal-800 text-gray-400'}`}>
+                              {p.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{p.description || 'Full gym facility access.'}</p>
+                          <div className="mt-3 text-xs text-gray-300">
+                            <span className="text-lg font-extrabold text-white">{p.price.toLocaleString()}</span>
+                            <span className="text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => openEditPlanModal(p)}
+                          className="mt-4 w-full py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                        >
+                          <Edit2 className="w-3.5 h-3.5 text-orange-primary" /> Edit Plan & Image
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <h3 className="text-lg font-bold text-white">Financial & Attendance Reports</h3>
-                  <p className="text-xs text-gray-400 mt-1">Export member lists, Chapa settlements, and audit logs.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition">
-                    Generate CSV Export
-                  </button>
-                </div>
+                {/* Other Admin Capabilities */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
+                    <h3 className="text-lg font-bold text-white">Financial & Attendance Reports</h3>
+                    <p className="text-xs text-gray-400 mt-1">Export member lists, Chapa settlements, and audit logs.</p>
+                    <button className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition">
+                      Generate CSV Export
+                    </button>
+                  </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <h3 className="text-lg font-bold text-white">Equipment Maintenance</h3>
-                  <p className="text-xs text-gray-400 mt-1">Track machine statuses, inspect fault reports, and service due dates.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition">
-                    Manage Inventory
-                  </button>
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
+                    <h3 className="text-lg font-bold text-white">Equipment Maintenance</h3>
+                    <p className="text-xs text-gray-400 mt-1">Track machine statuses, inspect fault reports, and service due dates.</p>
+                    <button className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition">
+                      Manage Inventory
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -534,76 +734,81 @@ export const App: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="p-8 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Standard Monthly</h3>
-                      <p className="text-xs text-gray-400 mt-1">General gym & equipment access</p>
-                      <div className="mt-6 mb-8">
-                        <span className="text-4xl font-extrabold text-white">1,500</span>
-                        <span className="text-sm text-gray-400"> ETB / Month</span>
-                      </div>
-                      <ul className="space-y-3 text-sm text-gray-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Full Gym Floor Access</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Locker Room & Showers</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> 60s Dynamic QR Pass</li>
-                      </ul>
-                    </div>
-                    <button 
-                      onClick={() => setAuthModalMode('register')}
-                      className="mt-8 w-full py-3 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 font-semibold text-white transition"
-                    >
-                      Choose Monthly
-                    </button>
-                  </div>
+                  {plans.length > 0 ? (
+                    plans.map((p, idx) => (
+                      <div
+                        key={p.id}
+                        className={`p-8 rounded-2xl bg-charcoal-850 border flex flex-col justify-between transition ${
+                          idx === 1
+                            ? 'border-2 border-orange-primary shadow-2xl shadow-orange-primary/10 relative'
+                            : 'border-charcoal-800'
+                        }`}
+                      >
+                        {idx === 1 && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-orange-primary text-white text-xs font-bold uppercase tracking-wider">
+                            Most Popular
+                          </div>
+                        )}
+                        <div>
+                          {p.imageUrl && (
+                            <div className="w-full h-44 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800 shadow-md">
+                              <img
+                                src={p.imageUrl}
+                                alt={p.name}
+                                className="w-full h-full object-cover hover:scale-105 transition duration-300"
+                              />
+                            </div>
+                          )}
 
-                  <div className="p-8 rounded-2xl bg-charcoal-850 border-2 border-orange-primary relative flex flex-col justify-between shadow-2xl shadow-orange-primary/10">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-orange-primary text-white text-xs font-bold uppercase tracking-wider">
-                      Most Popular
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Quarterly Fitness</h3>
-                      <p className="text-xs text-gray-400 mt-1">3 Months unlimited gym + assessment</p>
-                      <div className="mt-6 mb-8">
-                        <span className="text-4xl font-extrabold text-white">4,000</span>
-                        <span className="text-sm text-gray-400"> ETB / 3 Months</span>
+                          <h3 className="text-xl font-bold text-white">{p.name}</h3>
+                          <p className="text-xs text-gray-400 mt-1">{p.description || 'General gym & equipment access'}</p>
+                          <div className="mt-6 mb-8">
+                            <span className="text-4xl font-extrabold text-white">{p.price.toLocaleString()}</span>
+                            <span className="text-sm text-gray-400">
+                              {' '}
+                              ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}
+                            </span>
+                          </div>
+                          <ul className="space-y-3 text-sm text-gray-300">
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-orange-primary" /> Full Gym Floor Access
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-orange-primary" /> Locker Room & Showers
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-orange-primary" /> 60s Dynamic QR Pass
+                            </li>
+                            {p.durationMonths >= 3 && (
+                              <li className="flex items-center gap-2">
+                                <Check className="w-4 h-4 text-orange-primary" /> Group Class Bookings
+                              </li>
+                            )}
+                            {p.durationMonths >= 12 && (
+                              <li className="flex items-center gap-2">
+                                <Check className="w-4 h-4 text-orange-primary" /> Dedicated Personal Trainer
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setAuthModalMode('register')}
+                          className={`mt-8 w-full py-3 rounded-lg font-semibold text-white transition ${
+                            idx === 1
+                              ? 'bg-orange-primary hover:bg-orange-hover shadow-lg shadow-orange-primary/30'
+                              : 'bg-charcoal-800 hover:bg-charcoal-700'
+                          }`}
+                        >
+                          Choose {p.name}
+                        </button>
                       </div>
-                      <ul className="space-y-3 text-sm text-gray-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Unlimited Gym Access</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> 1 Free Trainer Assessment</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Progress Graph Tracking</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Group Class Bookings</li>
-                      </ul>
+                    ))
+                  ) : (
+                    <div className="col-span-3 text-center py-12 text-gray-400">
+                      Loading membership tiers...
                     </div>
-                    <button 
-                      onClick={() => setAuthModalMode('register')}
-                      className="mt-8 w-full py-3 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-white shadow-lg shadow-orange-primary/30 transition"
-                    >
-                      Choose Quarterly
-                    </button>
-                  </div>
-
-                  <div className="p-8 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Annual VIP Elite</h3>
-                      <p className="text-xs text-gray-400 mt-1">Full 12 Months VIP Access</p>
-                      <div className="mt-6 mb-8">
-                        <span className="text-4xl font-extrabold text-white">14,000</span>
-                        <span className="text-sm text-gray-400"> ETB / Year</span>
-                      </div>
-                      <ul className="space-y-3 text-sm text-gray-300">
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> 24/7 Access & Sauna</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Dedicated Personal Trainer</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> AI Custom Workout Plan</li>
-                        <li className="flex items-center gap-2"><Check className="w-4 h-4 text-orange-primary" /> Priority Class Booking</li>
-                      </ul>
-                    </div>
-                    <button 
-                      onClick={() => setAuthModalMode('register')}
-                      className="mt-8 w-full py-3 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 font-semibold text-white transition"
-                    >
-                      Choose Annual VIP
-                    </button>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
@@ -946,6 +1151,191 @@ export const App: React.FC = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN MEMBERSHIP PLAN EDITOR MODAL */}
+      {isPlanModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button 
+              type="button"
+              onClick={() => { setIsPlanModalOpen(false); setPlanModalError(null); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">
+                  {editingPlan ? 'Edit Membership Plan' : 'Create New Membership Plan'}
+                </h3>
+                <p className="text-xs text-gray-400">
+                  Business Rule 1: Admin defines tiers, pricing (ETB), and plan photo.
+                </p>
+              </div>
+            </div>
+
+            {planModalError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs text-red-200 flex items-start justify-between gap-2 shadow-lg shadow-red-950/40">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{planModalError}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setPlanModalError(null)} 
+                  className="text-red-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleSavePlan} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">Plan Name *</label>
+                <input
+                  type="text"
+                  value={planName}
+                  onChange={(e) => setPlanName(e.target.value)}
+                  required
+                  placeholder="e.g. Monthly Standard, Annual VIP"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">Description</label>
+                <textarea
+                  rows={2}
+                  value={planDescription}
+                  onChange={(e) => setPlanDescription(e.target.value)}
+                  placeholder="Short description of plan features and access..."
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Duration (Months) *</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={36}
+                    value={planDuration}
+                    onChange={(e) => setPlanDuration(parseInt(e.target.value, 10) || 1)}
+                    required
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Price (ETB) *</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={10}
+                    value={planPrice}
+                    onChange={(e) => setPlanPrice(parseFloat(e.target.value) || 0)}
+                    required
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="planIsActive"
+                  checked={planIsActive}
+                  onChange={(e) => setPlanIsActive(e.target.checked)}
+                  className="rounded border-charcoal-700 bg-charcoal-900 text-orange-primary focus:ring-0 w-4 h-4"
+                />
+                <label htmlFor="planIsActive" className="text-xs font-medium text-gray-300 cursor-pointer">
+                  Active (visible to public visitors & members for purchase)
+                </label>
+              </div>
+
+              {/* Plan Image Upload from Local Storage */}
+              <div className="pt-2">
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  Plan Image (Select from Local Storage)
+                </label>
+                
+                <input
+                  type="file"
+                  id="plan-image-file-input"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleImageFileChange}
+                  className="hidden"
+                />
+
+                {planImagePreview ? (
+                  <div className="relative rounded-xl overflow-hidden border border-charcoal-700 bg-charcoal-950 group">
+                    <img
+                      src={planImagePreview}
+                      alt="Plan preview"
+                      className="w-full h-36 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                      <label
+                        htmlFor="plan-image-file-input"
+                        className="px-3 py-1.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow"
+                      >
+                        <Upload className="w-3.5 h-3.5" /> Choose Different Image
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="plan-image-file-input"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-charcoal-700 hover:border-orange-primary/60 rounded-xl cursor-pointer bg-charcoal-900/60 hover:bg-charcoal-900 transition text-center"
+                  >
+                    <Upload className="w-6 h-6 text-orange-primary mb-2" />
+                    <span className="text-xs font-semibold text-white">Click to select photo from device</span>
+                    <span className="text-[10px] text-gray-400 mt-1">PNG, JPG, or WEBP up to 5MB</span>
+                  </label>
+                )}
+                {planImageName && (
+                  <p className="text-[11px] text-orange-primary mt-1.5 truncate">
+                    Selected file: {planImageName}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-charcoal-800">
+                <button
+                  type="button"
+                  onClick={() => { setIsPlanModalOpen(false); setPlanModalError(null); }}
+                  className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingPlan}
+                  className="px-5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                >
+                  {isSavingPlan ? (
+                    'Saving...'
+                  ) : editingPlan ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" /> Save Changes
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-3.5 h-3.5" /> Create Plan
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
