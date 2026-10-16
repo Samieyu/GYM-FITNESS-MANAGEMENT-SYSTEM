@@ -240,17 +240,17 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Global Toast Alert */}
-      {(successMessage || errorMessage) && (
+      {/* Global Toast Alert (When modal is closed) */}
+      {!authModalMode && (successMessage || errorMessage) && (
         <div className="max-w-6xl mx-auto w-full px-6 pt-4">
           {successMessage && (
-            <div className="p-3 rounded-lg bg-green-950/70 border border-green-700/60 text-xs sm:text-sm text-green-300 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-green-950/70 border border-green-700/60 text-xs sm:text-sm text-green-300 flex items-center justify-between shadow-lg">
               <span>{successMessage}</span>
               <button onClick={() => setSuccessMessage(null)}><X className="w-4 h-4" /></button>
             </div>
           )}
           {errorMessage && (
-            <div className="p-3 rounded-lg bg-red-950/70 border border-red-700/60 text-xs sm:text-sm text-red-300 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-red-950/70 border border-red-700/60 text-xs sm:text-sm text-red-300 flex items-center justify-between shadow-lg">
               <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4 text-red-400" /> {errorMessage}</span>
               <button onClick={() => setErrorMessage(null)}><X className="w-4 h-4" /></button>
             </div>
@@ -696,6 +696,39 @@ export const App: React.FC = () => {
                       : 'Create an account to start training'}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* In-Modal Alert Banners (Always visible inside modal) */}
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs sm:text-sm text-red-200 flex items-start justify-between gap-2 shadow-lg shadow-red-950/40 animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span className="font-medium">{errorMessage}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setErrorMessage(null)} 
+                  className="text-red-400 hover:text-white transition p-0.5"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-green-950/90 border border-green-700/80 text-xs sm:text-sm text-green-200 flex items-start justify-between gap-2 shadow-lg shadow-green-950/40 animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400 shrink-0" />
+                  <span className="font-medium">{successMessage}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => setSuccessMessage(null)} 
+                  className="text-green-400 hover:text-white transition p-0.5"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             )}
 
