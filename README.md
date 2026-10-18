@@ -113,12 +113,25 @@ npm run build      # Verifies TypeScript and builds production assets
 
 ---
 
-## 7. Implementation Roadmap & Phases
+## 7. Payments & Membership Activation API (Phase 4)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/v1/payments/chapa/initialize` | Member Only | Initialize Chapa checkout; verifies single active membership rule |
+| `POST` | `/api/v1/payments/chapa/webhook` | Public (Verified) | Verified webhook with HMAC-SHA256 signature; replay protected |
+| `POST` | `/api/v1/payments/manual` | Admin & Reception | Record offline cash or bank transfer payment with audit log |
+| `GET` | `/api/v1/memberships/my-active` | Member Only | Fetch active membership status and countdown of remaining days |
+| `GET` | `/api/v1/payments/my-history` | Member Only | Fetch billing and payment transaction history |
+| `GET` | `/api/v1/payments/admin/all` | Admin & Reception | Paginated payment transactions with status and method filters |
+
+---
+
+## 8. Implementation Roadmap & Phases
 
 - [x] **Phase 1: Project Skeleton, Dev Environment & Core Database Schema**
 - [x] **Phase 2: Authentication, RBAC & Email Verification**
 - [x] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
-- [ ] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
+- [x] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
 - [ ] **Phase 5: Dynamic QR Check-In, Rotating Tokens & Attendance Engine (Rules 7, 8, 9)**
 - [ ] **Phase 6: Walk-in Registration & Password Invitation (Rule 10)**
 - [ ] **Phase 7: Scheduled Membership Expiration & Email Reminders (Rule 5)**
