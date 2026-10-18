@@ -119,3 +119,49 @@ export const sendWalkinInvitationEmail = async (
     console.error(`[Email] Failed to send walk-in invitation to ${email}:`, error);
   }
 };
+
+export const sendPaymentConfirmationEmail = async (
+  email: string,
+  firstName: string,
+  paymentDetails: {
+    planName: string;
+    amount: number;
+    paymentMethod: string;
+    reference: string;
+    startDate: string;
+    endDate: string;
+  }
+): Promise<void> => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h3 style="color: #ffffff;">Payment Confirmed - Membership Activated!</h3>
+      <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
+      <p style="color: #d1d5db;">We have received your payment. Your membership is now <strong>active</strong>.</p>
+      
+      <div style="margin: 20px 0; padding: 16px; background-color: #1e1e1e; border-radius: 6px; border: 1px solid #333333;">
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Plan:</strong> ${paymentDetails.planName}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Amount Paid:</strong> ${paymentDetails.amount.toLocaleString()} ETB</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Payment Method:</strong> ${paymentDetails.paymentMethod.toUpperCase()}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Reference:</strong> <span style="font-family: monospace; color: #ff8533;">${paymentDetails.reference}</span></p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Valid From:</strong> ${paymentDetails.startDate} <strong>to</strong> ${paymentDetails.endDate}</p>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px;">
+        You can now generate your dynamic 60-second QR check-in pass directly on your member dashboard.
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `Payment Receipt & Membership Activated - ${paymentDetails.planName}`,
+      html,
+    });
+    console.log(`[Email] Payment confirmation sent to ${email}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send payment confirmation to ${email}:`, error);
+  }
+};
