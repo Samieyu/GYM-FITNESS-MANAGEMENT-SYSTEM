@@ -7,6 +7,8 @@ import authRoutes from './modules/auth/auth.routes';
 
 import path from 'path';
 import { plansRouter } from './modules/plans/plans.routes';
+import paymentsRouter from './modules/payments/payments.routes';
+import membershipsRouter from './modules/payments/memberships.routes';
 
 const app: Application = express();
 
@@ -26,8 +28,15 @@ app.use(
 // Static uploads serving (for plan images uploaded from local storage)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// Body Parsers
-app.use(express.json({ limit: '10mb' }));
+// Body Parsers with rawBody retention for webhook signature verification
+app.use(
+  express.json({
+    limit: '10mb',
+    verify: (req: any, _res, buf) => {
+      req.rawBody = buf.toString('utf8');
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Root Endpoint
@@ -64,6 +73,8 @@ app.get(`${config.apiPrefix}`, (_req: Request, res: Response) => {
 // API Modules
 app.use(`${config.apiPrefix}/auth`, authRoutes);
 app.use(`${config.apiPrefix}/plans`, plansRouter);
+app.use(`${config.apiPrefix}/payments`, paymentsRouter);
+app.use(`${config.apiPrefix}/memberships`, membershipsRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

@@ -10,6 +10,10 @@ declare global {
   }
 }
 
+export interface AuthenticatedRequest extends Request {
+  user: TokenPayload;
+}
+
 export const authGuard = (req: Request, _res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

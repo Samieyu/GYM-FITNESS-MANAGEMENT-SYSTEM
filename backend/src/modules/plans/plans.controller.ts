@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { plansService } from './plans.service';
 import { createPlanSchema, updatePlanSchema, uploadPlanImageSchema } from './plans.validation';
-import { AuthenticatedRequest } from '../../shared/middlewares/authGuard';
 
 export class PlansController {
   async getPublicPlans(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -41,10 +40,10 @@ export class PlansController {
     }
   }
 
-  async createPlan(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async createPlan(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const validated = createPlanSchema.parse(req.body);
-      const adminId = req.user!.userId;
+      const adminId = (req as any).user!.userId;
       const ipAddress = req.ip;
 
       const plan = await plansService.createPlan(validated, adminId, ipAddress);
@@ -57,11 +56,11 @@ export class PlansController {
     }
   }
 
-  async updatePlan(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async updatePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const validated = updatePlanSchema.parse(req.body);
-      const adminId = req.user!.userId;
+      const adminId = (req as any).user!.userId;
       const ipAddress = req.ip;
 
       const plan = await plansService.updatePlan(id, validated, adminId, ipAddress);
@@ -74,7 +73,7 @@ export class PlansController {
     }
   }
 
-  async uploadImage(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async uploadImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const validated = uploadPlanImageSchema.parse(req.body);
       const result = await plansService.uploadImage(validated.imageBase64, validated.imageName);
