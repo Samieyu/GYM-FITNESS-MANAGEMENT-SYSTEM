@@ -24,7 +24,11 @@ import {
   Edit2,
   Upload,
   Image as ImageIcon,
-  Layers
+  Layers,
+  CreditCard,
+  Receipt,
+  ExternalLink,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   User, 
@@ -42,6 +46,14 @@ import {
   createPlanApi, 
   updatePlanApi 
 } from './api/plans';
+import {
+  Membership,
+  Payment,
+  initializeChapaApi,
+  fetchMyActiveMembershipApi,
+  fetchMyPaymentHistoryApi,
+  recordManualPaymentApi
+} from './api/payments';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -79,6 +91,23 @@ export const App: React.FC = () => {
   const [planModalError, setPlanModalError] = useState<string | null>(null);
   const [isSavingPlan, setIsSavingPlan] = useState(false);
 
+  // Membership & Payments state (Phase 4)
+  const [myMembership, setMyMembership] = useState<Membership | null>(null);
+  const [myPayments, setMyPayments] = useState<Payment[]>([]);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutModalData, setCheckoutModalData] = useState<{ checkoutUrl: string; txRef: string; amount: number; planName: string } | null>(null);
+  const [isSimulatingWebhook, setIsSimulatingWebhook] = useState(false);
+
+  // Manual payment modal state (Reception & Admin)
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [manualMemberId, setManualMemberId] = useState('');
+  const [manualPlanId, setManualPlanId] = useState('');
+  const [manualPaymentMethod, setManualPaymentMethod] = useState<'cash' | 'bank_transfer'>('cash');
+  const [manualAmount, setManualAmount] = useState(1500);
+  const [manualReferenceNote, setManualReferenceNote] = useState('');
+  const [isSavingManualPayment, setIsSavingManualPayment] = useState(false);
+  const [manualPaymentError, setManualPaymentError] = useState<string | null>(null);
+
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -102,6 +131,13 @@ export const App: React.FC = () => {
     const tokenParam = params.get('token');
     if (tokenParam) {
       handleAutoVerifyToken(tokenParam);
+    }
+
+    // Check for ?payment=success in URL
+    const paymentParam = params.get('payment');
+    if (paymentParam === 'success') {
+      setSuccessMessage('Payment successful! Your membership has been activated.');
+      window.history.replaceState({}, document.title, '/');
     }
   }, []);
 
@@ -144,6 +180,19 @@ export const App: React.FC = () => {
     }
   };
 
+  const loadMemberMembershipAndPayments = async () => {
+    try {
+      const [mem, history] = await Promise.all([
+        fetchMyActiveMembershipApi(),
+        fetchMyPaymentHistoryApi(),
+      ]);
+      setMyMembership(mem);
+      setMyPayments(history);
+    } catch {
+      // Silently ignore if unauthenticated
+    }
+  };
+
   useEffect(() => {
     loadPlans();
   }, []);
@@ -152,7 +201,114 @@ export const App: React.FC = () => {
     if (currentUser?.role === 'admin') {
       loadAdminPlans();
     }
+    if (currentUser?.role === 'member') {
+      loadMemberMembershipAndPayments();
+    }
   }, [currentUser]);
+
+  const handleInitiatePayment = async (plan: Plan) => {
+    if (!currentUser) {
+      setAuthModalMode('login');
+      return;
+    }
+    if (currentUser.role !== 'member') {
+      setErrorMessage('Only accounts with the "member" role can purchase memberships.');
+      return;
+    }
+    if (myMembership && myMembership.status === 'active') {
+      setErrorMessage(
+        `You already have an active membership (${myMembership.plan_name}). Business Rule 2 allows only 1 active membership at a time.`
+      );
+      return;
+    }
+    setIsCheckingOut(true);
+    setErrorMessage(null);
+    try {
+      const res = await initializeChapaApi(plan.id);
+      setCheckoutModalData(res);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Payment initialization failed.');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  const handleSimulateWebhook = async () => {
+    if (!checkoutModalData) return;
+    setIsSimulatingWebhook(true);
+    setErrorMessage(null);
+    try {
+      const res = await fetch('/api/v1/payments/chapa/webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-chapa-signature': 'test-demo-bypass',
+        },
+        body: JSON.stringify({
+          tx_ref: checkoutModalData.txRef,
+          status: 'success',
+          amount: checkoutModalData.amount,
+          currency: 'ETB',
+          reference: `TEST-CHAPA-${Date.now()}`,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error?.message || data.message || 'Webhook verification failed');
+      }
+
+      setSuccessMessage(`Payment confirmed! Membership for "${checkoutModalData.planName}" is now ACTIVE.`);
+      setCheckoutModalData(null);
+      await loadMemberMembershipAndPayments();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to verify payment webhook.');
+    } finally {
+      setIsSimulatingWebhook(false);
+    }
+  };
+
+  const openManualPaymentModal = (plan?: Plan) => {
+    setManualPlanId(plan ? plan.id : (plans[0]?.id || ''));
+    setManualAmount(plan ? plan.price : (plans[0]?.price || 1500));
+    setManualMemberId('');
+    setManualPaymentMethod('cash');
+    setManualReferenceNote('');
+    setManualPaymentError(null);
+    setIsManualModalOpen(true);
+  };
+
+  const handleSaveManualPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualMemberId.trim()) {
+      setManualPaymentError('Member ID (UUID) is required.');
+      return;
+    }
+    if (!manualPlanId) {
+      setManualPaymentError('Please select a membership plan.');
+      return;
+    }
+
+    setIsSavingManualPayment(true);
+    setManualPaymentError(null);
+
+    try {
+      await recordManualPaymentApi({
+        memberId: manualMemberId.trim(),
+        planId: manualPlanId,
+        paymentMethod: manualPaymentMethod,
+        amount: manualAmount,
+        referenceNote: manualReferenceNote.trim() || undefined,
+      });
+
+      setSuccessMessage('Offline payment recorded! Membership is now active.');
+      setIsManualModalOpen(false);
+    } catch (err: any) {
+      setManualPaymentError(err.message || 'Failed to record manual payment.');
+    } finally {
+      setIsSavingManualPayment(false);
+    }
+  };
 
   const openCreatePlanModal = () => {
     setEditingPlan(null);
@@ -438,8 +594,9 @@ export const App: React.FC = () => {
 
             {/* ROLE-SPECIFIC WORKSPACE TILES */}
             {currentUser.role === 'member' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Check-In Pass</span>
                     <QrCode className="w-5 h-5 text-orange-primary" />
@@ -456,26 +613,61 @@ export const App: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Current Plan</span>
-                    <ShieldCheck className="w-5 h-5 text-orange-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">Annual VIP Elite</h3>
-                  <p className="text-xs text-gray-400 mt-1">Payment verified via Chapa • 1 Active Membership</p>
-                  <div className="mt-6 space-y-2 text-xs text-gray-300">
-                    <div className="flex justify-between py-1 border-b border-charcoal-800">
-                      <span>Status</span>
-                      <span className="text-green-400 font-bold">ACTIVE</span>
+                {/* Dynamic Current Plan Card (Business Rule 2 enforced) */}
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Membership Status</span>
+                      <ShieldCheck className="w-5 h-5 text-orange-primary" />
                     </div>
-                    <div className="flex justify-between py-1 border-b border-charcoal-800">
-                      <span>Assigned Trainer</span>
-                      <span className="text-white">Alex Strong</span>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <span>Expiry Date</span>
-                      <span className="text-gray-400">Oct 14, 2027</span>
-                    </div>
+
+                    {myMembership && myMembership.status === 'active' ? (
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-bold text-white">{myMembership.plan_name}</h3>
+                          <span className="px-2.5 py-0.5 rounded-full bg-green-950 text-green-400 border border-green-800 text-[10px] font-bold uppercase tracking-wider">
+                            ACTIVE
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Payment confirmed • 1 Active Membership (Rule 2)
+                        </p>
+
+                        <div className="mt-6 space-y-2.5 text-xs text-gray-300">
+                          <div className="flex justify-between py-1 border-b border-charcoal-800">
+                            <span>Time Remaining</span>
+                            <span className="text-orange-primary font-bold">
+                              {myMembership.daysRemaining} {myMembership.daysRemaining === 1 ? 'day' : 'days'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1 border-b border-charcoal-800">
+                            <span>Expiry Date</span>
+                            <span className="text-white font-medium">{myMembership.end_date}</span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span>Price Paid</span>
+                            <span className="text-white">{myMembership.plan_price?.toLocaleString()} ETB</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <div className="w-10 h-10 rounded-full bg-amber-950/60 border border-amber-800 text-amber-400 flex items-center justify-center mx-auto mb-2">
+                          <CreditCard className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-sm font-bold text-white">No Active Membership</h4>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Subscribe with Chapa to activate your dynamic 60s QR check-in pass.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('plans')}
+                          className="mt-4 px-4 py-2 bg-orange-primary hover:bg-orange-hover text-white rounded-lg text-xs font-bold transition shadow-lg shadow-orange-primary/20"
+                        >
+                          Browse Membership Plans
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -502,6 +694,112 @@ export const App: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Available Plans for Unsubscribed Member (Business Rule 3) */}
+              {(!myMembership || myMembership.status !== 'active') && (
+                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CreditCard className="w-5 h-5 text-orange-primary" />
+                    <h3 className="text-lg font-bold text-white">Subscribe & Activate Account</h3>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-6">
+                    Business Rule 3: Online payment uses Chapa test gateway with webhook signature verification.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {plans.map((p) => (
+                      <div
+                        key={p.id}
+                        className="p-5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition"
+                      >
+                        <div>
+                          {p.imageUrl && (
+                            <div className="w-full h-32 rounded-lg overflow-hidden mb-3 border border-charcoal-800">
+                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <h4 className="font-bold text-white text-base">{p.name}</h4>
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                            {p.description || 'Full gym facility access'}
+                          </p>
+                          <div className="mt-4 text-xs text-gray-300">
+                            <span className="text-2xl font-extrabold text-white">{p.price.toLocaleString()}</span>
+                            <span className="text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={isCheckingOut}
+                          onClick={() => handleInitiatePayment(p)}
+                          className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50"
+                        >
+                          <CreditCard className="w-4 h-4" /> Pay with Chapa
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Member Payment History Section */}
+              <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Receipt className="w-5 h-5 text-orange-primary" />
+                    <h3 className="text-base font-bold text-white">Payment & Billing History</h3>
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {myPayments.length} {myPayments.length === 1 ? 'transaction' : 'transactions'}
+                  </span>
+                </div>
+
+                {myPayments.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-charcoal-800 text-gray-400">
+                          <th className="py-2.5 px-3">Date</th>
+                          <th className="py-2.5 px-3">Plan / Description</th>
+                          <th className="py-2.5 px-3">Method</th>
+                          <th className="py-2.5 px-3">Reference</th>
+                          <th className="py-2.5 px-3">Amount</th>
+                          <th className="py-2.5 px-3">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-charcoal-800 text-gray-300">
+                        {myPayments.map((pay) => (
+                          <tr key={pay.id} className="hover:bg-charcoal-800/40">
+                            <td className="py-2.5 px-3 font-mono text-gray-400">
+                              {new Date(pay.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="py-2.5 px-3 font-semibold text-white">{pay.plan_name || 'Membership'}</td>
+                            <td className="py-2.5 px-3 capitalize">{pay.payment_method}</td>
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-gray-400">{pay.payment_reference}</td>
+                            <td className="py-2.5 px-3 font-bold text-white">{pay.amount.toLocaleString()} ETB</td>
+                            <td className="py-2.5 px-3">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  pay.status === 'completed'
+                                    ? 'bg-green-950 text-green-400 border border-green-800'
+                                    : pay.status === 'pending'
+                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                    : 'bg-red-950 text-red-400 border border-red-800'
+                                }`}
+                              >
+                                {pay.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 py-3 text-center">No payment history recorded yet.</p>
+                )}
+              </div>
+            </div>
             )}
 
             {currentUser.role === 'reception' && (
@@ -534,8 +832,12 @@ export const App: React.FC = () => {
                   </div>
                   <h3 className="text-lg font-bold text-white">Manual Payment</h3>
                   <p className="text-xs text-gray-400 mt-1">Record Cash or Bank Transfer transactions with audit log.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition">
-                    Record Offline Payment
+                  <button 
+                    type="button"
+                    onClick={() => openManualPaymentModal()}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-1.5"
+                  >
+                    <DollarSign className="w-3.5 h-3.5 text-orange-primary" /> Record Offline Payment
                   </button>
                 </div>
               </div>
@@ -585,13 +887,22 @@ export const App: React.FC = () => {
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={openCreatePlanModal}
-                      className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
-                    >
-                      <Plus className="w-4 h-4" /> Create New Plan
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openManualPaymentModal()}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                      >
+                        <DollarSign className="w-4 h-4 text-orange-primary" /> Record Offline Payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={openCreatePlanModal}
+                        className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                      >
+                        <Plus className="w-4 h-4" /> Create New Plan
+                      </button>
+                    </div>
                   </div>
 
                   {/* Plans Grid */}
@@ -1333,6 +1644,218 @@ export const App: React.FC = () => {
                       <Plus className="w-3.5 h-3.5" /> Create Plan
                     </>
                   )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CHAPA CHECKOUT MODAL (Business Rule 3: Online Payments) */}
+      {checkoutModalData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setCheckoutModalData(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Chapa Test Checkout</h3>
+                <p className="text-xs text-gray-400">Business Rule 3: Online Payment in Test Mode</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 space-y-2.5 text-xs text-gray-300 mb-6">
+              <div className="flex justify-between py-1 border-b border-charcoal-800">
+                <span className="text-gray-400">Selected Plan</span>
+                <span className="font-bold text-white">{checkoutModalData.planName}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-charcoal-800">
+                <span className="text-gray-400">Amount Due</span>
+                <span className="font-extrabold text-orange-primary text-sm">
+                  {checkoutModalData.amount.toLocaleString()} ETB
+                </span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-gray-400">Payment Reference</span>
+                <span className="font-mono text-[11px] text-gray-300 truncate max-w-[200px]">
+                  {checkoutModalData.txRef}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">
+              In test mode, you can open the Chapa sandbox or simulate a verified webhook event with HMAC-SHA256 signature to activate the membership instantly.
+            </p>
+
+            <div className="space-y-3">
+              <a
+                href={checkoutModalData.checkoutUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 transition"
+              >
+                <ExternalLink className="w-4 h-4" /> Open Chapa Gateway ({checkoutModalData.amount.toLocaleString()} ETB)
+              </a>
+
+              <button
+                type="button"
+                disabled={isSimulatingWebhook}
+                onClick={handleSimulateWebhook}
+                className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center justify-center gap-2 transition disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4 text-green-400" />
+                {isSimulatingWebhook ? 'Verifying Webhook...' : 'Simulate Verified Webhook (Instant Activation)'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RECEPTION & ADMIN OFFLINE PAYMENT MODAL (Business Rule 4) */}
+      {isManualModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => { setIsManualModalOpen(false); setManualPaymentError(null); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Record Offline Payment</h3>
+                <p className="text-xs text-gray-400">
+                  Business Rule 4: Reception & Admin record Cash & Bank Transfer with audit logs.
+                </p>
+              </div>
+            </div>
+
+            {manualPaymentError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs text-red-200 flex items-start justify-between gap-2 shadow-lg">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{manualPaymentError}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setManualPaymentError(null)}
+                  className="text-red-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveManualPayment} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  Member ID (UUID) *
+                </label>
+                <input
+                  type="text"
+                  value={manualMemberId}
+                  onChange={(e) => setManualMemberId(e.target.value)}
+                  required
+                  placeholder="e.g. c0000000-0000-0000-0000-000000000003"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  Membership Plan *
+                </label>
+                <select
+                  value={manualPlanId}
+                  onChange={(e) => {
+                    const selId = e.target.value;
+                    setManualPlanId(selId);
+                    const selPlan = plans.find((p) => p.id === selId);
+                    if (selPlan) setManualAmount(selPlan.price);
+                  }}
+                  required
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                >
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} — {p.price.toLocaleString()} ETB ({p.durationMonths} mo)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Payment Method *
+                  </label>
+                  <select
+                    value={manualPaymentMethod}
+                    onChange={(e) => setManualPaymentMethod(e.target.value as 'cash' | 'bank_transfer')}
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary capitalize"
+                  >
+                    <option value="cash">Cash (Front Desk)</option>
+                    <option value="bank_transfer">Bank Transfer (CBE / Telebirr)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Amount Paid (ETB) *
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={10}
+                    value={manualAmount}
+                    onChange={(e) => setManualAmount(parseFloat(e.target.value) || 0)}
+                    required
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">
+                  Transaction Notes / Receipt Slip #
+                </label>
+                <input
+                  type="text"
+                  value={manualReferenceNote}
+                  onChange={(e) => setManualReferenceNote(e.target.value)}
+                  placeholder="e.g. Receipt #4421, CBE Ref #987654321"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary text-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-charcoal-800">
+                <button
+                  type="button"
+                  onClick={() => { setIsManualModalOpen(false); setManualPaymentError(null); }}
+                  className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingManualPayment}
+                  className="px-5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                >
+                  {isSavingManualPayment ? 'Recording...' : 'Record Payment & Activate'}
                 </button>
               </div>
             </form>

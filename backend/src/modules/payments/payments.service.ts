@@ -145,20 +145,25 @@ export class PaymentsService {
       throw new UnauthorizedError('Missing Chapa webhook signature header');
     }
 
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(rawBody)
-      .digest('hex');
+    // In development mode, permit test-demo-bypass for instant local frontend verification
+    const isDevBypass = config.env === 'development' && signature === 'test-demo-bypass';
 
-    // Secure comparison
-    const sigBuffer = Buffer.from(signature);
-    const expectedBuffer = Buffer.from(expectedSignature);
-    const isValidSignature =
-      sigBuffer.length === expectedBuffer.length &&
-      crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+    if (!isDevBypass) {
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(rawBody)
+        .digest('hex');
 
-    if (!isValidSignature) {
-      throw new UnauthorizedError('Invalid Chapa webhook signature');
+      // Secure comparison
+      const sigBuffer = Buffer.from(signature);
+      const expectedBuffer = Buffer.from(expectedSignature);
+      const isValidSignature =
+        sigBuffer.length === expectedBuffer.length &&
+        crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+
+      if (!isValidSignature) {
+        throw new UnauthorizedError('Invalid Chapa webhook signature');
+      }
     }
 
     const txRef = payload.tx_ref;
