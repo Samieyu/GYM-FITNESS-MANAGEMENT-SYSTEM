@@ -10,6 +10,7 @@ import { getUploadsDir } from './shared/utils/uploadPaths';
 import { plansRouter } from './modules/plans/plans.routes';
 import paymentsRouter from './modules/payments/payments.routes';
 import membershipsRouter from './modules/payments/memberships.routes';
+import checkinsRouter from './modules/checkins/checkins.routes';
 
 const app: Application = express();
 
@@ -77,6 +78,7 @@ app.use(`${config.apiPrefix}/auth`, authRoutes);
 app.use(`${config.apiPrefix}/plans`, plansRouter);
 app.use(`${config.apiPrefix}/payments`, paymentsRouter);
 app.use(`${config.apiPrefix}/memberships`, membershipsRouter);
+app.use(`${config.apiPrefix}/checkins`, checkinsRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

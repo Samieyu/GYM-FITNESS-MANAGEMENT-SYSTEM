@@ -53,6 +53,8 @@ import {
   fetchMyPaymentHistoryApi,
   recordManualPaymentApi
 } from './api/payments';
+import { MemberQrPassModal } from './components/MemberQrPassModal';
+import { ReceptionScannerModal } from './components/ReceptionScannerModal';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
@@ -117,6 +119,10 @@ export const App: React.FC = () => {
   const [manualReferenceNote, setManualReferenceNote] = useState('');
   const [isSavingManualPayment, setIsSavingManualPayment] = useState(false);
   const [manualPaymentError, setManualPaymentError] = useState<string | null>(null);
+
+  // Check-In & Dynamic QR state (Phase 5: Rules 7, 8, 9)
+  const [isMemberQrModalOpen, setIsMemberQrModalOpen] = useState(false);
+  const [isReceptionScannerOpen, setIsReceptionScannerOpen] = useState(false);
 
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -636,22 +642,31 @@ export const App: React.FC = () => {
             {currentUser.role === 'member' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Check-In Pass</span>
-                    <QrCode className="w-5 h-5 text-orange-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white">60s Dynamic QR</h3>
-                  <p className="text-xs text-gray-400 mt-1">Ready for receptionist scanning at entrance.</p>
-                  <div className="mt-6 p-4 rounded-lg bg-charcoal-900 border border-charcoal-700 flex flex-col items-center justify-center">
-                    <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center text-charcoal-950 font-mono font-bold text-xs p-2 text-center">
-                      [QR TOKEN: ROTATES EVERY 60S]
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Check-In Pass (Rule 7)</span>
+                        <QrCode className="w-5 h-5 text-orange-primary" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">60s Dynamic QR Pass</h3>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Cryptographically signed HMAC token dynamically rotating every 60 seconds.
+                      </p>
                     </div>
-                    <span className="text-[11px] text-gray-400 mt-3 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-orange-primary" /> Refreshes in 48s
-                    </span>
+
+                    <div className="mt-6">
+                      <button
+                        type="button"
+                        onClick={() => setIsMemberQrModalOpen(true)}
+                        className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 active:scale-98"
+                      >
+                        <QrCode className="w-4 h-4" /> Open Digital QR Pass
+                      </button>
+                      <span className="text-[11px] text-gray-400 mt-2 flex items-center justify-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-orange-primary" /> Screenshot protection active
+                      </span>
+                    </div>
                   </div>
-                </div>
 
                 {/* Dynamic Current Plan Card (Business Rule 2 enforced) */}
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
@@ -854,9 +869,12 @@ export const App: React.FC = () => {
                     <QrCode className="w-5 h-5" />
                   </div>
                   <h3 className="text-lg font-bold text-white">Live QR Scanner</h3>
-                  <p className="text-xs text-gray-400 mt-1">Scan member dynamic pass and allow or deny entry.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition">
-                    Activate Camera Scanner
+                  <button 
+                    type="button"
+                    onClick={() => setIsReceptionScannerOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                  >
+                    <QrCode className="w-4 h-4" /> Open Front Desk Scanner
                   </button>
                 </div>
 
@@ -933,6 +951,13 @@ export const App: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsReceptionScannerOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                      >
+                        <QrCode className="w-4 h-4 text-orange-primary" /> Front Desk Scanner
+                      </button>
                       <button
                         type="button"
                         onClick={() => openManualPaymentModal()}
@@ -2256,6 +2281,25 @@ export const App: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* MEMBER DYNAMIC 60S QR PASS MODAL (Phase 5: Rule 7) */}
+      {currentUser && (
+        <MemberQrPassModal
+          isOpen={isMemberQrModalOpen}
+          onClose={() => setIsMemberQrModalOpen(false)}
+          memberName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+          memberEmail={currentUser.email}
+        />
+      )}
+
+      {/* FRONT DESK QR SCANNER & ATTENDANCE FEED MODAL (Phase 5: Rules 7, 8, 9) */}
+      {currentUser && (currentUser.role === 'reception' || currentUser.role === 'admin') && (
+        <ReceptionScannerModal
+          isOpen={isReceptionScannerOpen}
+          onClose={() => setIsReceptionScannerOpen(false)}
+          staffName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
       )}
 
       {/* Footer */}
