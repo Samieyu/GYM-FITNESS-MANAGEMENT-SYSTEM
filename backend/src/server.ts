@@ -26,3 +26,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
+// Hot-reloaded with configured Chapa live test keys

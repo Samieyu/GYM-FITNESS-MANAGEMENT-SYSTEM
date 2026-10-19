@@ -86,12 +86,52 @@ npm run build      # Verifies TypeScript and builds production assets
 
 ---
 
-## 5. Implementation Roadmap & Phases
+## 5. Authentication & RBAC API (Phase 2)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/register` | Public | Register new member and dispatch 24h verification email |
+| `POST` | `/api/v1/auth/login` | Public (Rate Limited) | Authenticate user; blocks unverified accounts; returns JWT pair |
+| `GET/POST`| `/api/v1/auth/verify-email` | Public | Verify token and activate user account |
+| `POST` | `/api/v1/auth/refresh` | Public | Refresh expired access token via rotating refresh token |
+| `POST` | `/api/v1/auth/logout` | Public | Revoke active refresh token |
+| `GET` | `/api/v1/auth/me` | Authenticated | Fetch current profile via Bearer access token |
+| `GET` | `/api/v1/auth/admin-check` | Admin Role Only | Verifies RBAC role enforcement |
+
+---
+
+## 6. Membership Plans & Pricing Engine API (Phase 3)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/plans` | Public | List all active plans with pricing and image URLs |
+| `GET` | `/api/v1/plans/:id` | Public | Retrieve detailed plan by ID |
+| `GET` | `/api/v1/plans/admin/all` | Admin Only | List all plans (including inactive/archived) |
+| `POST` | `/api/v1/plans` | Admin Only | Create new plan; validates non-negative price; logs audit |
+| `PUT` | `/api/v1/plans/:id` | Admin Only | Update plan; logs price changes in `audit_logs` |
+| `POST` | `/api/v1/plans/:id/image` | Admin Only | Upload plan photo from local storage (Base64 decoded) |
+
+---
+
+## 7. Payments & Membership Activation API (Phase 4)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/v1/payments/chapa/initialize` | Member Only | Initialize Chapa checkout; verifies single active membership rule |
+| `POST` | `/api/v1/payments/chapa/webhook` | Public (Verified) | Verified webhook with HMAC-SHA256 signature; replay protected |
+| `POST` | `/api/v1/payments/manual` | Admin & Reception | Record offline cash or bank transfer payment with audit log |
+| `GET` | `/api/v1/memberships/my-active` | Member Only | Fetch active membership status and countdown of remaining days |
+| `GET` | `/api/v1/payments/my-history` | Member Only | Fetch billing and payment transaction history |
+| `GET` | `/api/v1/payments/admin/all` | Admin & Reception | Paginated payment transactions with status and method filters |
+
+---
+
+## 8. Implementation Roadmap & Phases
 
 - [x] **Phase 1: Project Skeleton, Dev Environment & Core Database Schema**
-- [ ] **Phase 2: Authentication, RBAC & Email Verification**
-- [ ] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
-- [ ] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
+- [x] **Phase 2: Authentication, RBAC & Email Verification**
+- [x] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
+- [x] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
 - [ ] **Phase 5: Dynamic QR Check-In, Rotating Tokens & Attendance Engine (Rules 7, 8, 9)**
 - [ ] **Phase 6: Walk-in Registration & Password Invitation (Rule 10)**
 - [ ] **Phase 7: Scheduled Membership Expiration & Email Reminders (Rule 5)**

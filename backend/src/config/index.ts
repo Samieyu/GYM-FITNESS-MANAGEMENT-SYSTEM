@@ -1,4 +1,8 @@
 import dotenv from 'dotenv';
+import path from 'path';
+
+// Robustly load backend/.env
+dotenv.config({ path: path.resolve(__dirname, '..', '..', '.env') });
 dotenv.config();
 
 export const config = {
@@ -8,7 +12,7 @@ export const config = {
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
 
   db: {
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || '127.0.0.1',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     user: process.env.DB_USER || 'gym_user',
     password: process.env.DB_PASSWORD || 'gym_password',

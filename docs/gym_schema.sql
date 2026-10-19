@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS membership_plans (
     description TEXT,
     duration_months INT NOT NULL CHECK (duration_months > 0),
     price NUMERIC(12, 2) NOT NULL CHECK (price >= 0),
+    image_url TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_by_admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
