@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { getUploadsDir } from '../../shared/utils/uploadPaths';
 import { plansRepository, MembershipPlanRow } from './plans.repository';
 import { CreatePlanInput, UpdatePlanInput } from './plans.validation';
 import { NotFoundError, ConflictError, BadRequestError } from '../../shared/errors/AppError';
@@ -34,7 +35,7 @@ export class PlansService {
    * Saves a base64 image payload from admin local storage into the backend uploads folder
    */
   saveBase64Image(imageBase64: string, imageName: string): string {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'plans');
+    const uploadDir = path.join(getUploadsDir(), 'plans');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }

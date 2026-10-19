@@ -48,7 +48,7 @@ const getAuthHeaders = () => {
 export const initializeChapaApi = async (
   planId: string,
   returnUrl?: string
-): Promise<{ checkoutUrl: string; txRef: string; amount: number; planName: string }> => {
+): Promise<{ checkoutUrl: string | null; txRef: string; amount: number; planName: string; isLiveGateway: boolean }> => {
   const res = await fetch('/api/v1/payments/chapa/initialize', {
     method: 'POST',
     headers: getAuthHeaders(),

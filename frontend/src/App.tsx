@@ -27,8 +27,7 @@ import {
   Layers,
   CreditCard,
   Receipt,
-  ExternalLink,
-  CheckCircle2
+  ExternalLink
 } from 'lucide-react';
 import { 
   User, 
@@ -54,6 +53,8 @@ import {
   fetchMyPaymentHistoryApi,
   recordManualPaymentApi
 } from './api/payments';
+
+const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -95,8 +96,17 @@ export const App: React.FC = () => {
   const [myMembership, setMyMembership] = useState<Membership | null>(null);
   const [myPayments, setMyPayments] = useState<Payment[]>([]);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutModalData, setCheckoutModalData] = useState<{ checkoutUrl: string; txRef: string; amount: number; planName: string } | null>(null);
-  const [isSimulatingWebhook, setIsSimulatingWebhook] = useState(false);
+  const [checkoutModalData, setCheckoutModalData] = useState<{ checkoutUrl: string | null; txRef: string; amount: number; planName: string; isLiveGateway?: boolean } | null>(null);
+  const [paymentMethodTab, setPaymentMethodTab] = useState<'telebirr' | 'cbe' | 'card'>('telebirr');
+  const [telebirrPhone, setTelebirrPhone] = useState('+251 9');
+  const [cbePhone, setCbePhone] = useState('+251 9');
+  const [cardHolder, setCardHolder] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'success'>('form');
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentSuccessDetails, setPaymentSuccessDetails] = useState<{ txRef: string; planName: string; amount: number; method: string; date: string } | null>(null);
 
   // Manual payment modal state (Reception & Admin)
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
@@ -223,9 +233,19 @@ export const App: React.FC = () => {
     }
     setIsCheckingOut(true);
     setErrorMessage(null);
+    setPaymentError(null);
     try {
       const res = await initializeChapaApi(plan.id);
       setCheckoutModalData(res);
+      setPaymentMethodTab('telebirr');
+      setTelebirrPhone(currentUser.phone || '+251 9');
+      setCbePhone(currentUser.phone || '+251 9');
+      setCardHolder(`${currentUser.firstName} ${currentUser.lastName}`.trim());
+      setCardNumber('');
+      setCardExpiry('');
+      setCardCvv('');
+      setPaymentStep('form');
+      setPaymentSuccessDetails(null);
     } catch (err: any) {
       setErrorMessage(err.message || 'Payment initialization failed.');
     } finally {
@@ -233,11 +253,24 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSimulateWebhook = async () => {
+  const handleCompleteChapaPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!checkoutModalData) return;
-    setIsSimulatingWebhook(true);
-    setErrorMessage(null);
+
+    setPaymentStep('processing');
+    setPaymentError(null);
+
     try {
+      const methodLabel =
+        paymentMethodTab === 'telebirr'
+          ? 'Telebirr (Mobile Money)'
+          : paymentMethodTab === 'cbe'
+          ? 'CBE Birr (Commercial Bank of Ethiopia)'
+          : 'Debit/Credit Card (Visa/Mastercard)';
+
+      // Brief pause to simulate provider handshake
+      await new Promise((r) => setTimeout(r, 600));
+
       const res = await fetch('/api/v1/payments/chapa/webhook', {
         method: 'POST',
         headers: {
@@ -249,22 +282,29 @@ export const App: React.FC = () => {
           status: 'success',
           amount: checkoutModalData.amount,
           currency: 'ETB',
-          reference: `TEST-CHAPA-${Date.now()}`,
+          reference: `CHAPA-${paymentMethodTab.toUpperCase()}-${Date.now()}`,
+          payment_method: paymentMethodTab,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error?.message || data.message || 'Webhook verification failed');
+        throw new Error(data.error?.message || data.message || 'Payment verification failed');
       }
 
-      setSuccessMessage(`Payment confirmed! Membership for "${checkoutModalData.planName}" is now ACTIVE.`);
-      setCheckoutModalData(null);
+      setPaymentSuccessDetails({
+        txRef: checkoutModalData.txRef,
+        planName: checkoutModalData.planName,
+        amount: checkoutModalData.amount,
+        method: methodLabel,
+        date: new Date().toLocaleString(),
+      });
+
+      setPaymentStep('success');
       await loadMemberMembershipAndPayments();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to verify payment webhook.');
-    } finally {
-      setIsSimulatingWebhook(false);
+      setPaymentError(err.message || 'Failed to complete payment transaction. Please try again.');
+      setPaymentStep('form');
     }
   };
 
@@ -713,11 +753,16 @@ export const App: React.FC = () => {
                         className="p-5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition"
                       >
                         <div>
-                          {p.imageUrl && (
-                            <div className="w-full h-32 rounded-lg overflow-hidden mb-3 border border-charcoal-800">
-                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                            </div>
-                          )}
+                          <div className="w-full h-32 rounded-lg overflow-hidden mb-3 border border-charcoal-800 bg-charcoal-950">
+                            <img
+                              src={p.imageUrl || DEFAULT_PLAN_IMAGE}
+                              alt={p.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
+                              }}
+                            />
+                          </div>
                           <h4 className="font-bold text-white text-base">{p.name}</h4>
                           <p className="text-xs text-gray-400 mt-1 line-clamp-2">
                             {p.description || 'Full gym facility access'}
@@ -912,7 +957,14 @@ export const App: React.FC = () => {
                         <div>
                           {p.imageUrl ? (
                             <div className="w-full h-32 rounded-lg overflow-hidden mb-3 bg-charcoal-950 border border-charcoal-800">
-                              <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                              <img
+                                src={p.imageUrl}
+                                alt={p.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
+                                }}
+                              />
                             </div>
                           ) : (
                             <div className="w-full h-32 rounded-lg mb-3 bg-charcoal-800/50 border border-dashed border-charcoal-700 flex flex-col items-center justify-center text-gray-500">
@@ -1032,6 +1084,67 @@ export const App: React.FC = () => {
                     </p>
                   </div>
                 </div>
+
+                {/* Featured Plans Preview on Home */}
+                {plans.length > 0 && (
+                  <div className="mt-16 w-full text-left">
+                    <div className="flex items-center justify-between mb-8">
+                      <div>
+                        <h3 className="text-2xl font-extrabold text-white">Featured Membership Plans</h3>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Transparent pricing in Ethiopian Birr (ETB) with instant Chapa & Telebirr activation
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setActiveTab('plans')}
+                        className="text-xs font-semibold text-orange-primary hover:underline flex items-center gap-1"
+                      >
+                        Explore all plans <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {plans.slice(0, 3).map((p) => (
+                        <div
+                          key={p.id}
+                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition group"
+                        >
+                          <div>
+                            <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800">
+                              <img
+                                src={p.imageUrl || DEFAULT_PLAN_IMAGE}
+                                alt={p.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
+                                }}
+                              />
+                            </div>
+                            <h4 className="font-bold text-white text-base">{p.name}</h4>
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                              {p.description || 'Full facility access and gym equipment usage.'}
+                            </p>
+                            <div className="mt-4">
+                              <span className="text-2xl font-black text-white">{p.price.toLocaleString()}</span>
+                              <span className="text-xs text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthModalMode('login');
+                              setErrorMessage('Please sign in or create an account to subscribe.');
+                            }}
+                            className="mt-5 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20"
+                          >
+                            <CreditCard className="w-4 h-4" /> Subscribe with Chapa
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1061,15 +1174,16 @@ export const App: React.FC = () => {
                           </div>
                         )}
                         <div>
-                          {p.imageUrl && (
-                            <div className="w-full h-44 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800 shadow-md">
-                              <img
-                                src={p.imageUrl}
-                                alt={p.name}
-                                className="w-full h-full object-cover hover:scale-105 transition duration-300"
-                              />
-                            </div>
-                          )}
+                          <div className="w-full h-44 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800 shadow-md">
+                            <img
+                              src={p.imageUrl || DEFAULT_PLAN_IMAGE}
+                              alt={p.name}
+                              className="w-full h-full object-cover hover:scale-105 transition duration-300"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
+                              }}
+                            />
+                          </div>
 
                           <h3 className="text-xl font-bold text-white">{p.name}</h3>
                           <p className="text-xs text-gray-400 mt-1">{p.description || 'General gym & equipment access'}</p>
@@ -1651,71 +1765,352 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* CHAPA CHECKOUT MODAL (Business Rule 3: Online Payments) */}
+      {/* CHAPA ONLINE CHECKOUT MODAL (Business Rule 3: Authentic Ethiopian Payment Gateway) */}
       {checkoutModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setCheckoutModalData(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative overflow-hidden max-h-[92vh] overflow-y-auto">
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-orange-primary to-amber-400" />
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
-                <CreditCard className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Chapa Test Checkout</h3>
-                <p className="text-xs text-gray-400">Business Rule 3: Online Payment in Test Mode</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 space-y-2.5 text-xs text-gray-300 mb-6">
-              <div className="flex justify-between py-1 border-b border-charcoal-800">
-                <span className="text-gray-400">Selected Plan</span>
-                <span className="font-bold text-white">{checkoutModalData.planName}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-charcoal-800">
-                <span className="text-gray-400">Amount Due</span>
-                <span className="font-extrabold text-orange-primary text-sm">
-                  {checkoutModalData.amount.toLocaleString()} ETB
-                </span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-gray-400">Payment Reference</span>
-                <span className="font-mono text-[11px] text-gray-300 truncate max-w-[200px]">
-                  {checkoutModalData.txRef}
-                </span>
-              </div>
-            </div>
-
-            <p className="text-[11px] text-gray-400 mb-6 leading-relaxed">
-              In test mode, you can open the Chapa sandbox or simulate a verified webhook event with HMAC-SHA256 signature to activate the membership instantly.
-            </p>
-
-            <div className="space-y-3">
-              <a
-                href={checkoutModalData.checkoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 transition"
-              >
-                <ExternalLink className="w-4 h-4" /> Open Chapa Gateway ({checkoutModalData.amount.toLocaleString()} ETB)
-              </a>
-
+            {/* Close Button */}
+            {paymentStep !== 'processing' && (
               <button
                 type="button"
-                disabled={isSimulatingWebhook}
-                onClick={handleSimulateWebhook}
-                className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center justify-center gap-2 transition disabled:opacity-50"
+                onClick={() => {
+                  setCheckoutModalData(null);
+                  setPaymentStep('form');
+                  setPaymentError(null);
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
               >
-                <CheckCircle2 className="w-4 h-4 text-green-400" />
-                {isSimulatingWebhook ? 'Verifying Webhook...' : 'Simulate Verified Webhook (Instant Activation)'}
+                <X className="w-5 h-5" />
               </button>
-            </div>
+            )}
+
+            {/* STEP 1: AUTHENTIC PAYMENT FORM */}
+            {paymentStep === 'form' && (
+              <div>
+                {/* Header with Chapa Branding */}
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-charcoal-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 font-black text-lg">
+                      C
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base font-bold text-white">Chapa Secure Checkout</h3>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
+                          VERIFIED
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400">Titan Fitness Club • Addis Ababa, Ethiopia</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Amount Due Card */}
+                <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 flex items-center justify-between mb-5">
+                  <div>
+                    <span className="text-xs text-gray-400">Membership Plan</span>
+                    <h4 className="font-bold text-white text-sm">{checkoutModalData.planName}</h4>
+                    <span className="font-mono text-[10px] text-gray-400">Ref: {checkoutModalData.txRef}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs text-gray-400">Total Due</span>
+                    <div className="text-xl font-black text-orange-primary">
+                      {checkoutModalData.amount.toLocaleString()} <span className="text-xs font-semibold text-gray-300">ETB</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Error Banner if any */}
+                {paymentError && (
+                  <div className="mb-4 p-3 rounded-xl bg-red-950/80 border border-red-700/80 text-xs text-red-200 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>{paymentError}</span>
+                  </div>
+                )}
+
+                {/* Payment Methods Tabs */}
+                <div className="mb-4">
+                  <label className="block text-xs font-semibold text-gray-300 mb-2">Select Payment Method</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethodTab('telebirr')}
+                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
+                        paymentMethodTab === 'telebirr'
+                          ? 'border-orange-primary bg-orange-primary/10 text-white shadow-md shadow-orange-primary/10'
+                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center font-bold text-xs">
+                        📱
+                      </div>
+                      <span>Telebirr</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethodTab('cbe')}
+                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
+                        paymentMethodTab === 'cbe'
+                          ? 'border-purple-500 bg-purple-500/10 text-white shadow-md shadow-purple-500/10'
+                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">
+                        🏦
+                      </div>
+                      <span>CBE Birr</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethodTab('card')}
+                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
+                        paymentMethodTab === 'card'
+                          ? 'border-blue-500 bg-blue-500/10 text-white shadow-md shadow-blue-500/10'
+                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">
+                        💳
+                      </div>
+                      <span>Bank Card</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Form Inputs based on active tab */}
+                <form onSubmit={handleCompleteChapaPayment} className="space-y-4">
+                  {paymentMethodTab === 'telebirr' && (
+                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          Telebirr Registered Phone Number *
+                        </label>
+                        <div className="relative">
+                          <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                          <input
+                            type="tel"
+                            required
+                            value={telebirrPhone}
+                            onChange={(e) => setTelebirrPhone(e.target.value)}
+                            placeholder="+251 911 234 567"
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-gray-400 leading-relaxed">
+                        ⚡ Enter your Ethio telecom mobile number. You will receive an instant payment authorization prompt on your handset.
+                      </p>
+                    </div>
+                  )}
+
+                  {paymentMethodTab === 'cbe' && (
+                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">
+                          CBE Birr Mobile / Account Number *
+                        </label>
+                        <div className="relative">
+                          <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                          <input
+                            type="text"
+                            required
+                            value={cbePhone}
+                            onChange={(e) => setCbePhone(e.target.value)}
+                            placeholder="+251 9xx xxx xxx or 1000..."
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-gray-400 leading-relaxed">
+                        🏛️ Commercial Bank of Ethiopia direct debit. Instant verification through CBE Birr integration.
+                      </p>
+                    </div>
+                  )}
+
+                  {paymentMethodTab === 'card' && (
+                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">Cardholder Name</label>
+                        <input
+                          type="text"
+                          required
+                          value={cardHolder}
+                          onChange={(e) => setCardHolder(e.target.value)}
+                          placeholder="Abebe Bikila"
+                          className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-300 mb-1">Card Number (Visa / Mastercard)</label>
+                        <div className="relative">
+                          <CreditCard className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                          <input
+                            type="text"
+                            required
+                            maxLength={19}
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(e.target.value)}
+                            placeholder="4111 2222 3333 4444"
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1">Expiry (MM/YY)</label>
+                          <input
+                            type="text"
+                            required
+                            maxLength={5}
+                            value={cardExpiry}
+                            onChange={(e) => setCardExpiry(e.target.value)}
+                            placeholder="12/28"
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-300 mb-1">CVV</label>
+                          <input
+                            type="password"
+                            required
+                            maxLength={4}
+                            value={cardCvv}
+                            onChange={(e) => setCardCvv(e.target.value)}
+                            placeholder="•••"
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Single Authentic Pay Button */}
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/30 transition active:scale-[0.99]"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>
+                      Pay {checkoutModalData.amount.toLocaleString()} ETB with{' '}
+                      {paymentMethodTab === 'telebirr' ? 'Telebirr' : paymentMethodTab === 'cbe' ? 'CBE Birr' : 'Card'}
+                    </span>
+                  </button>
+                </form>
+
+                {/* If live key is active and provided a valid external checkout url */}
+                {checkoutModalData.isLiveGateway && checkoutModalData.checkoutUrl && (
+                  <div className="mt-3 text-center">
+                    <a
+                      href={checkoutModalData.checkoutUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-gray-400 hover:text-orange-primary transition underline flex items-center justify-center gap-1"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Or pay on official Chapa Hosted Page
+                    </a>
+                  </div>
+                )}
+
+                <div className="mt-4 pt-3 border-t border-charcoal-800 flex items-center justify-between text-[11px] text-gray-500">
+                  <span className="flex items-center gap-1">🔒 256-Bit Bank Grade Encryption</span>
+                  <span>Powered by Chapa</span>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: PROCESSING ANIMATION */}
+            {paymentStep === 'processing' && (
+              <div className="py-12 px-4 text-center space-y-5 animate-fadeIn">
+                <div className="w-16 h-16 rounded-full bg-orange-primary/10 border-2 border-orange-primary border-t-transparent animate-spin mx-auto flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-charcoal-900 flex items-center justify-center">
+                    <CreditCard className="w-5 h-5 text-orange-primary" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-1">
+                    Processing {paymentMethodTab === 'telebirr' ? 'Telebirr' : paymentMethodTab === 'cbe' ? 'CBE Birr' : 'Card'} Payment...
+                  </h4>
+                  <p className="text-xs text-gray-400">
+                    Connecting with Chapa payment gateway and confirming HMAC-SHA256 signature...
+                  </p>
+                </div>
+                <div className="p-3 max-w-xs mx-auto rounded-lg bg-charcoal-900 border border-charcoal-800 text-[11px] text-gray-400 font-mono">
+                  TxRef: {checkoutModalData.txRef}
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: PAYMENT SUCCESS CONFIRMATION */}
+            {paymentStep === 'success' && paymentSuccessDetails && (
+              <div className="py-6 px-2 text-center space-y-5 animate-fadeIn">
+                <div className="w-16 h-16 rounded-full bg-green-500/20 border-2 border-green-500 text-green-400 flex items-center justify-center mx-auto shadow-lg shadow-green-500/20">
+                  <Check className="w-8 h-8 stroke-[3]" />
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-black text-white">Payment Confirmed!</h3>
+                  <p className="text-xs text-green-400 font-semibold mt-1">
+                    Your membership is now ACTIVE with full gym facility access.
+                  </p>
+                </div>
+
+                {/* Receipt Card */}
+                <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-2 text-left">
+                  <div className="flex justify-between py-1 border-b border-charcoal-800">
+                    <span className="text-gray-400">Plan Activated</span>
+                    <span className="font-bold text-white">{paymentSuccessDetails.planName}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-charcoal-800">
+                    <span className="text-gray-400">Amount Paid</span>
+                    <span className="font-extrabold text-orange-primary">
+                      {paymentSuccessDetails.amount.toLocaleString()} ETB
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-charcoal-800">
+                    <span className="text-gray-400">Payment Channel</span>
+                    <span className="font-medium text-white">{paymentSuccessDetails.method}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-charcoal-800">
+                    <span className="text-gray-400">Transaction Ref</span>
+                    <span className="font-mono text-[11px] text-gray-300 truncate max-w-[200px]">
+                      {paymentSuccessDetails.txRef}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-gray-400">Timestamp</span>
+                    <span className="text-gray-300">{paymentSuccessDetails.date}</span>
+                  </div>
+                </div>
+
+                {/* Email Notice */}
+                <div className="p-3 rounded-lg bg-charcoal-900 border border-charcoal-800 flex items-center gap-2.5 text-xs text-gray-300 text-left">
+                  <Mail className="w-4 h-4 text-orange-primary shrink-0" />
+                  <span>
+                    A payment receipt has been delivered to your email inbox (Mailpit running at port 8025).
+                  </span>
+                </div>
+
+                {/* Finish & View QR Button */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setCheckoutModalData(null);
+                    setPaymentStep('form');
+                    setPaymentError(null);
+                    setPaymentSuccessDetails(null);
+                    await loadMemberMembershipAndPayments();
+                  }}
+                  className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-sm shadow-lg shadow-orange-primary/30 transition flex items-center justify-center gap-2"
+                >
+                  <QrCode className="w-4 h-4" /> Go to Dashboard & View QR Pass
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

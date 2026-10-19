@@ -6,6 +6,7 @@ import { errorHandler } from './shared/middlewares/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
 
 import path from 'path';
+import { getUploadsDir } from './shared/utils/uploadPaths';
 import { plansRouter } from './modules/plans/plans.routes';
 import paymentsRouter from './modules/payments/payments.routes';
 import membershipsRouter from './modules/payments/memberships.routes';
@@ -26,7 +27,8 @@ app.use(
 );
 
 // Static uploads serving (for plan images uploaded from local storage)
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+const uploadsDir = getUploadsDir();
+app.use('/uploads', express.static(uploadsDir));
 
 // Body Parsers with rawBody retention for webhook signature verification
 app.use(

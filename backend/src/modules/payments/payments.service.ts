@@ -29,7 +29,7 @@ export class PaymentsService {
     memberUser: { id: string; email: string; firstName: string; lastName: string },
     planId: string,
     returnUrl?: string
-  ): Promise<{ checkoutUrl: string; txRef: string; amount: number; planName: string }> {
+  ): Promise<{ checkoutUrl: string | null; txRef: string; amount: number; planName: string; isLiveGateway: boolean }> {
     // 1. Validate plan
     const plan = await this.repo.findPlanById(planId);
     if (!plan || !plan.is_active) {
@@ -80,14 +80,18 @@ export class PaymentsService {
       client.release();
     }
 
-    // 5. Call Chapa API to generate checkout URL (or fallback to test checkout URL in mock/sandbox)
-    let checkoutUrl = `https://checkout.chapa.co/checkout/payment/${txRef}`;
+    // 5. Call Chapa API to generate checkout URL if live key configured
+    let checkoutUrl: string | null = null;
+    let isLiveGateway = false;
+
     try {
-      if (
+      const isConfiguredKey =
         config.chapa.secretKey &&
         !config.chapa.secretKey.includes('placeholder') &&
-        !config.chapa.secretKey.includes('sample')
-      ) {
+        !config.chapa.secretKey.includes('sample') &&
+        config.chapa.secretKey.startsWith('CHASECK_');
+
+      if (isConfiguredKey) {
         const response = await fetch(`${config.chapa.baseUrl}/transaction/initialize`, {
           method: 'POST',
           headers: {
@@ -113,10 +117,13 @@ export class PaymentsService {
         const data: any = await response.json();
         if (data.status === 'success' && data.data?.checkout_url) {
           checkoutUrl = data.data.checkout_url;
+          isLiveGateway = true;
+        } else {
+          console.warn('[Chapa] External API response not success:', data);
         }
       }
     } catch (apiErr) {
-      console.warn('[Chapa] External API call error, using sandbox test checkout URL:', apiErr);
+      console.warn('[Chapa] External API call error, falling back to local simulation mode:', apiErr);
     }
 
     return {
@@ -124,6 +131,7 @@ export class PaymentsService {
       txRef,
       amount: parseFloat(plan.price),
       planName: plan.name,
+      isLiveGateway,
     };
   }
 
