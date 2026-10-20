@@ -55,6 +55,8 @@ import {
 } from './api/payments';
 import { MemberQrPassModal } from './components/MemberQrPassModal';
 import { ReceptionScannerModal } from './components/ReceptionScannerModal';
+import { MemberWorkoutModal } from './components/MemberWorkoutModal';
+import { TrainerWorkoutModal } from './components/TrainerWorkoutModal';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
@@ -123,6 +125,10 @@ export const App: React.FC = () => {
   // Check-In & Dynamic QR state (Phase 5: Rules 7, 8, 9)
   const [isMemberQrModalOpen, setIsMemberQrModalOpen] = useState(false);
   const [isReceptionScannerOpen, setIsReceptionScannerOpen] = useState(false);
+
+  // Workout & AI Plan state (Phase 6: Rules 10, 11)
+  const [isMemberWorkoutModalOpen, setIsMemberWorkoutModalOpen] = useState(false);
+  const [isTrainerWorkoutModalOpen, setIsTrainerWorkoutModalOpen] = useState(false);
 
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -726,26 +732,40 @@ export const App: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Workout Routine</span>
-                    <Activity className="w-5 h-5 text-orange-primary" />
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Workout Routine</span>
+                      <Activity className="w-5 h-5 text-orange-primary" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Personal Training Split</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Evidence-based routine approved by your coach (Rule 11).
+                    </p>
+
+                    <div className="mt-4 space-y-2 text-xs">
+                      <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
+                        <span>Barbell Bench Press</span>
+                        <span className="text-orange-primary font-semibold">4 × 8 reps</span>
+                      </div>
+                      <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
+                        <span>Barbell Back Squat</span>
+                        <span className="text-orange-primary font-semibold">4 × 8 reps</span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Today: Chest & Core</h3>
-                  <p className="text-xs text-gray-400 mt-1">Approved by Coach Alex • 5 Exercises</p>
-                  <div className="mt-6 space-y-2 text-xs">
-                    <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
-                      <span>Barbell Bench Press</span>
-                      <span className="text-orange-primary font-semibold">4 × 8 reps</span>
-                    </div>
-                    <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
-                      <span>Overhead Shoulder Press</span>
-                      <span className="text-orange-primary font-semibold">3 × 10 reps</span>
-                    </div>
-                    <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
-                      <span>Plank Hold</span>
-                      <span className="text-orange-primary font-semibold">3 × 60 sec</span>
-                    </div>
+
+                  <div className="mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setIsMemberWorkoutModalOpen(true)}
+                      className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                    >
+                      <Sparkles className="w-4 h-4" /> Open Workout & AI Coach
+                    </button>
+                    <span className="text-[11px] text-gray-400 mt-2 flex items-center justify-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-orange-primary" /> Rules 10 & 11 Enabled
+                    </span>
                   </div>
                 </div>
               </div>
@@ -917,11 +937,22 @@ export const App: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <h3 className="text-lg font-bold text-white">Workout Plan Builder</h3>
-                  <p className="text-xs text-gray-400 mt-1">Create, edit, or approve AI-generated draft workout routines.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition">
-                    Create New Plan
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                      <Dumbbell className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Workout Plan Builder</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Review AI-generated draft plans (Rule 11) or build custom athlete routines.
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsTrainerWorkoutModalOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                  >
+                    <Sparkles className="w-4 h-4" /> Review Queue & Plan Builder
                   </button>
                 </div>
 
@@ -951,6 +982,13 @@ export const App: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsTrainerWorkoutModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                      >
+                        <Dumbbell className="w-4 h-4 text-orange-primary" /> Workout Review Gate
+                      </button>
                       <button
                         type="button"
                         onClick={() => setIsReceptionScannerOpen(true)}
@@ -2299,6 +2337,24 @@ export const App: React.FC = () => {
           isOpen={isReceptionScannerOpen}
           onClose={() => setIsReceptionScannerOpen(false)}
           staffName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* MEMBER WORKOUT ROUTINE & AI COACH MODAL (Phase 6: Rules 10, 11) */}
+      {currentUser && (
+        <MemberWorkoutModal
+          isOpen={isMemberWorkoutModalOpen}
+          onClose={() => setIsMemberWorkoutModalOpen(false)}
+          memberName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* TRAINER & ADMIN WORKOUT REVIEW GATE & BUILDER MODAL (Phase 6: Rule 11) */}
+      {currentUser && (currentUser.role === 'trainer' || currentUser.role === 'admin') && (
+        <TrainerWorkoutModal
+          isOpen={isTrainerWorkoutModalOpen}
+          onClose={() => setIsTrainerWorkoutModalOpen(false)}
+          trainerName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
         />
       )}
 

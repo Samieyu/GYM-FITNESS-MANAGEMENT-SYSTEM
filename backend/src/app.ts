@@ -11,6 +11,7 @@ import { plansRouter } from './modules/plans/plans.routes';
 import paymentsRouter from './modules/payments/payments.routes';
 import membershipsRouter from './modules/payments/memberships.routes';
 import checkinsRouter from './modules/checkins/checkins.routes';
+import workoutsRouter from './modules/workouts/workouts.routes';
 
 const app: Application = express();
 
@@ -79,6 +80,7 @@ app.use(`${config.apiPrefix}/plans`, plansRouter);
 app.use(`${config.apiPrefix}/payments`, paymentsRouter);
 app.use(`${config.apiPrefix}/memberships`, membershipsRouter);
 app.use(`${config.apiPrefix}/checkins`, checkinsRouter);
+app.use(`${config.apiPrefix}/workouts`, workoutsRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);
