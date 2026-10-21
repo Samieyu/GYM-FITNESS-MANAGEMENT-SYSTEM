@@ -7,13 +7,13 @@ import {
   QrCode, 
   CheckCircle2, 
   XCircle, 
-  AlertCircle, 
+ 
   RefreshCw, 
   ShieldAlert, 
   Search, 
   Clock, 
-  UserCheck, 
-  CheckCheck,
+ 
+
   Zap
 } from 'lucide-react';
 import { 
@@ -22,6 +22,7 @@ import {
   ScanResultData, 
   CheckinRecordItem 
 } from '../api/checkins';
+import { formatEthiopianDate, formatEthiopianTime } from '../utils/ethiopianCalendar';
 
 interface ReceptionScannerModalProps {
   isOpen: boolean;
@@ -183,7 +184,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
               </span>
             </h3>
             <p className="text-xs text-gray-400">
-              Staff Operator: <strong className="text-gray-200">{staffName}</strong>
+              Staff Operator: <strong className="text-gray-200">{staffName}</strong> • Ethiopian Calendar (E.C.)
             </p>
           </div>
         </div>
@@ -365,19 +366,15 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 uppercase font-semibold block">Plan Expiry</span>
-                <span className="text-gray-300">
-                  {lastScanResult.membership?.end_date || 'N/A'}
+                <span className="text-[10px] text-gray-400 uppercase font-semibold block">Plan Expiry (E.C.)</span>
+                <span className="text-gray-300 font-medium">
+                  {formatEthiopianDate(lastScanResult.membership?.end_date)}
                 </span>
               </div>
               <div>
                 <span className="text-[10px] text-gray-400 uppercase font-semibold block">Time</span>
                 <span className="text-gray-300 font-mono text-[11px]">
-                  {new Date(lastScanResult.checkinTime).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}
+                  {formatEthiopianTime(lastScanResult.checkinTime)}
                 </span>
               </div>
             </div>
@@ -416,7 +413,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-orange-primary" /> Live Check-In Attendance Feed (Today)
+              <Clock className="w-4 h-4 text-orange-primary" /> Live Check-In Attendance Feed (Ethiopian Calendar)
             </h4>
             <button
               type="button"
@@ -440,6 +437,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
                   <thead className="bg-charcoal-950/70 text-gray-400 border-b border-charcoal-800 sticky top-0 text-[11px] uppercase tracking-wider">
                     <tr>
                       <th className="py-2.5 px-3">Time</th>
+                      <th className="py-2.5 px-3">Date (E.C.)</th>
                       <th className="py-2.5 px-3">Member</th>
                       <th className="py-2.5 px-3">Plan</th>
                       <th className="py-2.5 px-3">Method</th>
@@ -450,10 +448,10 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
                     {recentLogs.map((log) => (
                       <tr key={log.id} className="hover:bg-charcoal-800/40 transition">
                         <td className="py-2.5 px-3 font-mono text-[11px] text-gray-400 whitespace-nowrap">
-                          {new Date(log.checkin_time).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatEthiopianTime(log.checkin_time)}
+                        </td>
+                        <td className="py-2.5 px-3 font-mono text-[11px] text-gray-300 whitespace-nowrap">
+                          {formatEthiopianDate(log.checkin_time)}
                         </td>
                         <td className="py-2.5 px-3">
                           <span className="font-semibold text-white block">

@@ -10,7 +10,7 @@ const controller = new PaymentsController();
 // Rate limiters for security
 const checkoutLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 60,
   message: {
     status: 'error',
     message: 'Too many checkout attempts from this IP, please try again later.',
@@ -38,6 +38,14 @@ router.post(
   authGuard,
   roleGuard('member'),
   controller.initializeChapa
+);
+
+// Business Rule 3: Direct Chapa transaction verification (returns from checkout)
+router.get(
+  '/chapa/verify/:txRef',
+  checkoutLimiter,
+  authGuard,
+  controller.verifyChapa
 );
 
 // Business Rule 3: Chapa verified webhook endpoint (Public, rate limited, signature verified in service)

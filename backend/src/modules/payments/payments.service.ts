@@ -106,7 +106,7 @@ export class PaymentsService {
             last_name: memberUser.lastName,
             tx_ref: txRef,
             callback_url: `${config.corsOrigin.replace(':5173', ':5000')}/api/v1/payments/chapa/webhook`,
-            return_url: returnUrl || `${config.corsOrigin}/dashboard?payment=success&tx_ref=${txRef}`,
+            return_url: returnUrl || `${config.corsOrigin}/?payment=success&tx_ref=${txRef}`,
             customization: {
               title: 'Titan Fitness',
               description: `Payment for ${plan.name}`,
@@ -216,11 +216,108 @@ export class PaymentsService {
       );
     }
 
+    return await this.completePaymentAndActivateMembership(
+      payment,
+      payload.reference || payload.id || null,
+      payload
+    );
+  }
+
+  /**
+   * Business Rule 3: Directly verify transaction with Chapa via /transaction/verify/:txRef
+   * Handles user returning from Chapa hosted checkout gateway or manual client verification.
+   */
+  async verifyChapaTransaction(txRef: string): Promise<{
+    status: string;
+    message: string;
+    paymentId?: string;
+    membershipId?: string;
+    isCompleted: boolean;
+  }> {
+    if (!txRef) {
+      throw new BadRequestError('Transaction reference (tx_ref) is required');
+    }
+
+    const payment = await this.repo.findPaymentByReference(txRef);
+    if (!payment) {
+      throw new NotFoundError(`Payment with reference "${txRef}" not found`);
+    }
+
+    if (payment.status === 'completed') {
+      return {
+        status: 'success',
+        message: 'Payment has already been verified and processed',
+        paymentId: payment.id,
+        membershipId: payment.membership_id || undefined,
+        isCompleted: true,
+      };
+    }
+
+    let chapaResponse: any = null;
+    try {
+      const response = await fetch(`${config.chapa.baseUrl}/transaction/verify/${txRef}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${config.chapa.secretKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      chapaResponse = await response.json();
+    } catch (netErr: any) {
+      console.error('[Chapa Verify API] Failed to reach Chapa verify endpoint:', netErr);
+      throw new BadRequestError('Unable to reach Chapa verification server');
+    }
+
+    if (!chapaResponse || chapaResponse.status !== 'success' || !chapaResponse.data) {
+      return {
+        status: 'pending',
+        message: chapaResponse?.message || 'Payment is still awaiting completion on Chapa',
+        paymentId: payment.id,
+        isCompleted: false,
+      };
+    }
+
+    const chapaData = chapaResponse.data;
+    if (chapaData.status === 'success') {
+      const result = await this.completePaymentAndActivateMembership(
+        payment,
+        chapaData.reference || chapaData.id || txRef,
+        chapaData
+      );
+      return {
+        ...result,
+        isCompleted: true,
+      };
+    } else if (chapaData.status === 'failed') {
+      await this.repo.updatePaymentStatus(payment.id, 'failed', chapaData.reference, chapaData);
+      return {
+        status: 'failed',
+        message: 'Payment was unsuccessful or cancelled on Chapa',
+        paymentId: payment.id,
+        isCompleted: false,
+      };
+    }
+
+    return {
+      status: chapaData.status || 'pending',
+      message: `Transaction is currently ${chapaData.status || 'pending'} on Chapa`,
+      paymentId: payment.id,
+      isCompleted: false,
+    };
+  }
+
+  /**
+   * Helper to activate membership and complete payment atomically in a DB transaction
+   */
+  private async completePaymentAndActivateMembership(
+    payment: PaymentRecord,
+    transactionId: string | null,
+    rawPayload: any
+  ): Promise<{ status: string; message: string; paymentId: string; membershipId: string }> {
     if (!payment.membership_id) {
       throw new UnprocessableEntityError('Payment is not linked to a membership record');
     }
 
-    // 6. Fetch membership & plan to know duration
     const membership = await this.repo.findMembershipById(payment.membership_id);
     if (!membership) {
       throw new NotFoundError('Associated membership record not found');
@@ -228,7 +325,6 @@ export class PaymentsService {
 
     const durationMonths = membership.duration_months || 1;
 
-    // 7. Atomic transaction: Activate membership + update payment + audit log
     const client = await this.repo.getClient();
     let activatedMembership: MembershipRecord;
     try {
@@ -238,8 +334,8 @@ export class PaymentsService {
       await this.repo.updatePaymentStatus(
         payment.id,
         'completed',
-        payload.reference || payload.id || null,
-        payload,
+        transactionId,
+        rawPayload,
         client
       );
 
@@ -272,7 +368,6 @@ export class PaymentsService {
       await client.query('COMMIT');
     } catch (err: any) {
       await client.query('ROLLBACK');
-      // If unique constraint violated (already active membership)
       if (err.code === '23505' && err.constraint === 'idx_single_active_membership') {
         throw new ConflictError('Member already has an active membership');
       }
@@ -281,7 +376,7 @@ export class PaymentsService {
       client.release();
     }
 
-    // 8. Send confirmation email to member
+    // Send confirmation email to member
     if (payment.member_email && payment.member_first_name) {
       sendPaymentConfirmationEmail(payment.member_email, payment.member_first_name, {
         planName: membership.plan_name || 'Gym Membership',
@@ -290,7 +385,7 @@ export class PaymentsService {
         reference: payment.payment_reference,
         startDate: activatedMembership.start_date || 'Today',
         endDate: activatedMembership.end_date || 'N/A',
-      }).catch((emailErr) => console.error('[Webhook] Confirmation email error:', emailErr));
+      }).catch((emailErr) => console.error('[Payment Activation] Confirmation email error:', emailErr));
     }
 
     return {

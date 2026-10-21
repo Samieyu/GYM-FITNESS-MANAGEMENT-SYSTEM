@@ -51,12 +51,14 @@ import {
   initializeChapaApi,
   fetchMyActiveMembershipApi,
   fetchMyPaymentHistoryApi,
-  recordManualPaymentApi
+  recordManualPaymentApi,
+  verifyChapaTransactionApi
 } from './api/payments';
 import { MemberQrPassModal } from './components/MemberQrPassModal';
 import { ReceptionScannerModal } from './components/ReceptionScannerModal';
 import { MemberWorkoutModal } from './components/MemberWorkoutModal';
 import { TrainerWorkoutModal } from './components/TrainerWorkoutModal';
+import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
@@ -155,13 +157,52 @@ export const App: React.FC = () => {
       handleAutoVerifyToken(tokenParam);
     }
 
-    // Check for ?payment=success in URL
+    // Check for ?payment=success or ?tx_ref= in URL (Chapa hosted gateway return)
+    const txRefParam = params.get('tx_ref');
+    if (txRefParam) {
+      handleAutoVerifyChapaTx(txRefParam);
+    }
     const paymentParam = params.get('payment');
     if (paymentParam === 'success') {
       setSuccessMessage('Payment successful! Your membership has been activated.');
       window.history.replaceState({}, document.title, '/');
     }
   }, []);
+
+  const handleAutoVerifyChapaTx = async (txRef: string) => {
+    setIsCheckingOut(true);
+    setErrorMessage(null);
+    try {
+      const res = await verifyChapaTransactionApi(txRef);
+      if (res.status === 'success' || res.isCompleted) {
+        setSuccessMessage('Payment successfully confirmed with Chapa! Your membership is now active.');
+        await loadMemberMembershipAndPayments();
+        setPaymentSuccessDetails({
+          txRef,
+          planName: res.membership?.plan_name || 'Gym Membership',
+          amount: res.payment?.amount || 0,
+          method: 'Chapa Secure Checkout (Telebirr / CBE / Card)',
+          date: formatEthiopianDateTime(new Date()),
+        });
+        setPaymentStep('success');
+        setCheckoutModalData({
+          checkoutUrl: null,
+          txRef,
+          amount: res.payment?.amount || 0,
+          planName: res.membership?.plan_name || 'Gym Membership',
+          isLiveGateway: true,
+        });
+      } else {
+        setErrorMessage(res.message || 'Payment is still pending on Chapa.');
+      }
+    } catch (err: any) {
+      console.warn('Auto-verify error:', err);
+      setErrorMessage(err.message || 'Payment verification failed.');
+    } finally {
+      setIsCheckingOut(false);
+      window.history.replaceState({}, document.title, '/');
+    }
+  };
 
   const handleAutoVerifyToken = async (token: string) => {
     setIsSubmitting(true);
@@ -247,7 +288,12 @@ export const App: React.FC = () => {
     setErrorMessage(null);
     setPaymentError(null);
     try {
-      const res = await initializeChapaApi(plan.id);
+      const returnUrl = `${window.location.origin}/?payment=success`;
+      const res = await initializeChapaApi(plan.id, returnUrl);
+      if (res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
       setCheckoutModalData(res);
       setPaymentMethodTab('telebirr');
       setTelebirrPhone(currentUser.phone || '+251 9');
@@ -309,7 +355,7 @@ export const App: React.FC = () => {
         planName: checkoutModalData.planName,
         amount: checkoutModalData.amount,
         method: methodLabel,
-        date: new Date().toLocaleString(),
+        date: formatEthiopianDateTime(new Date()),
       });
 
       setPaymentStep('success');
@@ -475,6 +521,19 @@ export const App: React.FC = () => {
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
+    // Client-side strict validation for Gmail & Ethiopian phone
+    const cleanEmail = regEmail.trim().toLowerCase();
+    if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(cleanEmail)) {
+      e.preventDefault();
+      setErrorMessage('Only valid @gmail.com addresses are permitted (e.g. member@gmail.com).');
+      return;
+    }
+    const cleanPhone = regPhone.replace(/[\s-]/g, '');
+    if (!/^(\+251|0)[79]\d{8}$/.test(cleanPhone)) {
+      e.preventDefault();
+      setErrorMessage('Please provide a valid Ethiopian mobile phone (+251 9..., +251 7..., 09..., or 07...).');
+      return;
+    }
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
@@ -484,14 +543,14 @@ export const App: React.FC = () => {
       await registerMemberApi({
         firstName: regFirstName,
         lastName: regLastName,
-        email: regEmail,
+        email: cleanEmail,
         password: regPassword,
-        phone: regPhone,
+        phone: cleanPhone,
         fitnessGoals: regGoals,
       });
 
-      setRegisteredEmail(regEmail);
-      setLoginEmail(regEmail);
+      setRegisteredEmail(cleanEmail);
+      setLoginEmail(cleanEmail);
       setLoginPassword('');
       setAuthModalMode('verification-sent');
     } catch (err: any) {
@@ -702,8 +761,8 @@ export const App: React.FC = () => {
                             </span>
                           </div>
                           <div className="flex justify-between py-1 border-b border-charcoal-800">
-                            <span>Expiry Date</span>
-                            <span className="text-white font-medium">{myMembership.end_date}</span>
+                            <span>Expiry Date (E.C.)</span>
+                            <span className="text-orange-primary font-bold">{formatEthiopianDate(myMembership.end_date)}</span>
                           </div>
                           <div className="flex justify-between py-1">
                             <span>Price Paid</span>
@@ -839,7 +898,7 @@ export const App: React.FC = () => {
                     <table className="w-full text-left text-xs">
                       <thead>
                         <tr className="border-b border-charcoal-800 text-gray-400">
-                          <th className="py-2.5 px-3">Date</th>
+                          <th className="py-2.5 px-3">Date (E.C.)</th>
                           <th className="py-2.5 px-3">Plan / Description</th>
                           <th className="py-2.5 px-3">Method</th>
                           <th className="py-2.5 px-3">Reference</th>
@@ -851,7 +910,7 @@ export const App: React.FC = () => {
                         {myPayments.map((pay) => (
                           <tr key={pay.id} className="hover:bg-charcoal-800/40">
                             <td className="py-2.5 px-3 font-mono text-gray-400">
-                              {new Date(pay.created_at).toLocaleDateString()}
+                              {formatEthiopianDateTime(pay.created_at)}
                             </td>
                             <td className="py-2.5 px-3 font-semibold text-white">{pay.plan_name || 'Membership'}</td>
                             <td className="py-2.5 px-3 capitalize">{pay.payment_method}</td>
@@ -1562,7 +1621,7 @@ export const App: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Email (Verification Required)</label>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Gmail Address (@gmail.com) *</label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                     <input 
@@ -1570,7 +1629,7 @@ export const App: React.FC = () => {
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
                       required
-                      placeholder="jane@example.com"
+                      placeholder="yourname@gmail.com"
                       className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
                     />
                   </div>
@@ -1592,14 +1651,15 @@ export const App: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Phone Number</label>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Ethiopian Phone Number *</label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                     <input 
                       type="tel"
                       value={regPhone}
                       onChange={(e) => setRegPhone(e.target.value)}
-                      placeholder="+251 911 000 000"
+                      placeholder="+251 9... or 09... (Ethio / Safaricom)"
+                      required
                       className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
                     />
                   </div>
@@ -2052,6 +2112,20 @@ export const App: React.FC = () => {
                     </div>
                   )}
 
+                  {checkoutModalData.checkoutUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (checkoutModalData.checkoutUrl) {
+                          window.location.href = checkoutModalData.checkoutUrl;
+                        }
+                      }}
+                      className="mb-3 w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-950/50 transition active:scale-[0.99]"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Proceed to Official Chapa Gateway ({checkoutModalData.amount.toLocaleString()} ETB)</span>
+                    </button>
+                  )}
                   {/* Single Authentic Pay Button */}
                   <button
                     type="submit"
@@ -2145,7 +2219,7 @@ export const App: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span className="text-gray-400">Timestamp</span>
+                    <span className="text-gray-400">Timestamp (E.C.)</span>
                     <span className="text-gray-300">{paymentSuccessDetails.date}</span>
                   </div>
                 </div>

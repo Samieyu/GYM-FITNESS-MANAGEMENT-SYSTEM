@@ -6,12 +6,12 @@ import {
   Clock, 
   AlertCircle, 
   RefreshCw, 
-  Calendar, 
+ 
   Plus, 
   Trash2, 
-  ShieldCheck, 
+ 
   Sparkles,
-  UserCheck
+
 } from 'lucide-react';
 import { 
   fetchTrainerPendingDraftsApi, 
@@ -21,6 +21,7 @@ import {
   WorkoutPlanItem, 
   ExerciseItem 
 } from '../api/workouts';
+import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
 interface TrainerWorkoutModalProps {
   isOpen: boolean;
@@ -271,7 +272,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                             Athlete: <strong className="text-white">{plan.member_first_name} {plan.member_last_name}</strong> ({plan.member_email})
                           </p>
                           <span className="text-[10px] text-gray-500 block mt-1">
-                            Submitted {new Date(plan.created_at).toLocaleDateString()} • {plan.exercises?.length || 0} exercises
+                            Submitted (E.C.) {formatEthiopianDate(plan.created_at)} • {plan.exercises?.length || 0} exercises
                           </span>
                         </div>
 

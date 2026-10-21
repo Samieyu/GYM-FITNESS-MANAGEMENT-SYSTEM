@@ -3,17 +3,15 @@ import { QRCodeSVG } from 'qrcode.react';
 import { 
   X, 
   RefreshCw, 
-  Clock, 
   ShieldCheck, 
   AlertTriangle, 
-  Calendar, 
   History, 
-  Sparkles,
-  CheckCircle2,
-  XCircle,
-  Dumbbell
+  CheckCircle2, 
+  XCircle, 
+  Dumbbell 
 } from 'lucide-react';
 import { fetchMyQrPassApi, fetchMyCheckinHistoryApi, QrPassData, CheckinRecordItem } from '../api/checkins';
+import { formatEthiopianDate, formatEthiopianTime } from '../utils/ethiopianCalendar';
 
 interface MemberQrPassModalProps {
   isOpen: boolean;
@@ -36,7 +34,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
   const [history, setHistory] = useState<CheckinRecordItem[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<any>(null);
 
   const loadQrPass = async () => {
     setIsLoading(true);
@@ -176,7 +174,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
                 </span>
                 {qrData?.membership && (
                   <span className="text-[11px] text-gray-400 block mt-0.5">
-                    Valid until: <span className="text-gray-300 font-medium">{qrData.membership.end_date}</span>
+                    Valid until (E.C.): <span className="text-orange-primary font-medium">{formatEthiopianDate(qrData.membership.end_date)}</span>
                   </span>
                 )}
               </div>
@@ -289,7 +287,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
                 • <strong className="text-gray-300">Rule 7:</strong> Token is cryptographically signed with HMAC-SHA256 and expires strictly after 60 seconds. Screenshots are rejected.
               </p>
               <p className="text-[11px]">
-                • <strong className="text-gray-300">Rule 8:</strong> Requires active membership with validity on or after today's date.
+                • <strong className="text-gray-300">Rule 8:</strong> Requires active membership with validity on or after today's date in Ethiopian Calendar.
               </p>
               <p className="text-[11px]">
                 • <strong className="text-gray-300">Rule 9:</strong> 2-Hour anti-passback rule blocks immediate duplicate scans unless receptionist overrides.
@@ -302,7 +300,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
         {activeTab === 'history' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-400">Past check-in records:</span>
+              <span className="text-xs text-gray-400">Past check-in records (Ethiopian Calendar):</span>
               <button
                 type="button"
                 disabled={isLoadingHistory}
@@ -328,17 +326,10 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-white">
-                          {new Date(item.checkin_time).toLocaleDateString([], {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          {formatEthiopianDate(item.checkin_time)}
                         </span>
                         <span className="text-gray-400 font-mono text-[11px]">
-                          {new Date(item.checkin_time).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatEthiopianTime(item.checkin_time)}
                         </span>
                       </div>
                       <span className="text-[10px] text-gray-500 capitalize block mt-0.5">

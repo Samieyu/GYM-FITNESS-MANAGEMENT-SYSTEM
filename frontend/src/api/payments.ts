@@ -64,6 +64,23 @@ export const initializeChapaApi = async (
 };
 
 /**
+ * Directly verify a transaction with Chapa API by reference
+ */
+export const verifyChapaTransactionApi = async (txRef: string): Promise<any> => {
+  const res = await fetch(`/api/v1/payments/chapa/verify/${encodeURIComponent(txRef)}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error?.message || data.message || 'Payment verification failed');
+  }
+
+  return data.data;
+};
+
+/**
  * Fetch currently active membership for logged-in member
  */
 export const fetchMyActiveMembershipApi = async (): Promise<Membership | null> => {

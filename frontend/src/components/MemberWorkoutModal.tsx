@@ -8,11 +8,11 @@ import {
   AlertCircle, 
   RefreshCw, 
   Calendar, 
-  Target, 
+ 
   Activity, 
   ShieldCheck, 
   Flame,
-  ArrowRight
+
 } from 'lucide-react';
 import { 
   fetchMyActiveWorkoutApi, 
@@ -21,6 +21,7 @@ import {
   WorkoutPlanItem, 
   AiWorkoutRequestParams 
 } from '../api/workouts';
+import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
 interface MemberWorkoutModalProps {
   isOpen: boolean;
@@ -108,7 +109,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
   if (!isOpen) return null;
 
   // Group active plan exercises by day of week
-  const groupedExercises: Record<number, typeof activePlan.exercises> = {};
+  const groupedExercises: Record<number, any[]> = {};
   if (activePlan?.exercises) {
     for (const ex of activePlan.exercises) {
       if (!groupedExercises[ex.day_of_week]) {
@@ -236,7 +237,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
                     </span>
                     <span className="text-gray-500">•</span>
                     <span className="text-gray-400">
-                      Activated on: <span className="text-gray-300">{activePlan.approved_at ? new Date(activePlan.approved_at).toLocaleDateString() : 'Active'}</span>
+                      Activated on (E.C.): <span className="text-gray-300">{activePlan.approved_at ? formatEthiopianDate(activePlan.approved_at) : 'Active'}</span>
                     </span>
                   </div>
                 </div>
@@ -482,7 +483,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
                         {plan.description || 'Workout Routine'}
                       </p>
                       <span className="text-[10px] text-gray-500 block mt-1">
-                        Created {new Date(plan.created_at).toLocaleDateString()} • {plan.exercises?.length || 0} exercises
+                        Created (E.C.) {formatEthiopianDate(plan.created_at)} • {plan.exercises?.length || 0} exercises
                       </span>
                     </div>
 

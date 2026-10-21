@@ -40,6 +40,28 @@ export class PaymentsController {
     }
   };
 
+  /**
+   * Directly verify transaction by reference with Chapa API
+   * Used when returning from checkout page or polling status
+   */
+  verifyChapa = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { txRef } = req.params;
+      if (!txRef) {
+        throw new BadRequestError('Transaction reference is required');
+      }
+
+      const result = await this.service.verifyChapaTransaction(txRef);
+
+      res.status(200).json({
+        status: 'success',
+        data: result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   handleChapaWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const parsed = chapaWebhookSchema.safeParse(req.body);
