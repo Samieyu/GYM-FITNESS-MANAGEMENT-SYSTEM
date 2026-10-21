@@ -108,8 +108,8 @@ export class PaymentsService {
             callback_url: `${config.corsOrigin.replace(':5173', ':5000')}/api/v1/payments/chapa/webhook`,
             return_url: returnUrl || `${config.corsOrigin}/dashboard?payment=success&tx_ref=${txRef}`,
             customization: {
-              title: 'Titan Fitness Membership',
-              description: `Payment for ${plan.name} (${plan.duration_months} mo)`,
+              title: 'Titan Fitness',
+              description: `Payment for ${plan.name}`,
             },
           }),
         });
