@@ -317,7 +317,7 @@ export class PaymentsRepository {
     audit: {
       userId?: string | null;
       action: string;
-      entityName: string;
+      entityType: string;
       entityId?: string | null;
       oldValues?: any;
       newValues?: any;
@@ -331,24 +331,22 @@ export class PaymentsRepository {
       INSERT INTO audit_logs (
         user_id,
         action,
-        entity_name,
+        entity_type,
         entity_id,
         old_values,
         new_values,
-        ip_address,
-        user_agent
+        ip_address
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+      VALUES ($1, $2, $3, $4, $5, $6, $7);
     `;
     await runner.query(query, [
       audit.userId || null,
       audit.action,
-      audit.entityName,
+      audit.entityType,
       audit.entityId || null,
       audit.oldValues ? JSON.stringify(audit.oldValues) : null,
       audit.newValues ? JSON.stringify(audit.newValues) : null,
-      audit.ipAddress || null,
-      audit.userAgent || null,
+      audit.ipAddress || null,
     ]);
   }
 

@@ -255,7 +255,7 @@ export class PaymentsService {
         {
           userId: payment.member_id,
           action: 'PAYMENT_COMPLETED',
-          entityName: 'payments',
+          entityType: 'payments',
           entityId: payment.id,
           oldValues: { status: 'pending' },
           newValues: {
@@ -386,7 +386,7 @@ export class PaymentsService {
         {
           userId: recordedByUser.id,
           action: 'OFFLINE_PAYMENT_RECORDED',
-          entityName: 'payments',
+          entityType: 'payments',
           entityId: payment.id,
           newValues: {
             paymentMethod: data.paymentMethod,
