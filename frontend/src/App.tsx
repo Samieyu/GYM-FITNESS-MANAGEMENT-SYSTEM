@@ -37,6 +37,7 @@ import {
   registerMemberApi, 
   verifyEmailApi, 
   resendVerificationApi,
+  resetPasswordApi,
   logoutApi 
 } from './api/auth';
 import { 
@@ -68,7 +69,12 @@ const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'verification-sent' | null>(null);
+  const [authModalMode, setAuthModalMode] = useState<
+    'login' | 'register' | 'verification-sent' | 'set-password' | null
+  >(null);
+  const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   // Login form state (empty defaults - no hardcoded demo accounts exposed)
   const [loginEmail, setLoginEmail] = useState('');
@@ -158,8 +164,23 @@ export const App: React.FC = () => {
     // Check for ?token= query parameter in URL (Email Verification link)
     const params = new URLSearchParams(window.location.search);
     const tokenParam = params.get('token');
+    const pathname = window.location.pathname;
+    const isSetPasswordMode =
+      pathname.includes('set-password') ||
+      pathname.includes('reset-password') ||
+      params.get('mode') === 'set-password' ||
+      params.get('mode') === 'reset-password';
+
     if (tokenParam) {
-      handleAutoVerifyToken(tokenParam);
+      if (isSetPasswordMode) {
+        setResetPasswordToken(tokenParam);
+        setNewPassword('');
+        setConfirmPassword('');
+        setErrorMessage(null);
+        setAuthModalMode('set-password');
+      } else {
+        handleAutoVerifyToken(tokenParam);
+      }
     }
 
     // Check for ?tx_ref= or ?trx_ref= in URL (Chapa hosted gateway return)
@@ -205,6 +226,36 @@ export const App: React.FC = () => {
     } finally {
       setIsCheckingOut(false);
       window.history.replaceState({}, document.title, '/');
+    }
+  };
+
+  const handleSetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPasswordToken) {
+      setErrorMessage('Missing password reset token');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const res = await resetPasswordApi(resetPasswordToken, newPassword);
+      setSuccessMessage(res.message || 'Password set successfully! Please log in with your new password.');
+      setAuthModalMode('login');
+      setLoginPassword('');
+      window.history.replaceState({}, document.title, '/');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to set password. Token may have expired.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1487,15 +1538,27 @@ export const App: React.FC = () => {
             {authModalMode !== 'verification-sent' && (
               <div className="flex items-center gap-3 mb-5">
                 <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
-                  {authModalMode === 'login' ? <Lock className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
+                  {authModalMode === 'set-password' ? (
+                    <ShieldCheck className="w-5 h-5" />
+                  ) : authModalMode === 'login' ? (
+                    <Lock className="w-5 h-5" />
+                  ) : (
+                    <UserPlus className="w-5 h-5" />
+                  )}
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">
-                    {authModalMode === 'login' ? 'Sign In to Your Account' : 'Member Registration'}
+                    {authModalMode === 'set-password'
+                      ? 'Set Your Password'
+                      : authModalMode === 'login'
+                      ? 'Sign In to Your Account'
+                      : 'Member Registration'}
                   </h3>
                   <p className="text-xs text-gray-400">
-                    {authModalMode === 'login' 
-                      ? 'Enter your credentials to access your dashboard' 
+                    {authModalMode === 'set-password'
+                      ? 'Create a secure password to access your member dashboard'
+                      : authModalMode === 'login'
+                      ? 'Enter your credentials to access your dashboard'
                       : 'Create an account to start training'}
                   </p>
                 </div>
@@ -1586,6 +1649,66 @@ export const App: React.FC = () => {
                     className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 border border-charcoal-700 text-xs font-semibold transition disabled:opacity-50"
                   >
                     {isSubmitting ? 'Resending...' : 'Resend Verification Email'}
+                  </button>
+                </div>
+              </div>
+            ) : authModalMode === 'set-password' ? (
+              /* VIEW: SET / RESET PASSWORD FORM */
+              <div>
+                <form onSubmit={handleSetPasswordSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      New Password (minimum 6 characters)
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                      <input 
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        placeholder="••••••••"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Confirm New Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                      <input 
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        placeholder="••••••••"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Saving Password...' : 'Save Password & Access Account'}
+                  </button>
+                </form>
+
+                <div className="mt-4 pt-4 border-t border-charcoal-800 text-center text-xs text-gray-400">
+                  Already have a password?{' '}
+                  <button 
+                    type="button" 
+                    onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
+                    className="text-orange-primary hover:underline font-semibold"
+                  >
+                    Sign In
                   </button>
                 </div>
               </div>
