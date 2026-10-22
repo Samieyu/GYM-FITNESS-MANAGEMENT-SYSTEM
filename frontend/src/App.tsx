@@ -27,7 +27,8 @@ import {
   Layers,
   CreditCard,
   Receipt,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 import { 
   User, 
@@ -58,6 +59,8 @@ import { MemberQrPassModal } from './components/MemberQrPassModal';
 import { ReceptionScannerModal } from './components/ReceptionScannerModal';
 import { MemberWorkoutModal } from './components/MemberWorkoutModal';
 import { TrainerWorkoutModal } from './components/TrainerWorkoutModal';
+import { WalkinRegistrationModal } from './components/WalkinRegistrationModal';
+import { triggerManualExpiryCheckApi } from './api/reception';
 import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
@@ -131,6 +134,8 @@ export const App: React.FC = () => {
   // Workout & AI Plan state (Phase 6: Rules 10, 11)
   const [isMemberWorkoutModalOpen, setIsMemberWorkoutModalOpen] = useState(false);
   const [isTrainerWorkoutModalOpen, setIsTrainerWorkoutModalOpen] = useState(false);
+  const [isWalkinModalOpen, setIsWalkinModalOpen] = useState(false);
+  const [isRunningExpiryCheck, setIsRunningExpiryCheck] = useState(false);
 
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -405,6 +410,21 @@ export const App: React.FC = () => {
       setManualPaymentError(err.message || 'Failed to record manual payment.');
     } finally {
       setIsSavingManualPayment(false);
+    }
+  };
+
+  const handleRunManualExpiryCheck = async () => {
+    try {
+      setIsRunningExpiryCheck(true);
+      setErrorMessage(null);
+      const res = await triggerManualExpiryCheckApi();
+      setSuccessMessage(
+        `Daily expiry check completed (Rule 5 & 6): ${res.expiredMemberships ?? 0} memberships expired, ${res.reminders7dSent ?? 0} 7-day reminders sent, ${res.reminders1dSent ?? 0} 1-day reminders sent.`
+      );
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to run expiration check');
+    } finally {
+      setIsRunningExpiryCheck(false);
     }
   };
 
@@ -963,8 +983,12 @@ export const App: React.FC = () => {
                   </div>
                   <h3 className="text-lg font-bold text-white">Walk-in Registration</h3>
                   <p className="text-xs text-gray-400 mt-1">Register walk-in client, pick plan, record payment, send invite.</p>
-                  <button className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition">
-                    New Member Form
+                  <button 
+                    type="button"
+                    onClick={() => setIsWalkinModalOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                  >
+                    <UserPlus className="w-4 h-4" /> Register Walk-in Member
                   </button>
                 </div>
 
@@ -1068,6 +1092,22 @@ export const App: React.FC = () => {
                         className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
                       >
                         <Plus className="w-4 h-4" /> Create New Plan
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsWalkinModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                      >
+                        <UserPlus className="w-4 h-4 text-orange-primary" /> Walk-In Member
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRunManualExpiryCheck}
+                        disabled={isRunningExpiryCheck}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+                        title="Rule 5 & 6: Scan all memberships, auto-expire overdue, and dispatch 7d/1d reminder emails in Ethiopian Calendar"
+                      >
+                        <RefreshCw className={`w-4 h-4 text-orange-primary ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
                       </button>
                     </div>
                   </div>
@@ -2420,6 +2460,20 @@ export const App: React.FC = () => {
           isOpen={isMemberWorkoutModalOpen}
           onClose={() => setIsMemberWorkoutModalOpen(false)}
           memberName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* WALKIN REGISTRATION MODAL (Phase 6: Rule 10) */}
+      {currentUser && (currentUser.role === 'reception' || currentUser.role === 'admin') && (
+        <WalkinRegistrationModal
+          isOpen={isWalkinModalOpen}
+          onClose={() => setIsWalkinModalOpen(false)}
+          staffName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+          plans={adminPlans.length > 0 ? adminPlans : plans}
+          onSuccess={() => {
+            loadPlans();
+            loadAdminPlans();
+          }}
         />
       )}
 

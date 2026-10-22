@@ -5,13 +5,14 @@ import { config } from './config';
 import { errorHandler } from './shared/middlewares/errorHandler';
 import authRoutes from './modules/auth/auth.routes';
 
-import path from 'path';
 import { getUploadsDir } from './shared/utils/uploadPaths';
 import { plansRouter } from './modules/plans/plans.routes';
 import paymentsRouter from './modules/payments/payments.routes';
 import membershipsRouter from './modules/payments/memberships.routes';
 import checkinsRouter from './modules/checkins/checkins.routes';
 import workoutsRouter from './modules/workouts/workouts.routes';
+import receptionRouter from './modules/reception/reception.routes';
+import cronRouter from './modules/cron/cron.routes';
 
 const app: Application = express();
 
@@ -81,6 +82,8 @@ app.use(`${config.apiPrefix}/payments`, paymentsRouter);
 app.use(`${config.apiPrefix}/memberships`, membershipsRouter);
 app.use(`${config.apiPrefix}/checkins`, checkinsRouter);
 app.use(`${config.apiPrefix}/workouts`, workoutsRouter);
+app.use(`${config.apiPrefix}/reception`, receptionRouter);
+app.use(`${config.apiPrefix}/cron`, cronRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

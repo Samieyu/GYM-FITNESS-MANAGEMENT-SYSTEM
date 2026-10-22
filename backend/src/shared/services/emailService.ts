@@ -103,7 +103,8 @@ export const sendWalkinInvitationEmail = async (
           Set Your Password
         </a>
       </div>
-      <p style="color: #9ca3af; font-size: 12px;">Link: ${setPasswordUrl}</p>
+      <p style="color: #9ca3af; font-size: 12px;">Direct link: ${setPasswordUrl}</p>
+      <p style="color: #6b7280; font-size: 11px; margin-top: 30px;">This invitation link will expire in 72 hours.</p>
     </div>
   `;
 
@@ -163,5 +164,56 @@ export const sendPaymentConfirmationEmail = async (
     console.log(`[Email] Payment confirmation sent to ${email}`);
   } catch (error) {
     console.error(`[Email] Failed to send payment confirmation to ${email}:`, error);
+  }
+};
+
+export const sendExpiryReminderEmail = async (
+  email: string,
+  firstName: string,
+  details: {
+    planName: string;
+    daysRemaining: number;
+    endDate: string;
+    endDateEc: string;
+  }
+): Promise<void> => {
+  const renewUrl = `${config.corsOrigin}/plans`;
+  const isUrgent = details.daysRemaining <= 1;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h3 style="color: ${isUrgent ? '#ef4444' : '#f59e0b'};">
+        ${isUrgent ? 'URGENT: Membership Expires Tomorrow!' : 'Notice: Membership Expiring in 7 Days'}
+      </h3>
+      <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
+      <p style="color: #d1d5db;">
+        Your <strong>${details.planName}</strong> membership is set to expire on
+        <strong>${details.endDateEc}</strong> (${details.endDate}).
+      </p>
+      <div style="margin: 20px 0; padding: 16px; background-color: #1e1e1e; border-radius: 6px; border: 1px solid #333333;">
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Days Remaining:</strong> ${details.daysRemaining} ${details.daysRemaining === 1 ? 'day' : 'days'}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Expiry Date (E.C.):</strong> <span style="color: #ff8533;">${details.endDateEc}</span></p>
+      </div>
+      <p style="color: #d1d5db;">Renew now with Chapa, Telebirr, or CBE Birr to keep your dynamic QR check-in pass active without interruption.</p>
+      <div style="margin: 25px 0;">
+        <a href="${renewUrl}" style="background-color: #ff6b00; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+          Renew Membership
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 11px;">Titan Fitness Club • Addis Ababa, Ethiopia</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `${isUrgent ? '🚨 URGENT: Membership Expires Tomorrow' : 'Membership Expiring Soon (7 Days)'} - Titan Fitness`,
+      html,
+    });
+    console.log(`[Email] Expiry reminder (${details.daysRemaining}d) sent to ${email}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send expiry reminder to ${email}:`, error);
   }
 };

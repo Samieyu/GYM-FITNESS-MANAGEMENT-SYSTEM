@@ -1,6 +1,7 @@
 import app from './app';
 import { config } from './config';
 import { pool } from './db/pool';
+import { CronService } from './modules/cron/cron.service';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -31,6 +32,10 @@ const startServer = async () => {
       console.log(`[Server] Running on http://localhost:${config.port}`);
       console.log(`[Server] Healthcheck: http://localhost:${config.port}/health`);
       console.log(`[Server] Environment: ${config.env}`);
+
+      // Initialize automated daily expiration and reminder cron jobs
+      const cronService = new CronService();
+      cronService.startCronJobs();
     });
   } catch (err) {
     console.error('[Server] Failed to initialize express listener:', err);
@@ -43,4 +48,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
-// Hot-reloaded with configured Chapa live test keys
