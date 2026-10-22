@@ -106,7 +106,7 @@ export class PaymentsService {
             last_name: memberUser.lastName,
             tx_ref: txRef,
             callback_url: `${config.corsOrigin.replace(':5173', ':5000')}/api/v1/payments/chapa/webhook`,
-            return_url: returnUrl || `${config.corsOrigin}/?payment=success&tx_ref=${txRef}`,
+            return_url: returnUrl || `${config.corsOrigin}/?tx_ref=${txRef}`,
             customization: {
               title: 'Titan Fitness',
               description: `Payment for ${plan.name}`,
@@ -278,7 +278,17 @@ export class PaymentsService {
     }
 
     const chapaData = chapaResponse.data;
-    if (chapaData.status === 'success') {
+    const statusLower = (chapaData.status || '').toLowerCase();
+    const isSuccess =
+      statusLower === 'success' ||
+      statusLower === 'successful' ||
+      statusLower === 'completed';
+    const isFailed =
+      statusLower.includes('fail') ||
+      statusLower.includes('cancel') ||
+      statusLower.includes('expired');
+
+    if (isSuccess) {
       const result = await this.completePaymentAndActivateMembership(
         payment,
         chapaData.reference || chapaData.id || txRef,
@@ -288,11 +298,16 @@ export class PaymentsService {
         ...result,
         isCompleted: true,
       };
-    } else if (chapaData.status === 'failed') {
-      await this.repo.updatePaymentStatus(payment.id, 'failed', chapaData.reference, chapaData);
+    } else if (isFailed) {
+      await this.repo.updatePaymentStatus(
+        payment.id,
+        'failed',
+        chapaData.reference || txRef,
+        chapaData
+      );
       return {
         status: 'failed',
-        message: 'Payment was unsuccessful or cancelled on Chapa',
+        message: 'Payment was cancelled or unsuccessful on Chapa',
         paymentId: payment.id,
         isCompleted: false,
       };

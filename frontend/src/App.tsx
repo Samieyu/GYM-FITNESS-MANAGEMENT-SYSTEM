@@ -162,15 +162,10 @@ export const App: React.FC = () => {
       handleAutoVerifyToken(tokenParam);
     }
 
-    // Check for ?payment=success or ?tx_ref= in URL (Chapa hosted gateway return)
-    const txRefParam = params.get('tx_ref');
+    // Check for ?tx_ref= or ?trx_ref= in URL (Chapa hosted gateway return)
+    const txRefParam = params.get('tx_ref') || params.get('trx_ref');
     if (txRefParam) {
       handleAutoVerifyChapaTx(txRefParam);
-    }
-    const paymentParam = params.get('payment');
-    if (paymentParam === 'success') {
-      setSuccessMessage('Payment successful! Your membership has been activated.');
-      window.history.replaceState({}, document.title, '/');
     }
   }, []);
 
@@ -197,8 +192,12 @@ export const App: React.FC = () => {
           planName: res.membership?.plan_name || 'Gym Membership',
           isLiveGateway: true,
         });
+      } else if (res.status === 'failed') {
+        setErrorMessage(res.message || 'Payment was unsuccessful or cancelled on Chapa. Please try again.');
+        await loadMemberMembershipAndPayments();
       } else {
-        setErrorMessage(res.message || 'Payment is still pending on Chapa.');
+        setErrorMessage(res.message || 'Payment is still awaiting completion on Chapa.');
+        await loadMemberMembershipAndPayments();
       }
     } catch (err: any) {
       console.warn('Auto-verify error:', err);
@@ -937,17 +936,29 @@ export const App: React.FC = () => {
                             <td className="py-2.5 px-3 font-mono text-[11px] text-gray-400">{pay.payment_reference}</td>
                             <td className="py-2.5 px-3 font-bold text-white">{pay.amount.toLocaleString()} ETB</td>
                             <td className="py-2.5 px-3">
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  pay.status === 'completed'
-                                    ? 'bg-green-950 text-green-400 border border-green-800'
-                                    : pay.status === 'pending'
-                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                    : 'bg-red-950 text-red-400 border border-red-800'
-                                }`}
-                              >
-                                {pay.status}
-                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                    pay.status === 'completed'
+                                      ? 'bg-green-950 text-green-400 border border-green-800'
+                                      : pay.status === 'pending'
+                                      ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                      : 'bg-red-950 text-red-400 border border-red-800'
+                                  }`}
+                                >
+                                  {pay.status}
+                                </span>
+                                {pay.status === 'pending' && pay.payment_method === 'chapa' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAutoVerifyChapaTx(pay.payment_reference)}
+                                    className="px-2 py-0.5 rounded text-[10px] bg-charcoal-800 hover:bg-orange-primary/20 text-orange-primary border border-orange-primary/40 font-semibold transition"
+                                    title="Check live status on Chapa and activate membership if confirmed"
+                                  >
+                                    Verify Live
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ))}

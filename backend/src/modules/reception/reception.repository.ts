@@ -219,9 +219,9 @@ export class ReceptionRepository {
   ): Promise<void> {
     const query = `
       INSERT INTO audit_logs (
-        user_id, action, entity_type, entity_id, new_values, ip_address, user_agent
+        user_id, action, entity_type, entity_id, new_values, ip_address
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7);
+      VALUES ($1, $2, $3, $4, $5, $6);
     `;
     await client.query(query, [
       data.userId,
@@ -230,7 +230,6 @@ export class ReceptionRepository {
       data.entityId,
       JSON.stringify(data.newValues),
       data.ipAddress || null,
-      data.userAgent || null,
     ]);
   }
 }
