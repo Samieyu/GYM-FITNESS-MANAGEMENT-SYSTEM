@@ -9,7 +9,8 @@ import {
   AlertCircle,
   Calendar,
   MapPin,
-  RefreshCw
+  RefreshCw,
+  ChevronDown
 } from 'lucide-react';
 import { FitnessClass, RosterAttendee, fetchClassRosterApi, updateAttendanceApi } from '../api/classes';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
@@ -18,6 +19,8 @@ interface ClassRosterModalProps {
   isOpen: boolean;
   onClose: () => void;
   fitnessClass: FitnessClass | null;
+  classList?: FitnessClass[];
+  onSelectClass?: (cls: FitnessClass) => void;
   onAttendanceUpdated?: () => void;
 }
 
@@ -25,6 +28,8 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
   isOpen,
   onClose,
   fitnessClass,
+  classList = [],
+  onSelectClass,
   onAttendanceUpdated,
 }) => {
   const [roster, setRoster] = useState<RosterAttendee[]>([]);
@@ -50,7 +55,7 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
     if (isOpen && fitnessClass) {
       loadRoster();
     }
-  }, [isOpen, fitnessClass]);
+  }, [isOpen, fitnessClass?.id]);
 
   const handleUpdateStatus = async (memberId: string, newStatus: 'attended' | 'booked' | 'cancelled') => {
     if (!fitnessClass) return;
@@ -93,52 +98,77 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex items-start gap-4 mb-5">
-            <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary shrink-0">
-              <Users className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold text-white">{fitnessClass.title}</h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-charcoal-800 text-orange-primary border border-charcoal-700">
-                  Roster & Check-In
-                </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pr-10">
+            <div className="flex items-start gap-3">
+              <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary shrink-0">
+                <Users className="w-6 h-6" />
               </div>
-              <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-400">
-                <span className="flex items-center gap-1 text-gray-300">
-                  <Calendar className="w-3.5 h-3.5 text-orange-primary" /> {ethDate} E.C.
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-orange-primary" /> {timeFormatted}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-orange-primary" /> {fitnessClass.location}
-                </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-white">{fitnessClass.title}</h3>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-charcoal-800 text-orange-primary border border-charcoal-700">
+                    Roster & Check-In
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-400">
+                  <span className="flex items-center gap-1 text-gray-300">
+                    <Calendar className="w-3.5 h-3.5 text-orange-primary" /> {ethDate} E.C.
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1 text-gray-300">
+                    <Clock className="w-3.5 h-3.5 text-orange-primary" /> {timeFormatted}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1 text-gray-300">
+                    <MapPin className="w-3.5 h-3.5 text-orange-primary" /> {fitnessClass.location}
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* Quick Switch Class Selector (If multiple classes exist) */}
+            {classList.length > 1 && onSelectClass && (
+              <div className="sm:text-right">
+                <label className="block text-[11px] text-gray-400 font-semibold mb-1">Switch Class</label>
+                <select
+                  value={fitnessClass.id}
+                  onChange={(e) => {
+                    const targetCls = classList.find((c) => c.id === e.target.value);
+                    if (targetCls) onSelectClass(targetCls);
+                  }}
+                  className="bg-charcoal-900 border border-charcoal-700 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-orange-primary"
+                >
+                  {classList.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.title} ({formatEthiopianDate(c.start_time)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
-          {/* Metrics summary bar */}
+          {/* Quick Metrics Bar */}
           <div className="grid grid-cols-3 gap-3 mb-5">
             <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-center">
-              <p className="text-[11px] text-gray-400 uppercase font-semibold">Enrolled</p>
-              <p className="text-lg font-bold text-white mt-0.5">
-                {bookedList.length} <span className="text-xs font-normal text-gray-500">/ {fitnessClass.capacity}</span>
-              </p>
+              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold block">Capacity</span>
+              <span className="text-lg font-black text-white">
+                {bookedList.length} <span className="text-xs font-normal text-gray-400">/ {fitnessClass.capacity}</span>
+              </span>
             </div>
+
             <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-center">
-              <p className="text-[11px] text-gray-400 uppercase font-semibold">Attended</p>
-              <p className="text-lg font-bold text-green-400 mt-0.5">
-                {attendedCount} <span className="text-xs font-normal text-gray-500">present</span>
-              </p>
+              <span className="text-[10px] uppercase tracking-wider text-green-400 font-bold block">Checked In</span>
+              <span className="text-lg font-black text-green-400">
+                {attendedCount} <span className="text-xs font-normal text-gray-400">/ {bookedList.length}</span>
+              </span>
             </div>
+
             <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-center">
-              <p className="text-[11px] text-gray-400 uppercase font-semibold">Waitlist</p>
-              <p className="text-lg font-bold text-amber-400 mt-0.5">
-                {waitlistList.length} <span className="text-xs font-normal text-gray-500">in queue</span>
-              </p>
+              <span className="text-[10px] uppercase tracking-wider text-amber-400 font-bold block">Waitlisted</span>
+              <span className="text-lg font-black text-amber-400">
+                {waitlistList.length}
+              </span>
             </div>
           </div>
 
@@ -151,8 +181,8 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
         </div>
 
         {/* Scrollable Attendees List */}
-        <div className="overflow-y-auto flex-1 pr-1 space-y-5 max-h-[48vh]">
-          {/* Confirmed Bookings Section */}
+        <div className="flex-1 overflow-y-auto space-y-5 pr-1 my-2">
+          {/* Confirmed Attendees Section */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">

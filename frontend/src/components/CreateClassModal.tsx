@@ -6,12 +6,14 @@ interface CreateClassModalProps {
   isOpen: boolean;
   onClose: () => void;
   onClassCreated: (newClass: FitnessClass) => void;
+  currentUserId?: string;
 }
 
 export const CreateClassModal: React.FC<CreateClassModalProps> = ({
   isOpen,
   onClose,
   onClassCreated,
+  currentUserId,
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -37,11 +39,17 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
       fetchTrainersApi()
         .then((data) => {
           setTrainers(data);
-          if (data.length > 0) setTrainerId(data[0].id);
+          if (data.length > 0) {
+            const myTrainer = currentUserId ? data.find((t) => t.user_id === currentUserId) : null;
+            setTrainerId(myTrainer ? myTrainer.id : data[0].id);
+          }
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.error('Failed to load trainers:', err);
+          setErrorMessage(err.message || 'Failed to load trainers');
+        });
     }
-  }, [isOpen]);
+  }, [isOpen, currentUserId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +63,10 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
     }
     if (capacity < 1) {
       setErrorMessage('Capacity must be at least 1 spot');
+      return;
+    }
+    if (!date) {
+      setErrorMessage('Class date is required');
       return;
     }
 
@@ -81,6 +93,8 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
       });
 
       onClassCreated(created);
+      setTitle('');
+      setDescription('');
       onClose();
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to create group class');
@@ -120,13 +134,13 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Class Title</label>
+            <label className="block text-gray-300 font-semibold mb-1">Class Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. HIIT Strength & Core conditioning"
               required
-              placeholder="e.g. HIIT Power Hour, Vinyasa Yoga, Boxing Conditioning"
               className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
             />
           </div>
@@ -144,23 +158,27 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Lead Instructor / Trainer</label>
+              <label className="block text-gray-300 font-semibold mb-1">Lead Instructor / Trainer *</label>
               <select
                 value={trainerId}
                 onChange={(e) => setTrainerId(e.target.value)}
                 required
                 className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
               >
-                {trainers.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.first_name} {t.last_name} ({t.specialization})
-                  </option>
-                ))}
+                {trainers.length === 0 ? (
+                  <option value="">Loading trainers...</option>
+                ) : (
+                  trainers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.first_name} {t.last_name} ({t.specialization})
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Max Capacity (Rule 12)</label>
+              <label className="block text-gray-300 font-semibold mb-1">Max Capacity (Rule 12) *</label>
               <div className="relative">
                 <Users className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
                 <input
@@ -178,7 +196,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Date</label>
+              <label className="block text-gray-300 font-semibold mb-1">Date *</label>
               <div className="relative">
                 <Calendar className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
                 <input
@@ -192,7 +210,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Start Time</label>
+              <label className="block text-gray-300 font-semibold mb-1">Start Time *</label>
               <div className="relative">
                 <Clock className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
                 <input
@@ -206,7 +224,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">End Time</label>
+              <label className="block text-gray-300 font-semibold mb-1">End Time *</label>
               <div className="relative">
                 <Clock className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
                 <input
@@ -223,32 +241,42 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
           <div>
             <label className="block text-gray-300 font-semibold mb-1">Studio / Location</label>
             <div className="relative">
-              <MapPin className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-3" />
+              <MapPin className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Studio A, Cardio Room, Functional Deck..."
-                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2 text-white text-xs focus:outline-none focus:border-orange-primary"
+                placeholder="e.g. Studio A - Cardio Deck or Heavy Iron Zone"
+                required
+                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
               />
             </div>
           </div>
 
-          <div className="pt-3 border-t border-charcoal-800 flex justify-end gap-2">
+          <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-[11px] text-gray-400 space-y-1">
+            <p className="font-semibold text-gray-300 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-orange-primary" /> Automated Waitlist Engine Active
+            </p>
+            <p>
+              Once {capacity} spots are booked, additional registrations enter the waitlist queue and are auto-promoted when any member cancels.
+            </p>
+          </div>
+
+          <div className="pt-2 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 font-semibold transition"
+              className="px-4 py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 font-semibold text-xs transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold shadow-lg shadow-orange-primary/20 transition disabled:opacity-50 flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50 active:scale-98"
             >
-              <Sparkles className="w-4 h-4" />
-              {isSubmitting ? 'Scheduling...' : 'Schedule Class'}
+              <Calendar className="w-4 h-4" />
+              {isSubmitting ? 'Scheduling...' : 'Confirm Schedule'}
             </button>
           </div>
         </form>

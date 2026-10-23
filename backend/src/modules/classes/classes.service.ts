@@ -178,6 +178,7 @@ export class ClassesService {
     if (!booking) {
       throw new NotFoundError('Booking record not found');
     }
+    if (status === 'cancelled') { const res = await this.cancelBooking(classId, memberId); return res.cancelledBooking; }
     return this.repo.updateAttendance(classId, memberId, status);
   }
 
