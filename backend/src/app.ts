@@ -13,6 +13,7 @@ import checkinsRouter from './modules/checkins/checkins.routes';
 import workoutsRouter from './modules/workouts/workouts.routes';
 import receptionRouter from './modules/reception/reception.routes';
 import cronRouter from './modules/cron/cron.routes';
+import classesRouter from './modules/classes/classes.routes';
 
 const app: Application = express();
 
@@ -84,6 +85,7 @@ app.use(`${config.apiPrefix}/checkins`, checkinsRouter);
 app.use(`${config.apiPrefix}/workouts`, workoutsRouter);
 app.use(`${config.apiPrefix}/reception`, receptionRouter);
 app.use(`${config.apiPrefix}/cron`, cronRouter);
+app.use(`${config.apiPrefix}/classes`, classesRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

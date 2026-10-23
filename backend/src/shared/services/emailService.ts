@@ -217,3 +217,107 @@ export const sendExpiryReminderEmail = async (
     console.error(`[Email] Failed to send expiry reminder to ${email}:`, error);
   }
 };
+
+export const sendClassBookingConfirmationEmail = async (
+  email: string,
+  firstName: string,
+  classDetails: {
+    title: string;
+    location: string;
+    trainerName: string;
+    timeFormatted: string;
+    dateEc: string;
+    status: 'booked' | 'waitlisted';
+    waitlistPosition?: number | null;
+  }
+): Promise<void> => {
+  const isBooked = classDetails.status === 'booked';
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h3 style="color: ${isBooked ? '#22c55e' : '#f59e0b'};">
+        ${isBooked ? 'Class Booking Confirmed!' : 'Waitlist Confirmation (Position #' + classDetails.waitlistPosition + ')'}
+      </h3>
+      <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
+      <p style="color: #d1d5db;">
+        ${isBooked 
+          ? `Your spot is confirmed for <strong>${classDetails.title}</strong>.`
+          : `You have been added to the waitlist at position <strong>#${classDetails.waitlistPosition}</strong> for <strong>${classDetails.title}</strong>.`
+        }
+      </p>
+      
+      <div style="margin: 20px 0; padding: 16px; background-color: #1e1e1e; border-radius: 6px; border: 1px solid #333333;">
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Class:</strong> ${classDetails.title}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Trainer:</strong> ${classDetails.trainerName}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Location:</strong> ${classDetails.location}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Date (E.C.):</strong> ${classDetails.dateEc}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Schedule Time:</strong> ${classDetails.timeFormatted}</p>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px;">
+        ${isBooked 
+          ? 'Please arrive 10 minutes early with your digital QR check-in pass.' 
+          : 'You will be automatically promoted to booked and notified immediately if a spot opens up.'}
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `${isBooked ? '✅ Confirmed: ' : '📋 Waitlisted: '}${classDetails.title} - Titan Fitness`,
+      html,
+    });
+    console.log(`[Email] Class ${classDetails.status} email sent to ${email}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send class booking email to ${email}:`, error);
+  }
+};
+
+export const sendWaitlistPromotionEmail = async (
+  email: string,
+  firstName: string,
+  classDetails: {
+    title: string;
+    location: string;
+    trainerName: string;
+    timeFormatted: string;
+    dateEc: string;
+  }
+): Promise<void> => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h3 style="color: #22c55e;">🎉 Great News! You Are In!</h3>
+      <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
+      <p style="color: #d1d5db;">
+        A spot opened up and you have been promoted from the waitlist to <strong>BOOKED</strong> for <strong>${classDetails.title}</strong>!
+      </p>
+      
+      <div style="margin: 20px 0; padding: 16px; background-color: #1e1e1e; border-radius: 6px; border: 1px solid #333333;">
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Class:</strong> ${classDetails.title}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Trainer:</strong> ${classDetails.trainerName}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Location:</strong> ${classDetails.location}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Date (E.C.):</strong> ${classDetails.dateEc}</p>
+        <p style="margin: 6px 0; color: #ffffff;"><strong>Schedule Time:</strong> ${classDetails.timeFormatted}</p>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px;">
+        Your digital pass is ready for check-in at the front desk. See you in class!
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `🎉 Waitlist Promoted: You are confirmed for ${classDetails.title}!`,
+      html,
+    });
+    console.log(`[Email] Waitlist promotion email sent to ${email}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send waitlist promotion email to ${email}:`, error);
+  }
+};

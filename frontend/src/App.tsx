@@ -28,7 +28,11 @@ import {
   CreditCard,
   Receipt,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  Users,
+  CheckCircle2,
+  MapPin,
+  Bookmark
 } from 'lucide-react';
 import { 
   User, 
@@ -61,6 +65,17 @@ import { ReceptionScannerModal } from './components/ReceptionScannerModal';
 import { MemberWorkoutModal } from './components/MemberWorkoutModal';
 import { TrainerWorkoutModal } from './components/TrainerWorkoutModal';
 import { WalkinRegistrationModal } from './components/WalkinRegistrationModal';
+import {
+  FitnessClass,
+  ClassBooking,
+  fetchUpcomingClassesApi,
+  bookClassApi,
+  cancelClassBookingApi,
+  fetchMyBookingsApi,
+} from './api/classes';
+import { ClassRosterModal } from './components/ClassRosterModal';
+import { CreateClassModal } from './components/CreateClassModal';
+
 import { triggerManualExpiryCheckApi } from './api/reception';
 import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
 
@@ -143,6 +158,15 @@ export const App: React.FC = () => {
   const [isWalkinModalOpen, setIsWalkinModalOpen] = useState(false);
   const [isRunningExpiryCheck, setIsRunningExpiryCheck] = useState(false);
 
+  // Group Classes & Waitlists (Rule 12)
+  const [classesList, setClassesList] = useState<FitnessClass[]>([]);
+  const [myBookings, setMyBookings] = useState<ClassBooking[]>([]);
+  const [selectedRosterClass, setSelectedRosterClass] = useState<FitnessClass | null>(null);
+  const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
+  const [isCreateClassModalOpen, setIsCreateClassModalOpen] = useState(false);
+  const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
+  const [classesLoading, setClassesLoading] = useState(false);
+
   // UI status and messages
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -189,6 +213,83 @@ export const App: React.FC = () => {
       handleAutoVerifyChapaTx(txRefParam);
     }
   }, []);
+
+  const loadClasses = async () => {
+    setClassesLoading(true);
+    try {
+      const data = await fetchUpcomingClassesApi();
+      setClassesList(data);
+    } catch (err: any) {
+      console.error('Error fetching classes:', err);
+    } finally {
+      setClassesLoading(false);
+    }
+  };
+
+  const loadMyBookings = async () => {
+    try {
+      const data = await fetchMyBookingsApi();
+      setMyBookings(data);
+    } catch (err: any) {
+      console.error('Error fetching member bookings:', err);
+    }
+  };
+
+  const handleBookClass = async (cls: FitnessClass) => {
+    if (!currentUser) {
+      setAuthModalMode('login');
+      setErrorMessage('Please sign in to reserve a spot in this group class.');
+      return;
+    }
+    if (currentUser.role !== 'member') {
+      setErrorMessage('Only registered gym members can book group fitness classes.');
+      return;
+    }
+    if (!myMembership || myMembership.status !== 'active') {
+      setErrorMessage('Active membership required (Rule 12). Please subscribe to a membership plan to book classes.');
+      return;
+    }
+
+    setBookingLoadingId(cls.id);
+    setErrorMessage(null);
+    try {
+      const res = await bookClassApi(cls.id);
+      if (res.status === 'waitlisted') {
+        setSuccessMessage(`Capacity full. You have joined the waitlist at Position #${res.waitlist_position}. You will be auto-promoted when a spot opens!`);
+      } else {
+        setSuccessMessage(`Spot reserved successfully for "${cls.title}"! Confirmation email dispatched.`);
+      }
+      await Promise.all([loadClasses(), loadMyBookings()]);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to book class.');
+    } finally {
+      setBookingLoadingId(null);
+    }
+  };
+
+  const handleCancelBooking = async (classId: string) => {
+    setBookingLoadingId(classId);
+    setErrorMessage(null);
+    try {
+      const res = await cancelClassBookingApi(classId);
+      setSuccessMessage(res.message || 'Booking cancelled. Waitlisted member auto-promoted.');
+      await Promise.all([loadClasses(), loadMyBookings()]);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to cancel booking.');
+    } finally {
+      setBookingLoadingId(null);
+    }
+  };
+
+  useEffect(() => {
+    loadClasses();
+  }, []);
+
+  useEffect(() => {
+    if (currentUser && currentUser.role === 'member') {
+      loadMyBookings();
+    }
+  }, [currentUser]);
 
   const handleAutoVerifyChapaTx = async (txRef: string) => {
     setIsCheckingOut(true);
@@ -951,6 +1052,223 @@ export const App: React.FC = () => {
                 </div>
               )}
 
+                            {/* Group Fitness Classes & Waitlist Management (Business Rule 12) */}
+              <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-orange-primary" />
+                      <h3 className="text-xl font-bold text-white">Group Fitness Classes (Rule 12)</h3>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Strict capacity enforcement, real-time waitlist queue, and automatic email promotions on cancellation.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { loadClasses(); loadMyBookings(); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold border border-charcoal-700 transition"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-orange-primary' : ''}`} />
+                    Refresh Schedule
+                  </button>
+                </div>
+
+                {/* My Active Bookings & Waitlist Status */}
+                {myBookings.length > 0 && (
+                  <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-orange-primary mb-3 flex items-center gap-1.5">
+                      <Bookmark className="w-4 h-4" /> My Reserved Spots & Waitlist Status
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {myBookings.map((bk) => (
+                        <div
+                          key={bk.booking_id}
+                          className="p-3.5 rounded-lg bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-white text-sm">{bk.title}</span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  bk.booking_status === 'booked'
+                                    ? 'bg-green-950 text-green-400 border border-green-800'
+                                    : bk.booking_status === 'waitlisted'
+                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                    : 'bg-charcoal-800 text-gray-400'
+                                }`}
+                              >
+                                {bk.booking_status === 'waitlisted'
+                                  ? `Waitlisted (Queue #${bk.waitlist_position})`
+                                  : bk.booking_status.toUpperCase()}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-orange-primary" />
+                              {formatEthiopianDateTime(bk.start_time)}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-gray-500" />
+                              {bk.location} • Coach {bk.trainer_name}
+                            </p>
+                          </div>
+                          {(bk.booking_status === 'booked' || bk.booking_status === 'waitlisted') && (
+                            <div className="mt-3 pt-2.5 border-t border-charcoal-800 flex justify-end">
+                              <button
+                                type="button"
+                                disabled={bookingLoadingId === bk.class_id}
+                                onClick={() => handleCancelBooking(bk.class_id)}
+                                className="px-3 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-xs text-gray-300 font-semibold transition disabled:opacity-50"
+                              >
+                                {bookingLoadingId === bk.class_id ? 'Cancelling...' : 'Cancel Spot'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Available Classes Grid */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Upcoming Class Schedule (Ethiopian Time & Calendar)
+                  </h4>
+                  {classesList.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {classesList.map((cls) => {
+                        const isFull = cls.booked_count >= cls.capacity;
+                        const userBooking = myBookings.find((b) => b.class_id === cls.id);
+                        const isBooked = userBooking?.booking_status === 'booked';
+                        const isWaitlisted = userBooking?.booking_status === 'waitlisted';
+                        const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
+
+                        return (
+                          <div
+                            key={cls.id}
+                            className={`p-5 rounded-xl bg-charcoal-900 border flex flex-col justify-between transition ${
+                              isBooked
+                                ? 'border-green-600/50 bg-green-950/10'
+                                : isWaitlisted
+                                ? 'border-amber-600/50 bg-amber-950/10'
+                                : 'border-charcoal-800 hover:border-charcoal-700'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[11px] font-mono text-orange-primary flex items-center gap-1">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {formatEthiopianDate(cls.start_time)}
+                                </span>
+                                {cls.waitlist_count > 0 && (
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800">
+                                    {cls.waitlist_count} on waitlist
+                                  </span>
+                                )}
+                              </div>
+
+                              <h4 className="font-bold text-white text-base">{cls.title}</h4>
+                              <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                                {cls.description || 'High-intensity coaching & form guidance.'}
+                              </p>
+
+                              <div className="mt-3 space-y-1 text-xs text-gray-300">
+                                <div className="flex items-center gap-1.5 text-gray-400">
+                                  <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
+                                </div>
+                                <div className="text-gray-400">
+                                  Coach: <span className="text-white font-medium">{cls.trainer_name || 'Gym Trainer'}</span>
+                                  {cls.trainer_specialization && (
+                                    <span className="text-[11px] text-gray-500"> ({cls.trainer_specialization})</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Capacity Bar */}
+                              <div className="mt-4">
+                                <div className="flex justify-between text-[11px] mb-1 font-medium">
+                                  <span className="text-gray-400">Capacity</span>
+                                  <span className={isFull ? 'text-amber-400 font-bold' : 'text-green-400 font-bold'}>
+                                    {cls.booked_count} / {cls.capacity} spots
+                                  </span>
+                                </div>
+                                <div className="w-full bg-charcoal-800 rounded-full h-1.5 overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all ${
+                                      isFull ? 'bg-amber-500' : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-5">
+                              {isBooked ? (
+                                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-green-950/40 border border-green-800/60">
+                                  <span className="text-xs font-semibold text-green-400 flex items-center gap-1.5">
+                                    <CheckCircle2 className="w-4 h-4" /> Confirmed Spot
+                                  </span>
+                                  <button
+                                    type="button"
+                                    disabled={bookingLoadingId === cls.id}
+                                    onClick={() => handleCancelBooking(cls.id)}
+                                    className="px-2.5 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-[11px] text-gray-300 transition"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : isWaitlisted ? (
+                                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-950/40 border border-amber-800/60">
+                                  <span className="text-xs font-semibold text-amber-400">
+                                    Waitlist Queue #{userBooking.waitlist_position}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    disabled={bookingLoadingId === cls.id}
+                                    onClick={() => handleCancelBooking(cls.id)}
+                                    className="px-2.5 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-[11px] text-gray-300 transition"
+                                  >
+                                    Leave
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  disabled={bookingLoadingId === cls.id || (!myMembership || myMembership.status !== 'active')}
+                                  onClick={() => handleBookClass(cls)}
+                                  className={`w-full py-2.5 rounded-lg font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 ${
+                                    isFull
+                                      ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
+                                      : 'bg-orange-primary hover:bg-orange-hover text-white shadow-orange-primary/20'
+                                  }`}
+                                >
+                                  {bookingLoadingId === cls.id
+                                    ? 'Processing...'
+                                    : isFull
+                                    ? `Join Waitlist (Queue #${cls.waitlist_count + 1})`
+                                    : 'Reserve Spot'}
+                                </button>
+                              )}
+                              {(!myMembership || myMembership.status !== 'active') && !isBooked && !isWaitlisted && (
+                                <p className="text-[10px] text-amber-400/80 mt-1.5 text-center">
+                                  Active membership required to book
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 text-xs">
+                      No upcoming classes scheduled right now.
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Member Payment History Section */}
               <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
                 <div className="flex items-center justify-between mb-4">
@@ -1468,54 +1786,97 @@ export const App: React.FC = () => {
                   <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
                     Scheduled <span className="text-orange-primary">Classes</span>
                   </h2>
-                  <p className="mt-4 text-gray-400">Instructor-led training sessions with capacity and waitlist management.</p>
+                  <p className="mt-4 text-gray-400">
+                    Live schedule with automatic waitlist promotion and Ethiopian Calendar time.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-orange-primary" /> Mon & Wed • 07:00 AM</span>
-                      <span className="px-2 py-0.5 rounded bg-green-950 text-green-400 border border-green-800">12 / 15 Booked</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-white">HIIT Strength & Cardio</h3>
-                    <p className="text-sm text-gray-400 mt-2">Coach Alex Strong • Main Studio</p>
-                    <button 
-                      onClick={() => setAuthModalMode('login')}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-orange-primary font-semibold text-white transition"
-                    >
-                      Reserve Spot
-                    </button>
-                  </div>
+                  {classesList.length > 0 ? (
+                    classesList.map((cls) => {
+                      const isFull = cls.booked_count >= cls.capacity;
+                      const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-orange-primary" /> Tue & Thu • 06:00 PM</span>
-                      <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">Full (3 on Waitlist)</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-white">Powerlifting & Deadlift Clinic</h3>
-                    <p className="text-sm text-gray-400 mt-2">Coach Alex Strong • Heavy Iron Zone</p>
-                    <button 
-                      onClick={() => setAuthModalMode('login')}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-orange-primary font-semibold text-white transition"
-                    >
-                      Join Waitlist
-                    </button>
-                  </div>
+                      return (
+                        <div
+                          key={cls.id}
+                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition group"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between text-xs mb-3">
+                              <span className="flex items-center gap-1 font-mono text-orange-primary">
+                                <Calendar className="w-3.5 h-3.5" />
+                                {formatEthiopianDateTime(cls.start_time)}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  isFull
+                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                    : 'bg-green-950 text-green-400 border border-green-800'
+                                }`}
+                              >
+                                {isFull ? `Full (${cls.waitlist_count} Waitlist)` : `${cls.booked_count} / ${cls.capacity} Booked`}
+                              </span>
+                            </div>
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-orange-primary" /> Saturday • 09:00 AM</span>
-                      <span className="px-2 py-0.5 rounded bg-green-950 text-green-400 border border-green-800">8 / 20 Booked</span>
+                            <h3 className="text-lg font-bold text-white group-hover:text-orange-primary transition">
+                              {cls.title}
+                            </h3>
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                              {cls.description || 'Full coaching, mobility guidance, and conditioning.'}
+                            </p>
+
+                            <div className="mt-4 space-y-1.5 text-xs text-gray-300">
+                              <p className="text-gray-400 flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
+                              </p>
+                              <p className="text-gray-400">
+                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Titan Coach'}</span>
+                                {cls.trainer_specialization && (
+                                  <span className="text-gray-500"> ({cls.trainer_specialization})</span>
+                                )}
+                              </p>
+                            </div>
+
+                            {/* Capacity bar */}
+                            <div className="mt-4">
+                              <div className="w-full bg-charcoal-900 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all ${
+                                    isFull ? 'bg-amber-500' : 'bg-green-500'
+                                  }`}
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!currentUser) {
+                                setAuthModalMode('login');
+                                setErrorMessage('Please sign in or create an account to book fitness classes.');
+                              } else {
+                                handleBookClass(cls);
+                              }
+                            }}
+                            className={`mt-6 w-full py-2.5 rounded-lg font-semibold text-xs transition flex items-center justify-center gap-2 shadow-lg ${
+                              isFull
+                                ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
+                                : 'bg-orange-primary hover:bg-orange-hover text-white shadow-orange-primary/20'
+                            }`}
+                          >
+                            {isFull ? 'Join Waitlist' : 'Reserve Spot'}
+                          </button>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-3 text-center py-12 text-gray-400">
+                      Loading scheduled fitness classes...
                     </div>
-                    <h3 className="text-lg font-bold text-white">Mobility & Functional Core</h3>
-                    <p className="text-sm text-gray-400 mt-2">Studio 2 • All Levels</p>
-                    <button 
-                      onClick={() => setAuthModalMode('login')}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-orange-primary font-semibold text-white transition"
-                    >
-                      Reserve Spot
-                    </button>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
@@ -2619,6 +2980,24 @@ export const App: React.FC = () => {
           trainerName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
         />
       )}
+
+            {/* CLASS ROSTER & ATTENDANCE MODAL (Rule 12) */}
+      <ClassRosterModal
+        isOpen={isRosterModalOpen}
+        onClose={() => setIsRosterModalOpen(false)}
+        fitnessClass={selectedRosterClass}
+        onAttendanceUpdated={loadClasses}
+      />
+
+      {/* CREATE CLASS MODAL (Rule 12) */}
+      <CreateClassModal
+        isOpen={isCreateClassModalOpen}
+        onClose={() => setIsCreateClassModalOpen(false)}
+        onClassCreated={(newCls) => {
+          loadClasses();
+          setSuccessMessage(`Class "${newCls.title}" scheduled successfully!`);
+        }}
+      />
 
       {/* Footer */}
       <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">
