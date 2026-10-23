@@ -32,7 +32,8 @@ import {
   Users,
   CheckCircle2,
   MapPin,
-  Bookmark
+  Bookmark,
+  Scale
 } from 'lucide-react';
 import { 
   User, 
@@ -75,6 +76,9 @@ import {
 } from './api/classes';
 import { ClassRosterModal } from './components/ClassRosterModal';
 import { CreateClassModal } from './components/CreateClassModal';
+import { MemberProgressModal } from './components/MemberProgressModal';
+import { TrainerProgressModal } from './components/TrainerProgressModal';
+
 
 import { triggerManualExpiryCheckApi } from './api/reception';
 import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
@@ -164,6 +168,10 @@ export const App: React.FC = () => {
   const [selectedRosterClass, setSelectedRosterClass] = useState<FitnessClass | null>(null);
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isCreateClassModalOpen, setIsCreateClassModalOpen] = useState(false);
+  // Progress & Transformation Tracking
+  const [isMemberProgressModalOpen, setIsMemberProgressModalOpen] = useState(false);
+  const [isTrainerProgressModalOpen, setIsTrainerProgressModalOpen] = useState(false);
+
   const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
   const [classesLoading, setClassesLoading] = useState(false);
 
@@ -877,7 +885,7 @@ export const App: React.FC = () => {
             {/* ROLE-SPECIFIC WORKSPACE TILES */}
             {currentUser.role === 'member' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-4">
@@ -1392,13 +1400,23 @@ export const App: React.FC = () => {
             {currentUser.role === 'trainer' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <h3 className="text-lg font-bold text-white">Assigned Members</h3>
-                  <p className="text-xs text-gray-400 mt-1">View roster, review weight logs, and leave comments.</p>
-                  <div className="mt-6 p-4 rounded-lg bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300">
-                    <p className="font-semibold text-white">John Athlete (MEM-0001)</p>
-                    <p className="text-gray-400 mt-0.5">Goal: Lean muscle & cardio</p>
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Assigned Athletes & Logs</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Review athlete weight metrics, body measurements, and leave coaching notes.
+                    </p>
                   </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsTrainerProgressModalOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                  >
+                    <Scale className="w-4 h-4" /> Review Athlete Transformation
+                  </button>
                 </div>
 
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
@@ -1640,6 +1658,14 @@ export const App: React.FC = () => {
                         title="Rule 12: Schedule a new group fitness class with capacity limits"
                       >
                         <Calendar className="w-4 h-4" /> Schedule Class
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsTrainerProgressModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        title="Review all member transformation metrics and coach feedback"
+                      >
+                        <Scale className="w-4 h-4 text-orange-primary" /> Athlete Progress
                       </button>
                       <button
                         type="button"
@@ -3293,6 +3319,24 @@ export const App: React.FC = () => {
           setSuccessMessage(`Class "${newCls.title}" scheduled successfully!`);
         }}
       />
+
+            {/* MEMBER PROGRESS & BODY TRANSFORMATION MODAL */}
+      {currentUser && (
+        <MemberProgressModal
+          isOpen={isMemberProgressModalOpen}
+          onClose={() => setIsMemberProgressModalOpen(false)}
+          memberName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* TRAINER & ADMIN ATHLETE PROGRESS REVIEW MODAL */}
+      {currentUser && (currentUser.role === 'trainer' || currentUser.role === 'admin') && (
+        <TrainerProgressModal
+          isOpen={isTrainerProgressModalOpen}
+          onClose={() => setIsTrainerProgressModalOpen(false)}
+          trainerName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
 
       {/* Footer */}
       <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">

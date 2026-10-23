@@ -14,6 +14,7 @@ import workoutsRouter from './modules/workouts/workouts.routes';
 import receptionRouter from './modules/reception/reception.routes';
 import cronRouter from './modules/cron/cron.routes';
 import classesRouter from './modules/classes/classes.routes';
+import progressRouter from './modules/progress/progress.routes';
 
 const app: Application = express();
 
@@ -86,6 +87,7 @@ app.use(`${config.apiPrefix}/workouts`, workoutsRouter);
 app.use(`${config.apiPrefix}/reception`, receptionRouter);
 app.use(`${config.apiPrefix}/cron`, cronRouter);
 app.use(`${config.apiPrefix}/classes`, classesRouter);
+app.use(`${config.apiPrefix}/progress`, progressRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

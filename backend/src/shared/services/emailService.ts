@@ -321,3 +321,49 @@ export const sendWaitlistPromotionEmail = async (
     console.error(`[Email] Failed to send waitlist promotion email to ${email}:`, error);
   }
 };
+
+
+export const sendTrainerFeedbackEmail = async (
+  email: string,
+  firstName: string,
+  feedbackDetails: {
+    trainerName: string;
+    comment: string;
+    weightKg: number;
+    recordedDateEc: string;
+  }
+): Promise<void> => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h3 style="color: #ffffff;">Coach Feedback on Your Transformation Log</h3>
+      <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
+      <p style="color: #d1d5db;">
+        Your personal coach <strong>${feedbackDetails.trainerName}</strong> reviewed your progress metric log recorded on <strong>${feedbackDetails.recordedDateEc}</strong> (Weight: <strong>${feedbackDetails.weightKg} kg</strong>) and left feedback:
+      </p>
+      
+      <div style="margin: 20px 0; padding: 16px; background-color: #1e1e1e; border-radius: 6px; border-left: 4px solid #ff6b00; border: 1px solid #333333;">
+        <p style="margin: 0; color: #f3f4f6; font-style: italic; font-size: 14px;">"${feedbackDetails.comment}"</p>
+      </div>
+
+      <div style="margin: 25px 0;">
+        <a href="${config.corsOrigin}" style="background-color: #ff6b00; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+          View Your Progress Dashboard
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 11px; margin-top: 30px;">Keep pushing towards your fitness goals!</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `Coach Feedback: New note from ${feedbackDetails.trainerName}`,
+      html,
+    });
+    console.log(`[Email] Trainer feedback email sent to ${email}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send trainer feedback email to ${email}:`, error);
+  }
+};
