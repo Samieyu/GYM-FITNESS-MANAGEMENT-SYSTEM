@@ -33,7 +33,8 @@ import {
   CheckCircle2,
   MapPin,
   Bookmark,
-  Scale
+  Scale,
+  Wrench
 } from 'lucide-react';
 import { 
   User, 
@@ -78,6 +79,7 @@ import { ClassRosterModal } from './components/ClassRosterModal';
 import { CreateClassModal } from './components/CreateClassModal';
 import { MemberProgressModal } from './components/MemberProgressModal';
 import { TrainerProgressModal } from './components/TrainerProgressModal';
+import { EquipmentManagementModal } from './components/EquipmentManagementModal';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
@@ -171,6 +173,7 @@ export const App: React.FC = () => {
   // Progress & Transformation Tracking
   const [isMemberProgressModalOpen, setIsMemberProgressModalOpen] = useState(false);
   const [isTrainerProgressModalOpen, setIsTrainerProgressModalOpen] = useState(false);
+  const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
 
   const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
   const [classesLoading, setClassesLoading] = useState(false);
@@ -1350,7 +1353,7 @@ export const App: React.FC = () => {
             )}
 
             {currentUser.role === 'reception' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
                   <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
                     <QrCode className="w-5 h-5" />
@@ -1493,6 +1496,25 @@ export const App: React.FC = () => {
                     )}
                   </div>
                 </div>
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                      <Wrench className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Equipment & Defects</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Report floor machine issues, check operational status, and inspect maintenance history.
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsEquipmentModalOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs transition flex items-center justify-center gap-1.5 active:scale-98"
+                  >
+                    <Wrench className="w-4 h-4 text-orange-primary" /> View & Report Defect
+                  </button>
+                </div>
+
               </div>
 
               {/* Dedicated Trainer Group Classes & Roster Oversight Panel (Rule 12) */}
@@ -1666,6 +1688,14 @@ export const App: React.FC = () => {
                         title="Review all member transformation metrics and coach feedback"
                       >
                         <Scale className="w-4 h-4 text-orange-primary" /> Athlete Progress
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsEquipmentModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        title="Manage gym equipment inventory, defect reports, and maintenance logs"
+                      >
+                        <Wrench className="w-4 h-4 text-orange-primary" /> Equipment & Repairs
                       </button>
                       <button
                         type="button"
@@ -3335,6 +3365,16 @@ export const App: React.FC = () => {
           isOpen={isTrainerProgressModalOpen}
           onClose={() => setIsTrainerProgressModalOpen(false)}
           trainerName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* EQUIPMENT INVENTORY & MAINTENANCE MODAL */}
+      {currentUser && (
+        <EquipmentManagementModal
+          isOpen={isEquipmentModalOpen}
+          onClose={() => setIsEquipmentModalOpen(false)}
+          userRole={currentUser.role as any}
+          userName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
         />
       )}
 

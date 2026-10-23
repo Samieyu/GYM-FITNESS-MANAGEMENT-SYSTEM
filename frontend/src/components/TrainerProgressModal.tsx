@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Users, 
-  Scale, 
+
   Calendar, 
   MessageSquare, 
   TrendingDown, 
@@ -11,7 +11,7 @@ import {
   RefreshCw, 
   Sparkles,
   Send,
-  UserCheck
+
 } from 'lucide-react';
 import { 
   AssignedMemberSummary, 
@@ -138,7 +138,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Inspect member transformation metrics, track weight deltas, and submit personalized coaching guidance.
+                Coach: {trainerName} • Inspect member transformation metrics, track weight deltas, and submit coaching feedback.
               </p>
             </div>
           </div>

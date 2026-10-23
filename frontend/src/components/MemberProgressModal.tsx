@@ -7,11 +7,11 @@ import {
   Calendar, 
   Plus, 
   MessageSquare, 
-  Activity, 
+
   AlertCircle, 
   RefreshCw,
-  Award,
-  ChevronRight,
+
+
   Sparkles
 } from 'lucide-react';
 import { 
@@ -144,7 +144,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Track weight changes, body measurements, BMI trends, and personal coach reviews.
+                Athlete: {memberName} • Track weight changes, body measurements, BMI trends, and coach feedback.
               </p>
             </div>
           </div>

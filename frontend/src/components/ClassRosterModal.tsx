@@ -10,7 +10,7 @@ import {
   Calendar,
   MapPin,
   RefreshCw,
-  ChevronDown
+
 } from 'lucide-react';
 import { FitnessClass, RosterAttendee, fetchClassRosterApi, updateAttendanceApi } from '../api/classes';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
