@@ -4,6 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        lime: {
+          brand: '#B4F82C',
+          hover: '#9FE01B',
+          glow: '#CCFF00',
+          dark: '#1E2914',
+        },
         charcoal: {
           950: '#0a0a0a',
           900: '#121212',

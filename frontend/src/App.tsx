@@ -14,10 +14,8 @@ import {
   Server,
   LogOut,
   UserPlus,
-  Activity,
   DollarSign,
   AlertCircle,
-  Clock,
   Phone,
   Target,
   Plus,
@@ -26,13 +24,10 @@ import {
   Image as ImageIcon,
   Layers,
   CreditCard,
-  Receipt,
   ExternalLink,
   RefreshCw,
   Users,
-  CheckCircle2,
   MapPin,
-  Bookmark,
   Scale,
   Wrench,
   BarChart3,
@@ -84,10 +79,12 @@ import { TrainerProgressModal } from './components/TrainerProgressModal';
 import { EquipmentManagementModal } from './components/EquipmentManagementModal';
 import { AIAssistantModal } from './components/AIAssistantModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
+import { AthleteDashboardView } from './components/AthleteDashboardView';
+import { SidebarNavigation } from './components/SidebarNavigation';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
-import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
+import { formatEthiopianDateTime } from './utils/ethiopianCalendar';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
@@ -135,7 +132,7 @@ export const App: React.FC = () => {
   // Membership & Payments state (Phase 4)
   const [myMembership, setMyMembership] = useState<Membership | null>(null);
   const [myPayments, setMyPayments] = useState<Payment[]>([]);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [, setIsCheckingOut] = useState(false);
   const [checkoutModalData, setCheckoutModalData] = useState<{ checkoutUrl: string | null; txRef: string; amount: number; planName: string; isLiveGateway?: boolean } | null>(null);
   const [paymentMethodTab, setPaymentMethodTab] = useState<'telebirr' | 'cbe' | 'card'>('telebirr');
   const [telebirrPhone, setTelebirrPhone] = useState('+251 9');
@@ -770,19 +767,42 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-charcoal-900 text-gray-100 flex flex-col justify-between selection:bg-orange-primary selection:text-white">
+    <div className={`min-h-screen ${currentUser ? 'bg-[#F4F6F8] text-slate-900' : 'bg-charcoal-900 text-gray-100'} flex flex-col justify-between selection:bg-[#B4F82C] selection:text-slate-950`}>
+      {/* Sleek Vertical Navigation Rail (from Design Screenshot) */}
+      {currentUser && (
+        <SidebarNavigation
+          currentUser={currentUser}
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          onOpenWorkout={() => {
+            if (currentUser.role === 'member') setIsMemberWorkoutModalOpen(true);
+            else setIsTrainerWorkoutModalOpen(true);
+          }}
+          onOpenProgress={() => {
+            if (currentUser.role === 'member') setIsMemberProgressModalOpen(true);
+            else setIsTrainerProgressModalOpen(true);
+          }}
+          onOpenAiCoach={() => setIsAiModalOpen(true)}
+          onOpenQrPass={() => setIsMemberQrModalOpen(true)}
+          onOpenScanner={() => setIsReceptionScannerOpen(true)}
+          onOpenWalkin={() => setIsWalkinModalOpen(true)}
+          onOpenEquipment={() => setIsEquipmentModalOpen(true)}
+          onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
+          onLogout={handleLogout}
+        />
+      )}
       {/* Sticky Top Header */}
       <header className="border-b border-charcoal-800 bg-charcoal-950/90 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => setActiveTab('home')}
         >
-          <div className="p-2 bg-orange-primary rounded-lg text-white shadow-md shadow-orange-primary/30">
+          <div className="p-2 bg-[#B4F82C] rounded-2xl text-slate-950 shadow-md shadow-[#B4F82C]/20 font-black">
             <Dumbbell className="w-6 h-6" />
           </div>
           <div>
             <h1 className="font-bold text-xl tracking-tight text-white flex items-center gap-1.5">
-              TITAN <span className="text-orange-primary">FITNESS</span>
+              TITAN <span className="text-[#B4F82C] font-black">FITNESS</span>
             </h1>
             <p className="text-xs text-gray-400">Gym & Fitness Management System</p>
           </div>
@@ -888,7 +908,9 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full flex flex-col justify-center">
+      <main className={`mx-auto px-4 sm:px-6 py-8 flex-1 w-full flex flex-col justify-center ${currentUser ? "max-w-7xl md:pl-24" : "max-w-6xl"}`}>
+
+
         {/* VIEW A: AUTHENTICATED ROLE DASHBOARD */}
         {currentUser ? (
           <div className="w-full space-y-8 animate-fadeIn">
@@ -916,498 +938,25 @@ export const App: React.FC = () => {
 
             {/* ROLE-SPECIFIC WORKSPACE TILES */}
             {currentUser.role === 'member' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Check-In Pass (Rule 7)</span>
-                        <QrCode className="w-5 h-5 text-orange-primary" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white">60s Dynamic QR Pass</h3>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Cryptographically signed HMAC token dynamically rotating every 60 seconds.
-                      </p>
-                    </div>
-
-                    <div className="mt-6">
-                      <button
-                        type="button"
-                        onClick={() => setIsMemberQrModalOpen(true)}
-                        className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 active:scale-98"
-                      >
-                        <QrCode className="w-4 h-4" /> Open Digital QR Pass
-                      </button>
-                      <span className="text-[11px] text-gray-400 mt-2 flex items-center justify-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-orange-primary" /> Screenshot protection active
-                      </span>
-                    </div>
-                  </div>
-
-                {/* Dynamic Current Plan Card (Business Rule 2 enforced) */}
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Membership Status</span>
-                      <ShieldCheck className="w-5 h-5 text-orange-primary" />
-                    </div>
-
-                    {myMembership && myMembership.status === 'active' ? (
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-bold text-white">{myMembership.plan_name}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full bg-green-950 text-green-400 border border-green-800 text-[10px] font-bold uppercase tracking-wider">
-                            ACTIVE
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Payment confirmed • 1 Active Membership (Rule 2)
-                        </p>
-
-                        <div className="mt-6 space-y-2.5 text-xs text-gray-300">
-                          <div className="flex justify-between py-1 border-b border-charcoal-800">
-                            <span>Time Remaining</span>
-                            <span className="text-orange-primary font-bold">
-                              {myMembership.daysRemaining} {myMembership.daysRemaining === 1 ? 'day' : 'days'}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1 border-b border-charcoal-800">
-                            <span>Expiry Date (E.C.)</span>
-                            <span className="text-orange-primary font-bold">{formatEthiopianDate(myMembership.end_date)}</span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span>Price Paid</span>
-                            <span className="text-white">{myMembership.plan_price?.toLocaleString()} ETB</span>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-4">
-                        <div className="w-10 h-10 rounded-full bg-amber-950/60 border border-amber-800 text-amber-400 flex items-center justify-center mx-auto mb-2">
-                          <CreditCard className="w-5 h-5" />
-                        </div>
-                        <h4 className="text-sm font-bold text-white">No Active Membership</h4>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Subscribe with Chapa to activate your dynamic 60s QR check-in pass.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setActiveTab('plans')}
-                          className="mt-4 px-4 py-2 bg-orange-primary hover:bg-orange-hover text-white rounded-lg text-xs font-bold transition shadow-lg shadow-orange-primary/20"
-                        >
-                          Browse Membership Plans
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Workout Routine</span>
-                      <Activity className="w-5 h-5 text-orange-primary" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">Personal Training Split</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Evidence-based routine approved by your coach (Rule 11).
-                    </p>
-
-                    <div className="mt-4 space-y-2 text-xs">
-                      <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
-                        <span>Barbell Bench Press</span>
-                        <span className="text-orange-primary font-semibold">4 × 8 reps</span>
-                      </div>
-                      <div className="p-2.5 rounded bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-gray-300">
-                        <span>Barbell Back Squat</span>
-                        <span className="text-orange-primary font-semibold">4 × 8 reps</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <button
-                      type="button"
-                      onClick={() => setIsMemberWorkoutModalOpen(true)}
-                      className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
-                    >
-                      <Sparkles className="w-4 h-4" /> Open Workout & AI Coach
-                    </button>
-                    <span className="text-[11px] text-gray-400 mt-2 flex items-center justify-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-orange-primary" /> Rules 10 & 11 Enabled
-                    </span>
-                  </div>
-                </div>
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Transformation & AI</span>
-                        <Scale className="w-5 h-5 text-orange-primary" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white">Body Progress & AI Review</h3>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Track body weight, BMI metrics, coach logs, and get AI consistency summaries.
-                      </p>
-                    </div>
-
-                    <div className="mt-6 flex flex-col gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsMemberProgressModalOpen(true)}
-                        className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
-                      >
-                        <Scale className="w-4 h-4" /> Open Progress Tracker
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsAiModalOpen(true)}
-                        className="w-full py-2 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-amber-300 text-xs font-semibold transition flex items-center justify-center gap-1.5 active:scale-98"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Consult Titan AI Coach
-                      </button>
-                    </div>
-                  </div>
-              </div>
-
-              {/* Available Plans for Unsubscribed Member (Business Rule 3) */}
-              {(!myMembership || myMembership.status !== 'active') && (
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CreditCard className="w-5 h-5 text-orange-primary" />
-                    <h3 className="text-lg font-bold text-white">Subscribe & Activate Account</h3>
-                  </div>
-                  <p className="text-xs text-gray-400 mb-6">
-                    Business Rule 3: Online payment uses Chapa test gateway with webhook signature verification.
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {plans.map((p) => (
-                      <div
-                        key={p.id}
-                        className="p-5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition"
-                      >
-                        <div>
-                          <div className="w-full h-32 rounded-lg overflow-hidden mb-3 border border-charcoal-800 bg-charcoal-950">
-                            <img
-                              src={p.imageUrl || DEFAULT_PLAN_IMAGE}
-                              alt={p.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
-                              }}
-                            />
-                          </div>
-                          <h4 className="font-bold text-white text-base">{p.name}</h4>
-                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                            {p.description || 'Full gym facility access'}
-                          </p>
-                          <div className="mt-4 text-xs text-gray-300">
-                            <span className="text-2xl font-extrabold text-white">{p.price.toLocaleString()}</span>
-                            <span className="text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          disabled={isCheckingOut}
-                          onClick={() => handleInitiatePayment(p)}
-                          className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50"
-                        >
-                          <CreditCard className="w-4 h-4" /> Pay with Chapa
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-                            {/* Group Fitness Classes & Waitlist Management (Business Rule 12) */}
-              <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 space-y-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-orange-primary" />
-                      <h3 className="text-xl font-bold text-white">Group Fitness Classes (Rule 12)</h3>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Strict capacity enforcement, real-time waitlist queue, and automatic email promotions on cancellation.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => { loadClasses(); loadMyBookings(); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold border border-charcoal-700 transition"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-orange-primary' : ''}`} />
-                    Refresh Schedule
-                  </button>
-                </div>
-
-                {/* My Active Bookings & Waitlist Status */}
-                {myBookings.length > 0 && (
-                  <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-orange-primary mb-3 flex items-center gap-1.5">
-                      <Bookmark className="w-4 h-4" /> My Reserved Spots & Waitlist Status
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {myBookings.map((bk) => (
-                        <div
-                          key={bk.booking_id}
-                          className="p-3.5 rounded-lg bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-white text-sm">{bk.title}</span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  bk.booking_status === 'booked'
-                                    ? 'bg-green-950 text-green-400 border border-green-800'
-                                    : bk.booking_status === 'waitlisted'
-                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                    : 'bg-charcoal-800 text-gray-400'
-                                }`}
-                              >
-                                {bk.booking_status === 'waitlisted'
-                                  ? `Waitlisted (Queue #${bk.waitlist_position})`
-                                  : bk.booking_status.toUpperCase()}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-orange-primary" />
-                              {formatEthiopianDateTime(bk.start_time)}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5 text-gray-500" />
-                              {bk.location} • Coach {bk.trainer_name}
-                            </p>
-                          </div>
-                          {(bk.booking_status === 'booked' || bk.booking_status === 'waitlisted') && (
-                            <div className="mt-3 pt-2.5 border-t border-charcoal-800 flex justify-end">
-                              <button
-                                type="button"
-                                disabled={bookingLoadingId === bk.class_id}
-                                onClick={() => handleCancelBooking(bk.class_id)}
-                                className="px-3 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-xs text-gray-300 font-semibold transition disabled:opacity-50"
-                              >
-                                {bookingLoadingId === bk.class_id ? 'Cancelling...' : 'Cancel Spot'}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Available Classes Grid */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                    Upcoming Class Schedule (Ethiopian Time & Calendar)
-                  </h4>
-                  {classesList.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {classesList.map((cls) => {
-                        const isFull = cls.booked_count >= cls.capacity;
-                        const userBooking = myBookings.find((b) => b.class_id === cls.id);
-                        const isBooked = userBooking?.booking_status === 'booked';
-                        const isWaitlisted = userBooking?.booking_status === 'waitlisted';
-                        const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
-
-                        return (
-                          <div
-                            key={cls.id}
-                            className={`p-5 rounded-xl bg-charcoal-900 border flex flex-col justify-between transition ${
-                              isBooked
-                                ? 'border-green-600/50 bg-green-950/10'
-                                : isWaitlisted
-                                ? 'border-amber-600/50 bg-amber-950/10'
-                                : 'border-charcoal-800 hover:border-charcoal-700'
-                            }`}
-                          >
-                            <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-[11px] font-mono text-orange-primary flex items-center gap-1">
-                                  <Calendar className="w-3.5 h-3.5" />
-                                  {formatEthiopianDate(cls.start_time)}
-                                </span>
-                                {cls.waitlist_count > 0 && (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800">
-                                    {cls.waitlist_count} on waitlist
-                                  </span>
-                                )}
-                              </div>
-
-                              <h4 className="font-bold text-white text-base">{cls.title}</h4>
-                              <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                                {cls.description || 'High-intensity coaching & form guidance.'}
-                              </p>
-
-                              <div className="mt-3 space-y-1 text-xs text-gray-300">
-                                <div className="flex items-center gap-1.5 text-gray-400">
-                                  <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
-                                </div>
-                                <div className="text-gray-400">
-                                  Coach: <span className="text-white font-medium">{cls.trainer_name || 'Gym Trainer'}</span>
-                                  {cls.trainer_specialization && (
-                                    <span className="text-[11px] text-gray-500"> ({cls.trainer_specialization})</span>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* Capacity Bar */}
-                              <div className="mt-4">
-                                <div className="flex justify-between text-[11px] mb-1 font-medium">
-                                  <span className="text-gray-400">Capacity</span>
-                                  <span className={isFull ? 'text-amber-400 font-bold' : 'text-green-400 font-bold'}>
-                                    {cls.booked_count} / {cls.capacity} spots
-                                  </span>
-                                </div>
-                                <div className="w-full bg-charcoal-800 rounded-full h-1.5 overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full transition-all ${
-                                      isFull ? 'bg-amber-500' : 'bg-green-500'
-                                    }`}
-                                    style={{ width: `${pct}%` }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="mt-5">
-                              {isBooked ? (
-                                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-green-950/40 border border-green-800/60">
-                                  <span className="text-xs font-semibold text-green-400 flex items-center gap-1.5">
-                                    <CheckCircle2 className="w-4 h-4" /> Confirmed Spot
-                                  </span>
-                                  <button
-                                    type="button"
-                                    disabled={bookingLoadingId === cls.id}
-                                    onClick={() => handleCancelBooking(cls.id)}
-                                    className="px-2.5 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-[11px] text-gray-300 transition"
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              ) : isWaitlisted ? (
-                                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-950/40 border border-amber-800/60">
-                                  <span className="text-xs font-semibold text-amber-400">
-                                    Waitlist Queue #{userBooking.waitlist_position}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    disabled={bookingLoadingId === cls.id}
-                                    onClick={() => handleCancelBooking(cls.id)}
-                                    className="px-2.5 py-1 rounded bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-[11px] text-gray-300 transition"
-                                  >
-                                    Leave
-                                  </button>
-                                </div>
-                              ) : (
-                                <button
-                                  type="button"
-                                  disabled={bookingLoadingId === cls.id || (!myMembership || myMembership.status !== 'active')}
-                                  onClick={() => handleBookClass(cls)}
-                                  className={`w-full py-2.5 rounded-lg font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 ${
-                                    isFull
-                                      ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
-                                      : 'bg-orange-primary hover:bg-orange-hover text-white shadow-orange-primary/20'
-                                  }`}
-                                >
-                                  {bookingLoadingId === cls.id
-                                    ? 'Processing...'
-                                    : isFull
-                                    ? `Join Waitlist (Queue #${cls.waitlist_count + 1})`
-                                    : 'Reserve Spot'}
-                                </button>
-                              )}
-                              {(!myMembership || myMembership.status !== 'active') && !isBooked && !isWaitlisted && (
-                                <p className="text-[10px] text-amber-400/80 mt-1.5 text-center">
-                                  Active membership required to book
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500 text-xs">
-                      No upcoming classes scheduled right now.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Member Payment History Section */}
-              <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Receipt className="w-5 h-5 text-orange-primary" />
-                    <h3 className="text-base font-bold text-white">Payment & Billing History</h3>
-                  </div>
-                  <span className="text-xs text-gray-400">
-                    {myPayments.length} {myPayments.length === 1 ? 'transaction' : 'transactions'}
-                  </span>
-                </div>
-
-                {myPayments.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead>
-                        <tr className="border-b border-charcoal-800 text-gray-400">
-                          <th className="py-2.5 px-3">Date (E.C.)</th>
-                          <th className="py-2.5 px-3">Plan / Description</th>
-                          <th className="py-2.5 px-3">Method</th>
-                          <th className="py-2.5 px-3">Reference</th>
-                          <th className="py-2.5 px-3">Amount</th>
-                          <th className="py-2.5 px-3">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-charcoal-800 text-gray-300">
-                        {myPayments.map((pay) => (
-                          <tr key={pay.id} className="hover:bg-charcoal-800/40">
-                            <td className="py-2.5 px-3 font-mono text-gray-400">
-                              {formatEthiopianDateTime(pay.created_at)}
-                            </td>
-                            <td className="py-2.5 px-3 font-semibold text-white">{pay.plan_name || 'Membership'}</td>
-                            <td className="py-2.5 px-3 capitalize">{pay.payment_method}</td>
-                            <td className="py-2.5 px-3 font-mono text-[11px] text-gray-400">{pay.payment_reference}</td>
-                            <td className="py-2.5 px-3 font-bold text-white">{pay.amount.toLocaleString()} ETB</td>
-                            <td className="py-2.5 px-3">
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                    pay.status === 'completed'
-                                      ? 'bg-green-950 text-green-400 border border-green-800'
-                                      : pay.status === 'pending'
-                                      ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                      : 'bg-red-950 text-red-400 border border-red-800'
-                                  }`}
-                                >
-                                  {pay.status}
-                                </span>
-                                {pay.status === 'pending' && pay.payment_method === 'chapa' && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleAutoVerifyChapaTx(pay.payment_reference)}
-                                    className="px-2 py-0.5 rounded text-[10px] bg-charcoal-800 hover:bg-orange-primary/20 text-orange-primary border border-orange-primary/40 font-semibold transition"
-                                    title="Check live status on Chapa and activate membership if confirmed"
-                                  >
-                                    Verify Live
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-500 py-3 text-center">No payment history recorded yet.</p>
-                )}
-              </div>
-            </div>
+              <AthleteDashboardView
+                currentUser={currentUser}
+                myMembership={myMembership}
+                myPayments={myPayments}
+                classesList={classesList}
+                myBookings={myBookings}
+                plans={plans}
+                onOpenQrPass={() => setIsMemberQrModalOpen(true)}
+                onOpenWorkout={() => setIsMemberWorkoutModalOpen(true)}
+                onOpenProgress={() => setIsMemberProgressModalOpen(true)}
+                onOpenAiCoach={() => setIsAiModalOpen(true)}
+                onInitiatePayment={handleInitiatePayment}
+                onBookClass={handleBookClass}
+                onCancelBooking={(cls) => handleCancelBooking(cls.id)}
+                bookingLoadingId={bookingLoadingId}
+                onRefreshClasses={loadClasses}
+                onVerifyChapaTx={handleAutoVerifyChapaTx}
+                onNavigateTab={setActiveTab}
+              />
             )}
 
             {currentUser.role === 'reception' && (
@@ -3463,23 +3012,40 @@ export const App: React.FC = () => {
         />
       )}
 
-            {/* TITAN AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
-      {currentUser && (
-        <AIAssistantModal
-          isOpen={isAiModalOpen}
-          onClose={() => setIsAiModalOpen(false)}
-          userName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
-          userRole={currentUser.role}
-        />
-      )}
-
-      {/* TITAN ANALYTICS & CSV REPORTING MODAL */}
-      <AnalyticsModal
-        isOpen={isAnalyticsModalOpen}
-        onClose={() => setIsAnalyticsModalOpen(false)}
-        userRole={currentUser?.role || 'guest'}
-      />
-
+            {/* TITAN AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
+
+      {currentUser && (
+
+        <AIAssistantModal
+
+          isOpen={isAiModalOpen}
+
+          onClose={() => setIsAiModalOpen(false)}
+
+          userName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+
+          userRole={currentUser.role}
+
+        />
+
+      )}
+
+
+
+      {/* TITAN ANALYTICS & CSV REPORTING MODAL */}
+
+      <AnalyticsModal
+
+        isOpen={isAnalyticsModalOpen}
+
+        onClose={() => setIsAnalyticsModalOpen(false)}
+
+        userRole={currentUser?.role || 'guest'}
+
+      />
+
+
+
       {/* Footer */}
       <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">
         &copy; {new Date().getFullYear()} Titan Fitness Systems. All rights reserved.
