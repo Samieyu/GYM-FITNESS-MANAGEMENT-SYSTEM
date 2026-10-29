@@ -16,6 +16,8 @@ import cronRouter from './modules/cron/cron.routes';
 import classesRouter from './modules/classes/classes.routes';
 import progressRouter from './modules/progress/progress.routes';
 import equipmentRouter from './modules/equipment/equipment.routes';
+import aiRouter from './modules/ai/ai.routes';
+import analyticsRouter from './modules/analytics/analytics.routes';
 
 const app: Application = express();
 
@@ -90,6 +92,8 @@ app.use(`${config.apiPrefix}/cron`, cronRouter);
 app.use(`${config.apiPrefix}/classes`, classesRouter);
 app.use(`${config.apiPrefix}/progress`, progressRouter);
 app.use(`${config.apiPrefix}/equipment`, equipmentRouter);
+app.use(`${config.apiPrefix}/ai`, aiRouter);
+app.use(`${config.apiPrefix}/analytics`, analyticsRouter);
 
 // Centralized Error Handler
 app.use(errorHandler);

@@ -34,7 +34,9 @@ import {
   MapPin,
   Bookmark,
   Scale,
-  Wrench
+  Wrench,
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 import { 
   User, 
@@ -80,6 +82,8 @@ import { CreateClassModal } from './components/CreateClassModal';
 import { MemberProgressModal } from './components/MemberProgressModal';
 import { TrainerProgressModal } from './components/TrainerProgressModal';
 import { EquipmentManagementModal } from './components/EquipmentManagementModal';
+import { AIAssistantModal } from './components/AIAssistantModal';
+import { AnalyticsModal } from './components/AnalyticsModal';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
@@ -174,6 +178,8 @@ export const App: React.FC = () => {
   const [isMemberProgressModalOpen, setIsMemberProgressModalOpen] = useState(false);
   const [isTrainerProgressModalOpen, setIsTrainerProgressModalOpen] = useState(false);
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
 
   const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
   const [classesLoading, setClassesLoading] = useState(false);
@@ -791,6 +797,28 @@ export const App: React.FC = () => {
 
           {currentUser ? (
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsAiModalOpen(true)}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-primary/20 hover:from-amber-500/30 hover:to-orange-primary/30 border border-amber-500/40 text-amber-300 flex items-center gap-1.5 transition shadow-sm active:scale-95"
+                title="Titan AI: Workout Coach, Nutrition & Biomechanics Guide"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden md:inline">Titan AI Coach</span>
+              </button>
+
+              {(currentUser.role === 'admin' || currentUser.role === 'reception') && (
+                <button
+                  type="button"
+                  onClick={() => setIsAnalyticsModalOpen(true)}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 flex items-center gap-1.5 transition active:scale-95"
+                  title="Financial overview, attendance throughput & CSV exports"
+                >
+                  <TrendingUp className="w-3.5 h-3.5 text-orange-primary" />
+                  <span className="hidden md:inline">Analytics & Reports</span>
+                </button>
+              )}
+
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-semibold text-white">{currentUser.firstName} {currentUser.lastName}</p>
                 <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-orange-primary/10 text-orange-primary border border-orange-primary/30">
@@ -879,6 +907,7 @@ export const App: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-3">
+
                 <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-950/60 text-green-400 border border-green-800 text-xs font-semibold">
                   <UserCheck className="w-4 h-4" /> Account Verified
                 </span>
@@ -1009,6 +1038,35 @@ export const App: React.FC = () => {
                     </span>
                   </div>
                 </div>
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xs font-bold uppercase tracking-wider text-orange-primary">Transformation & AI</span>
+                        <Scale className="w-5 h-5 text-orange-primary" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Body Progress & AI Review</h3>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Track body weight, BMI metrics, coach logs, and get AI consistency summaries.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsMemberProgressModalOpen(true)}
+                        className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                      >
+                        <Scale className="w-4 h-4" /> Open Progress Tracker
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsAiModalOpen(true)}
+                        className="w-full py-2 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-amber-300 text-xs font-semibold transition flex items-center justify-center gap-1.5 active:scale-98"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Consult Titan AI Coach
+                      </button>
+                    </div>
+                  </div>
               </div>
 
               {/* Available Plans for Unsubscribed Member (Business Rule 3) */}
@@ -1397,6 +1455,24 @@ export const App: React.FC = () => {
                     <DollarSign className="w-3.5 h-3.5 text-orange-primary" /> Record Offline Payment
                   </button>
                 </div>
+                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                      <BarChart3 className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Facility Analytics & CSV</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Live attendance traffic density, revenue overview, and audited Ethiopian Calendar CSV reports.
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsAnalyticsModalOpen(true)}
+                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                  >
+                    <TrendingUp className="w-4 h-4" /> Open Analytics & Reports
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1696,6 +1772,14 @@ export const App: React.FC = () => {
                         title="Manage gym equipment inventory, defect reports, and maintenance logs"
                       >
                         <Wrench className="w-4 h-4 text-orange-primary" /> Equipment & Repairs
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsAnalyticsModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        title="Financial breakdown, attendance heatmap, and Ethiopian Calendar CSV exports"
+                      >
+                        <TrendingUp className="w-4 h-4 text-orange-primary" /> Analytics & CSV Reports
                       </button>
                       <button
                         type="button"
@@ -2799,6 +2883,7 @@ export const App: React.FC = () => {
                 {/* Header with Chapa Branding */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-charcoal-800">
                   <div className="flex items-center gap-3">
+
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 font-black text-lg">
                       C
                     </div>
@@ -3378,6 +3463,23 @@ export const App: React.FC = () => {
         />
       )}
 
+            {/* TITAN AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
+      {currentUser && (
+        <AIAssistantModal
+          isOpen={isAiModalOpen}
+          onClose={() => setIsAiModalOpen(false)}
+          userName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+          userRole={currentUser.role}
+        />
+      )}
+
+      {/* TITAN ANALYTICS & CSV REPORTING MODAL */}
+      <AnalyticsModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => setIsAnalyticsModalOpen(false)}
+        userRole={currentUser?.role || 'guest'}
+      />
+
       {/* Footer */}
       <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">
         &copy; {new Date().getFullYear()} Titan Fitness Systems. All rights reserved.
