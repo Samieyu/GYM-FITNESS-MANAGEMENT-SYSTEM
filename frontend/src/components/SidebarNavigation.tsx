@@ -11,7 +11,6 @@ import {
   BarChart3,
   Wrench,
   LogOut,
-  MessageSquare,
 } from 'lucide-react';
 import { User } from '../api/auth';
 
@@ -46,7 +45,15 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 }) => {
   if (!currentUser) return null;
 
-  const isAdminOrReception = currentUser.role === 'admin' || currentUser.role === 'reception';
+  const role = currentUser.role;
+
+  // AI assistant button tooltip & styling based on persona
+  const aiTooltip =
+    role === 'admin'
+      ? 'Management AI Consultant • የአስተዳደር አማካሪ'
+      : role === 'trainer'
+      ? 'Trainer AI Coaching Co-Pilot • የአሰልጣኝ ረዳት'
+      : 'Titan AI Fitness Coach • የአካል ብቃት አሰልጣኝ';
 
   return (
     <aside className="w-20 bg-[#0B0D10] border-r border-slate-900 flex flex-col justify-between items-center py-6 fixed left-0 top-0 bottom-0 z-40 select-none">
@@ -57,7 +64,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
           className="w-11 h-11 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-[#B4F82C] shadow-lg shadow-[#B4F82C]/10 hover:scale-105 transition"
           title="Titan Fitness Management System"
         >
-          {/* Geometric Triangle Gym Brand Icon from uploaded screenshot */}
+          {/* Geometric Triangle Gym Brand Icon */}
           <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
             <path d="M12 2L2 20h20L12 2zm0 4.5l6.5 11.5h-13L12 6.5z" />
           </svg>
@@ -65,7 +72,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 
         {/* PRIMARY VERTICAL NAV ICONS */}
         <nav className="flex flex-col items-center gap-3">
-          {/* 1. Home / Dashboard */}
+          {/* 1. Home / Dashboard (All roles) */}
           <button
             onClick={() => onSelectTab('home')}
             className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
@@ -78,74 +85,82 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             <LayoutDashboard className="w-5 h-5" />
           </button>
 
-          {/* 2. Workout Routines */}
-          <button
-            onClick={onOpenWorkout}
-            className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
-            title="Workout Routines • ልምምድ"
-          >
-            <Dumbbell className="w-5 h-5" />
-          </button>
+          {/* 2. Workout Routines (Members and Trainers only, NOT Reception) */}
+          {(role === 'member' || role === 'trainer') && (
+            <button
+              onClick={onOpenWorkout}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
+              title={role === 'trainer' ? 'Workout Plan Builder • የልምምድ እቅድ ማዘጋጃ' : 'Workout Routines • ልምምድ'}
+            >
+              <Dumbbell className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* 3. Group Fitness Classes */}
-          <button
-            onClick={() => onSelectTab('classes')}
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
-              activeTab === 'classes'
-                ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-            title="Group Classes • ክፍሎች"
-          >
-            <Calendar className="w-5 h-5" />
-          </button>
+          {/* 3. Group Fitness Classes (Member, Trainer, Admin, NOT Reception) */}
+          {role !== 'reception' && (
+            <button
+              onClick={() => onSelectTab('classes')}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
+                activeTab === 'classes'
+                  ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+              title="Group Classes • ክፍሎች"
+            >
+              <Calendar className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* 4. Membership Plans & Billing */}
-          <button
-            onClick={() => onSelectTab('plans')}
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
-              activeTab === 'plans'
-                ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-            title="Membership Plans • የደንበኝነት እቅዶች"
-          >
-            <CreditCard className="w-5 h-5" />
-          </button>
+          {/* 4. Membership Plans & Billing (Member, Trainer, Admin, NOT Reception) */}
+          {role !== 'reception' && (
+            <button
+              onClick={() => onSelectTab('plans')}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
+                activeTab === 'plans'
+                  ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+              title={role === 'admin' ? 'Manage Membership Plans • የእቅድ አስተዳደር' : 'Membership Plans • የደንበኝነት እቅዶች'}
+            >
+              <CreditCard className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* 5. Athlete Body Progress */}
-          <button
-            onClick={onOpenProgress}
-            className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
-            title="Body Transformation & Logs • ክብደትና ልኬት"
-          >
-            <Scale className="w-5 h-5" />
-          </button>
+          {/* 5. Athlete Body Progress (Member & Trainer only, NOT Reception) */}
+          {(role === 'member' || role === 'trainer') && (
+            <button
+              onClick={onOpenProgress}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
+              title="Body Transformation & Logs • ክብደትና ልኬት"
+            >
+              <Scale className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* 6. Dynamic QR Pass (Member) */}
-          {currentUser.role === 'member' && (
+          {/* 6. Dynamic QR Pass (Member only) */}
+          {role === 'member' && (
             <button
               onClick={onOpenQrPass}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
-              title="60s Dynamic QR Pass • ዲጂታል መግቢያ"
+              title="Dynamic QR Entrance Pass • ዲጂታል መግቢያ"
             >
               <QrCode className="w-5 h-5" />
             </button>
           )}
 
-          {/* 7. Front Desk Live Scanner (Staff) */}
-          {isAdminOrReception && onOpenScanner && (
+          {/* 7. Front Desk Live Scanner (Staff: Reception & Admin) */}
+          {(role === 'reception' || role === 'admin') && onOpenScanner && (
             <button
               onClick={onOpenScanner}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
-              title="Reception QR Scanner • መግቢያ መፈተሻ"
+              title="Front Desk QR Scanner • መግቢያ መፈተሻ"
             >
               <QrCode className="w-5 h-5" />
             </button>
           )}
 
-          {/* 8. Walk-in Registration (Staff) */}
-          {isAdminOrReception && onOpenWalkin && (
+          {/* 8. Walk-in Registration (Staff: Reception & Admin) */}
+          {(role === 'reception' || role === 'admin') && onOpenWalkin && (
             <button
               onClick={onOpenWalkin}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
@@ -155,19 +170,19 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 9. Equipment Inventory & Defects */}
-          {onOpenEquipment && (
+          {/* 9. Equipment Inventory & Defects (Staff: Admin & Trainer only - REMOVED from member & reception) */}
+          {(role === 'admin' || role === 'trainer') && onOpenEquipment && (
             <button
               onClick={onOpenEquipment}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
-              title="Equipment & Repairs • እቃዎችና ጥገና"
+              title="Equipment & Maintenance • እቃዎችና ጥገና"
             >
               <Wrench className="w-5 h-5" />
             </button>
           )}
 
-          {/* 10. Financial & Attendance Analytics */}
-          {isAdminOrReception && onOpenAnalytics && (
+          {/* 10. Financial & Attendance Analytics (Admin only, REMOVED from reception) */}
+          {role === 'admin' && onOpenAnalytics && (
             <button
               onClick={onOpenAnalytics}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
@@ -177,27 +192,21 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 11. Titan AI Coach */}
-          <button
-            onClick={onOpenAiCoach}
-            className="w-11 h-11 rounded-2xl flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-slate-900 transition"
-            title="Titan AI Coach • የአካል ብቃት አሰልጣኝ"
-          >
-            <Sparkles className="w-5 h-5" />
-          </button>
+          {/* 11. Single Merged AI Assistant (Tailored per role: Member, Trainer, Admin; REMOVED from reception) */}
+          {role !== 'reception' && (
+            <button
+              onClick={onOpenAiCoach}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center text-[#B4F82C] hover:text-white hover:bg-slate-900 transition group"
+              title={aiTooltip}
+            >
+              <Sparkles className="w-5 h-5 transition group-hover:scale-110" />
+            </button>
+          )}
         </nav>
       </div>
 
-      {/* BOTTOM ICONS: SUPPORT & LOGOUT */}
-      <div className="flex flex-col items-center gap-3">
-        <button
-          onClick={onOpenAiCoach}
-          className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-500 hover:text-white hover:bg-slate-900 transition"
-          title="Fitness Q&A Assistant • የድጋፍ ረዳት"
-        >
-          <MessageSquare className="w-5 h-5" />
-        </button>
-
+      {/* BOTTOM ICONS: LOGOUT ONLY (Duplicate Q&A removed) */}
+      <div className="flex flex-col items-center">
         <button
           onClick={onLogout}
           className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-500 hover:text-rose-400 hover:bg-slate-900 transition"

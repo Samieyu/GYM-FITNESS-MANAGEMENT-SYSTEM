@@ -142,7 +142,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Digital Pass (Rule 7)
+            Digital Pass
           </button>
           <button
             type="button"
@@ -278,19 +278,13 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
               </div>
             </div>
 
-            {/* Anti-Passback & Security Policy Notice (Rules 7 & 8) */}
+            {/* Digital Entrance Pass Instructions */}
             <div className="p-3.5 rounded-2xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-400 space-y-1.5 leading-relaxed">
               <div className="flex items-center gap-1.5 text-orange-primary font-semibold text-[11px]">
-                <ShieldCheck className="w-3.5 h-3.5" /> Anti-Passback & Security Engine
+                <ShieldCheck className="w-3.5 h-3.5" /> Titan Digital Entrance Pass
               </div>
-              <p className="text-[11px]">
-                • <strong className="text-gray-300">Rule 7:</strong> Token is cryptographically signed with HMAC-SHA256 and expires strictly after 60 seconds. Screenshots are rejected.
-              </p>
-              <p className="text-[11px]">
-                • <strong className="text-gray-300">Rule 8:</strong> Requires active membership with validity on or after today's date in Ethiopian Calendar.
-              </p>
-              <p className="text-[11px]">
-                • <strong className="text-gray-300">Rule 9:</strong> 2-Hour anti-passback rule blocks immediate duplicate scans unless receptionist overrides.
+              <p className="text-[11px] text-gray-300">
+                Hold your device up to the front desk optical scanner upon arrival. This dynamic QR pass automatically updates every 60 seconds for secure facility entry.
               </p>
             </div>
           </div>

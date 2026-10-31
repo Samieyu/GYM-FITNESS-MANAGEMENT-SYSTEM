@@ -31,7 +31,8 @@ import {
   Scale,
   Wrench,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  Download
 } from 'lucide-react';
 import { 
   User, 
@@ -40,6 +41,7 @@ import {
   registerMemberApi, 
   verifyEmailApi, 
   resendVerificationApi,
+  requestPasswordResetApi,
   resetPasswordApi,
   logoutApi 
 } from './api/auth';
@@ -92,9 +94,28 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
   const [authModalMode, setAuthModalMode] = useState<
-    'login' | 'register' | 'verification-sent' | 'set-password' | null
+    'login' | 'register' | 'verification-sent' | 'set-password' | 'forgot-password' | null
   >(null);
   const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(null);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [isForgotSubmitting, setIsForgotSubmitting] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsForgotSubmitting(true);
+    setErrorMessage(null);
+    try {
+      await requestPasswordResetApi(forgotEmail);
+      setForgotSuccess(true);
+      setSuccessMessage('Password reset link sent! Please check your email inbox.');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to request password reset.');
+    } finally {
+      setIsForgotSubmitting(false);
+    }
+  };
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   
@@ -260,7 +281,7 @@ export const App: React.FC = () => {
       return;
     }
     if (!myMembership || myMembership.status !== 'active') {
-      setErrorMessage('Active membership required (Rule 12). Please subscribe to a membership plan to book classes.');
+      setErrorMessage('Active membership required. Please subscribe to an active membership plan to reserve classes.');
       return;
     }
 
@@ -450,7 +471,7 @@ export const App: React.FC = () => {
     }
     if (myMembership && myMembership.status === 'active') {
       setErrorMessage(
-        `You already have an active membership (${myMembership.plan_name}). Business Rule 2 allows only 1 active membership at a time.`
+        `You already have an active membership (${myMembership.plan_name}). Members may only hold one active membership at a time.`
       );
       return;
     }
@@ -812,29 +833,43 @@ export const App: React.FC = () => {
         <div className="flex items-center gap-4 sm:gap-6">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-charcoal-850 border border-charcoal-800 text-xs text-gray-400">
             <Server className={`w-3.5 h-3.5 ${backendStatus === 'connected' ? 'text-green-500' : 'text-amber-500'}`} />
-            <span>API: {backendStatus === 'connected' ? 'Connected (Port 5000)' : 'Offline'}</span>
+            <span>System: {backendStatus === 'connected' ? 'Online' : 'Offline'}</span>
           </div>
 
           {currentUser ? (
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsAiModalOpen(true)}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-primary/20 hover:from-amber-500/30 hover:to-orange-primary/30 border border-amber-500/40 text-amber-300 flex items-center gap-1.5 transition shadow-sm active:scale-95"
-                title="Titan AI: Workout Coach, Nutrition & Biomechanics Guide"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden md:inline">Titan AI Coach</span>
-              </button>
+              {currentUser.role !== 'reception' && (
+                <button
+                  type="button"
+                  onClick={() => setIsAiModalOpen(true)}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#B4F82C]/10 hover:bg-[#B4F82C]/20 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center gap-1.5 transition shadow-sm active:scale-95"
+                  title={
+                    currentUser.role === 'admin'
+                      ? 'Management AI Consultant'
+                      : currentUser.role === 'trainer'
+                      ? 'Trainer Coaching Co-Pilot'
+                      : 'Titan AI Fitness Coach'
+                  }
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#B4F82C]" />
+                  <span className="hidden md:inline">
+                    {currentUser.role === 'admin'
+                      ? 'Management AI'
+                      : currentUser.role === 'trainer'
+                      ? 'Coaching Co-Pilot'
+                      : 'AI Fitness Coach'}
+                  </span>
+                </button>
+              )}
 
-              {(currentUser.role === 'admin' || currentUser.role === 'reception') && (
+              {currentUser.role === 'admin' && activeTab === 'home' && (
                 <button
                   type="button"
                   onClick={() => setIsAnalyticsModalOpen(true)}
                   className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 flex items-center gap-1.5 transition active:scale-95"
                   title="Financial overview, attendance throughput & CSV exports"
                 >
-                  <TrendingUp className="w-3.5 h-3.5 text-orange-primary" />
+                  <TrendingUp className="w-3.5 h-3.5 text-[#B4F82C]" />
                   <span className="hidden md:inline">Analytics & Reports</span>
                 </button>
               )}
@@ -924,7 +959,7 @@ export const App: React.FC = () => {
                   Welcome, {currentUser.firstName} {currentUser.lastName}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                  Active account: {currentUser.email} • Authenticated with RBAC Guard
+                  Active account: {currentUser.email} • Verified Account
                 </p>
               </div>
 
@@ -936,8 +971,88 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* ROLE-SPECIFIC WORKSPACE TILES */}
-            {currentUser.role === 'member' && (
+            {/* MEMBER WORKSPACE: ACTIVATION CHECK */}
+            {currentUser.role === 'member' && activeTab === 'home' && (!myMembership || myMembership.status !== 'active') && (
+              <div className="p-8 sm:p-12 rounded-3xl bg-[#0E1116] border border-slate-800 text-center max-w-4xl mx-auto space-y-8 shadow-2xl animate-fadeIn">
+                <div className="w-16 h-16 rounded-2xl bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center justify-center mx-auto shadow-lg shadow-[#B4F82C]/10">
+                  <CreditCard className="w-8 h-8" />
+                </div>
+
+                <div className="max-w-xl mx-auto space-y-2">
+                  <span className="inline-block px-3 py-1 rounded-full bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] text-xs font-semibold">
+                    Step 2: Choose Membership Plan
+                  </span>
+                  <h3 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                    Activate Your Membership, {currentUser.firstName}!
+                  </h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">
+                    Your member account is verified. To access the gym floor, receive your 60-second rotating QR entrance pass, book group classes, and receive custom workout plans, please select a plan below.
+                  </p>
+                </div>
+
+                {/* Steps tracker */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left py-2">
+                  <div className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">✓</div>
+                    <div>
+                      <p className="text-xs font-bold text-white">1. Verified Account</p>
+                      <p className="text-[10px] text-slate-400 truncate max-w-[140px]">{currentUser.email}</p>
+                    </div>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#B4F82C]/10 border border-[#B4F82C]/40 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-[#B4F82C] text-slate-950 font-bold flex items-center justify-center text-xs">2</div>
+                    <div>
+                      <p className="text-xs font-bold text-[#B4F82C]">2. Select Plan</p>
+                      <p className="text-[10px] text-slate-300">Choose duration & pay</p>
+                    </div>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-3 opacity-60">
+                    <div className="w-7 h-7 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs">3</div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-300">3. Gym Access</p>
+                      <p className="text-[10px] text-slate-500">Dynamic QR unlocked</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Available Membership Plans Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+                  {plans.map((p) => (
+                    <div key={p.id} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-[#B4F82C]/50 transition flex flex-col justify-between">
+                      <div>
+                        <h4 className="text-base font-bold text-white">{p.name}</h4>
+                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description || 'Full gym facility access & trainer guidance.'}</p>
+                        <div className="mt-4">
+                          <span className="text-2xl font-black text-[#B4F82C]">{p.price.toLocaleString()}</span>
+                          <span className="text-xs text-slate-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleInitiatePayment(p)}
+                        className="mt-6 w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-[#B4F82C]/20"
+                      >
+                        <CreditCard className="w-4 h-4" /> Subscribe with Chapa
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-400">
+                  <span>Prefer to pay in person? Visit the front desk to pay with Cash or Telebirr.</span>
+                  <button
+                    type="button"
+                    onClick={loadMemberMembershipAndPayments}
+                    className="text-[#B4F82C] hover:underline font-semibold flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Refresh Payment Status
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* MEMBER WORKSPACE: FULL DASHBOARD (When paid & active) */}
+            {currentUser.role === 'member' && activeTab === 'home' && myMembership && myMembership.status === 'active' && (
               <AthleteDashboardView
                 currentUser={currentUser}
                 myMembership={myMembership}
@@ -959,73 +1074,64 @@ export const App: React.FC = () => {
               />
             )}
 
-            {currentUser.role === 'reception' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
-                    <QrCode className="w-5 h-5" />
+            {currentUser.role === 'reception' && activeTab === 'home' && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <QrCode className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Live QR Scanner</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Optical scanner for member dynamic QR passes with instant anti-passback and expiration check.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Live QR Scanner</h3>
                   <button 
                     type="button"
                     onClick={() => setIsReceptionScannerOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                    className="mt-6 w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] font-bold text-xs text-slate-950 transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
                   >
                     <QrCode className="w-4 h-4" /> Open Front Desk Scanner
                   </button>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-orange-primary mb-4">
-                    <UserPlus className="w-5 h-5" />
+                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <UserPlus className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Walk-in Member Registration</h3>
+                    <p className="text-xs text-gray-400 mt-1">Register walk-in client, assign membership tier, record cash payment, and send activation link.</p>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Walk-in Registration</h3>
-                  <p className="text-xs text-gray-400 mt-1">Register walk-in client, pick plan, record payment, send invite.</p>
                   <button 
                     type="button"
                     onClick={() => setIsWalkinModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                    className="mt-6 w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-2 active:scale-98"
                   >
-                    <UserPlus className="w-4 h-4" /> Register Walk-in Member
+                    <UserPlus className="w-4 h-4 text-[#B4F82C]" /> Register Walk-in Member
                   </button>
                 </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-orange-primary mb-4">
-                    <DollarSign className="w-5 h-5" />
+                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <DollarSign className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Record Offline Payment</h3>
+                    <p className="text-xs text-gray-400 mt-1">Record Cash or Direct Bank Transfer transactions with immediate receipt generation.</p>
                   </div>
-                  <h3 className="text-lg font-bold text-white">Manual Payment</h3>
-                  <p className="text-xs text-gray-400 mt-1">Record Cash or Bank Transfer transactions with audit log.</p>
                   <button 
                     type="button"
                     onClick={() => openManualPaymentModal()}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-1.5"
+                    className="mt-6 w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-2"
                   >
-                    <DollarSign className="w-3.5 h-3.5 text-orange-primary" /> Record Offline Payment
-                  </button>
-                </div>
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
-                      <BarChart3 className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">Facility Analytics & CSV</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Live attendance traffic density, revenue overview, and audited Ethiopian Calendar CSV reports.
-                    </p>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsAnalyticsModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
-                  >
-                    <TrendingUp className="w-4 h-4" /> Open Analytics & Reports
+                    <DollarSign className="w-4 h-4 text-[#B4F82C]" /> Record Cash / Transfer
                   </button>
                 </div>
               </div>
             )}
 
-            {currentUser.role === 'trainer' && (
+            {currentUser.role === 'trainer' && activeTab === 'home' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
@@ -1073,7 +1179,7 @@ export const App: React.FC = () => {
                     </div>
                     <h3 className="text-lg font-bold text-white">Group Classes & Roster</h3>
                     <p className="text-xs text-gray-400 mt-1">
-                      Rule 12: Schedule group workouts, monitor waitlists, and take live attendance.
+                      Schedule group workouts, monitor waitlists, and take live attendance.
                     </p>
                     <div className="mt-4 space-y-2">
                       {classesList.slice(0, 2).map((cls) => (
@@ -1148,7 +1254,7 @@ export const App: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <Users className="w-5 h-5 text-orange-primary" />
-                      <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight (Rule 12)</h3>
+                      <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight</h3>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">
                       Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance check-in.
@@ -1261,7 +1367,7 @@ export const App: React.FC = () => {
               </div>
             )}
 
-            {currentUser.role === 'admin' && (
+            {currentUser.role === 'admin' && activeTab === 'home' && (
               <div className="space-y-6">
                 {/* Admin Plans & Pricing Management Panel */}
                 <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
@@ -1272,7 +1378,7 @@ export const App: React.FC = () => {
                         <h3 className="text-xl font-bold text-white">Plans & Pricing Engine</h3>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
-                        Business Rule 1: Only Admin creates tiers, modifies pricing, and uploads plan imagery from local storage.
+                        Only Admin creates tiers, modifies pricing, and uploads plan imagery from local storage.
                       </p>
                     </div>
 
@@ -1302,7 +1408,7 @@ export const App: React.FC = () => {
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
                         className="px-3.5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
-                        title="Rule 12: Schedule a new group fitness class with capacity limits"
+                        title="Schedule a new group fitness class with capacity limits"
                       >
                         <Calendar className="w-4 h-4" /> Schedule Class
                       </button>
@@ -1349,7 +1455,7 @@ export const App: React.FC = () => {
                         onClick={handleRunManualExpiryCheck}
                         disabled={isRunningExpiryCheck}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
-                        title="Rule 5 & 6: Scan all memberships, auto-expire overdue, and dispatch 7d/1d reminder emails in Ethiopian Calendar"
+                        title="Scan all memberships, auto-expire overdue, and dispatch 7d/1d reminder emails in Ethiopian Calendar"
                       >
                         <RefreshCw className={`w-4 h-4 text-orange-primary ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
                       </button>
@@ -1414,7 +1520,7 @@ export const App: React.FC = () => {
                         <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight Engine</h3>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
-                        Business Rule 12: Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance oversight.
+                        Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance oversight.
                       </p>
                     </div>
 
@@ -1524,24 +1630,319 @@ export const App: React.FC = () => {
 
                 {/* Other Admin Capabilities */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                    <h3 className="text-lg font-bold text-white">Financial & Attendance Reports</h3>
-                    <p className="text-xs text-gray-400 mt-1">Export member lists, Chapa settlements, and audit logs.</p>
-                    <button className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition">
-                      Generate CSV Export
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                    <div>
+                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                        <BarChart3 className="w-5 h-5" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Financial & Attendance Reports</h3>
+                      <p className="text-xs text-gray-400 mt-1">View revenue analytics, attendance throughput, and download official CSV exports.</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsAnalyticsModalOpen(true)}
+                      className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 active:scale-98"
+                    >
+                      <Download className="w-4 h-4 text-[#B4F82C]" /> Open Analytics & CSV Reports
                     </button>
                   </div>
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800">
-                    <h3 className="text-lg font-bold text-white">Equipment Maintenance</h3>
-                    <p className="text-xs text-gray-400 mt-1">Track machine statuses, inspect fault reports, and service due dates.</p>
-                    <button className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition">
-                      Manage Inventory
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                    <div>
+                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                        <Wrench className="w-5 h-5" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Equipment & Maintenance</h3>
+                      <p className="text-xs text-gray-400 mt-1">Track machine inventory, review defect reports, and schedule maintenance.</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsEquipmentModalOpen(true)}
+                      className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-[#B4F82C]/20"
+                    >
+                      <Wrench className="w-4 h-4" /> Manage Inventory & Maintenance
                     </button>
                   </div>
                 </div>
               </div>
             )}
+          
+            {/* LOGGED-IN VIEW: CLASSES TAB */}
+            {activeTab === 'classes' && (
+              <div className="w-full space-y-6 animate-fadeIn">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                      <Calendar className="w-7 h-7 text-[#B4F82C]" />
+                      Scheduled <span className="text-[#B4F82C]">Group Classes</span>
+                    </h2>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-400">
+                      Live schedule with instructor assignments, capacity limits, and Ethiopian Calendar times.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => loadClasses()}
+                      className="px-3.5 py-2 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-white font-semibold text-xs border border-charcoal-700 transition flex items-center gap-1.5"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
+                    </button>
+                    {(currentUser.role === 'admin' || currentUser.role === 'trainer') && (
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateClassModalOpen(true)}
+                        className="px-4 py-2 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center gap-1.5 active:scale-95"
+                      >
+                        <Plus className="w-4 h-4" /> Schedule New Class
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {classesList.length > 0 ? (
+                    classesList.map((cls) => {
+                      const isFull = cls.booked_count >= cls.capacity;
+                      const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
+                      const isBookedByMe = myBookings.some((b) => b.class_id === cls.id && b.status === 'booked');
+                      const isWaitlistedByMe = myBookings.some((b) => b.class_id === cls.id && b.status === 'waitlisted');
+
+                      return (
+                        <div
+                          key={cls.id}
+                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between text-xs mb-3">
+                              <span className="flex items-center gap-1 font-mono text-[#B4F82C]">
+                                <Calendar className="w-3.5 h-3.5" />
+                                {formatEthiopianDateTime(cls.start_time)}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  isFull
+                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                    : 'bg-green-950 text-green-400 border border-green-800'
+                                }`}
+                              >
+                                {isFull ? `Full (${cls.waitlist_count} Waitlist)` : `${cls.booked_count} / ${cls.capacity} Booked`}
+                              </span>
+                            </div>
+
+                            <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
+                              {cls.title}
+                            </h3>
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                              {cls.description || 'Full coaching, mobility guidance, and conditioning.'}
+                            </p>
+
+                            <div className="mt-4 space-y-1.5 text-xs text-gray-300">
+                              <p className="text-gray-400 flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
+                              </p>
+                              <p className="text-gray-400">
+                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Titan Coach'}</span>
+                                {cls.trainer_specialization && (
+                                  <span className="text-gray-500"> ({cls.trainer_specialization})</span>
+                                )}
+                              </p>
+                            </div>
+
+                            {/* Capacity bar */}
+                            <div className="mt-4">
+                              <div className="w-full bg-charcoal-900 rounded-full h-1.5 overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all ${
+                                    isFull ? 'bg-amber-500' : 'bg-green-500'
+                                  }`}
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-6 flex flex-col gap-2">
+                            {(currentUser.role === 'admin' || currentUser.role === 'trainer') && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedRosterClass(cls);
+                                  setIsRosterModalOpen(true);
+                                }}
+                                className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                              >
+                                <Users className="w-4 h-4 text-[#B4F82C]" /> View Class Roster & Attendance
+                              </button>
+                            )}
+
+                            {currentUser.role === 'member' && (
+                              isBookedByMe ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelBooking(cls.id)}
+                                  disabled={bookingLoadingId === cls.id}
+                                  className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-rose-950/80 hover:text-rose-300 border border-charcoal-700 text-gray-300 font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                                >
+                                  {bookingLoadingId === cls.id ? 'Updating...' : 'Cancel Reservation'}
+                                </button>
+                              ) : isWaitlistedByMe ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelBooking(cls.id)}
+                                  disabled={bookingLoadingId === cls.id}
+                                  className="w-full py-2.5 rounded-xl bg-amber-950/40 text-amber-300 border border-amber-800 font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                                >
+                                  Waitlisted (Click to Leave)
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleBookClass(cls)}
+                                  disabled={bookingLoadingId === cls.id}
+                                  className={`w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg ${
+                                    isFull
+                                      ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
+                                      : 'bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 shadow-[#B4F82C]/20'
+                                  }`}
+                                >
+                                  {bookingLoadingId === cls.id ? (
+                                    'Processing...'
+                                  ) : isFull ? (
+                                    'Join Waitlist Queue'
+                                  ) : (
+                                    'Reserve Spot'
+                                  )}
+                                </button>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="col-span-3 text-center py-12 text-gray-400">
+                      No group classes scheduled yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* LOGGED-IN VIEW: PLANS TAB */}
+            {activeTab === 'plans' && (
+              <div className="w-full space-y-6 animate-fadeIn">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                      <CreditCard className="w-7 h-7 text-[#B4F82C]" />
+                      Membership <span className="text-[#B4F82C]">Plans & Billing</span>
+                    </h2>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-400">
+                      Official gym tiers, pricing in Ethiopian Birr (ETB), and instant Chapa payment gateway.
+                    </p>
+                  </div>
+                  {currentUser.role === 'admin' && (
+                    <button
+                      type="button"
+                      onClick={openCreatePlanModal}
+                      className="px-4 py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center gap-1.5 active:scale-95"
+                    >
+                      <Plus className="w-4 h-4" /> Create New Plan
+                    </button>
+                  )}
+                </div>
+
+                {/* If member: Show active plan badge at top */}
+                {currentUser.role === 'member' && myMembership && (
+                  <div className="p-5 rounded-2xl bg-[#0E1116] border border-[#B4F82C]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/10 text-[#B4F82C] flex items-center justify-center">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs text-[#B4F82C] font-bold uppercase tracking-wider">Current Active Plan</span>
+                        <h4 className="text-lg font-bold text-white">{myMembership.plan_name}</h4>
+                        <p className="text-xs text-gray-400">
+                          Expires: {formatEthiopianDate(myMembership.end_date)} E.C.
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold">
+                      Active
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {(currentUser.role === 'admin' && adminPlans.length > 0 ? adminPlans : plans).map((p) => (
+                    <div
+                      key={p.id}
+                      className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
+                    >
+                      <div>
+                        {p.imageUrl ? (
+                          <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800">
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-36 rounded-xl mb-4 bg-charcoal-800/50 border border-dashed border-charcoal-700 flex flex-col items-center justify-center text-gray-500">
+                            <ImageIcon className="w-6 h-6 mb-1 text-gray-400" />
+                            <span className="text-[10px]">No image uploaded</span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
+                            {p.name}
+                          </h3>
+                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${p.isActive ? 'bg-green-950 text-green-400 border border-green-800' : 'bg-charcoal-800 text-gray-400'}`}>
+                            {p.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-gray-400 line-clamp-2">
+                          {p.description || 'Full gym facility access, showers, lockers, and expert coaching.'}
+                        </p>
+
+                        <div className="mt-4">
+                          <span className="text-3xl font-black text-[#B4F82C]">{p.price.toLocaleString()}</span>
+                          <span className="text-xs text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-6">
+                        {currentUser.role === 'admin' ? (
+                          <button
+                            type="button"
+                            onClick={() => openEditPlanModal(p)}
+                            className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                          >
+                            <Edit2 className="w-3.5 h-3.5 text-[#B4F82C]" /> Edit Plan & Image
+                          </button>
+                        ) : currentUser.role === 'member' ? (
+                          <button
+                            type="button"
+                            onClick={() => handleInitiatePayment(p)}
+                            className="w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#B4F82C]/20 transition"
+                          >
+                            <CreditCard className="w-4 h-4" /> {myMembership ? 'Switch to Plan' : 'Subscribe with Chapa'}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
         ) : (
           /* VIEW B: PUBLIC VISITOR VIEW (When not logged in) */
@@ -1892,6 +2293,8 @@ export const App: React.FC = () => {
                   <h3 className="text-lg font-bold text-white">
                     {authModalMode === 'set-password'
                       ? 'Set Your Password'
+                      : authModalMode === 'forgot-password'
+                      ? 'Reset Your Password'
                       : authModalMode === 'login'
                       ? 'Sign In to Your Account'
                       : 'Member Registration'}
@@ -1899,6 +2302,8 @@ export const App: React.FC = () => {
                   <p className="text-xs text-gray-400">
                     {authModalMode === 'set-password'
                       ? 'Create a secure password to access your member dashboard'
+                      : authModalMode === 'forgot-password'
+                      ? 'Enter your registered Gmail to receive a password reset link'
                       : authModalMode === 'login'
                       ? 'Enter your credentials to access your dashboard'
                       : 'Create an account to start training'}
@@ -2074,7 +2479,21 @@ export const App: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Password</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-medium text-gray-300">Password</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuthModalMode('forgot-password');
+                          setForgotEmail(loginEmail);
+                          setForgotSuccess(false);
+                          setErrorMessage(null);
+                        }}
+                        className="text-xs text-[#B4F82C] hover:underline font-semibold"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
                     <div className="relative">
                       <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
                       <input 
@@ -2102,11 +2521,72 @@ export const App: React.FC = () => {
                   <button 
                     type="button" 
                     onClick={() => { setAuthModalMode('register'); setErrorMessage(null); }}
-                    className="text-orange-primary hover:underline font-semibold"
+                    className="text-[#B4F82C] hover:underline font-semibold"
                   >
                     Create Member Account
                   </button>
                 </div>
+              </div>
+            ) : authModalMode === 'forgot-password' ? (
+              /* VIEW 4: FORGOT PASSWORD FORM */
+              <div className="space-y-4">
+                {forgotSuccess ? (
+                  <div className="p-4 rounded-xl bg-green-950/60 border border-green-800 text-green-300 text-xs space-y-3">
+                    <p>
+                      Password reset instructions have been dispatched to <strong>{forgotEmail}</strong>. Please check your inbox or spam folder.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthModalMode('login');
+                        setForgotSuccess(false);
+                        setErrorMessage(null);
+                      }}
+                      className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs"
+                    >
+                      Return to Sign In
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">Registered Gmail Address</label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                        <input
+                          type="email"
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          required
+                          placeholder="yourname@gmail.com"
+                          className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isForgotSubmitting}
+                      className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
+                    >
+                      {isForgotSubmitting ? 'Sending Reset Link...' : 'Send Password Reset Link'}
+                    </button>
+
+                    <div className="mt-4 pt-4 border-t border-charcoal-800 text-center text-xs text-gray-400">
+                      Remember your password?{' '}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuthModalMode('login');
+                          setErrorMessage(null);
+                        }}
+                        className="text-[#B4F82C] hover:underline font-semibold"
+                      >
+                        Sign In
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             ) : (
               /* VIEW 3: REGISTRATION FORM */
@@ -2240,7 +2720,7 @@ export const App: React.FC = () => {
                   {editingPlan ? 'Edit Membership Plan' : 'Create New Membership Plan'}
                 </h3>
                 <p className="text-xs text-gray-400">
-                  Business Rule 1: Admin defines tiers, pricing (ETB), and plan photo.
+                  Admin defines tiers, pricing (ETB), and plan photo.
                 </p>
               </div>
             </div>
@@ -2788,7 +3268,7 @@ export const App: React.FC = () => {
               <div>
                 <h3 className="text-lg font-bold text-white">Record Offline Payment</h3>
                 <p className="text-xs text-gray-400">
-                  Business Rule 4: Reception & Admin record Cash & Bank Transfer with audit logs.
+                  Reception & Admin record Cash & Bank Transfer with audit logs.
                 </p>
               </div>
             </div>

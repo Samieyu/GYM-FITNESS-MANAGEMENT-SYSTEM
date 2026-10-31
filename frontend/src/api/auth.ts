@@ -97,6 +97,17 @@ export const resendVerificationApi = async (email: string) => {
   return json;
 };
 
+export const requestPasswordResetApi = async (email: string) => {
+  const res = await fetch(`${API_BASE}/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || 'Failed to request password reset');
+  return json;
+};
+
 export const resetPasswordApi = async (token: string, newPassword: string) => {
   const res = await fetch(`${API_BASE}/reset-password`, {
     method: 'POST',
