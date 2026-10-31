@@ -605,7 +605,7 @@ export const App: React.FC = () => {
       setErrorMessage(null);
       const res = await triggerManualExpiryCheckApi();
       setSuccessMessage(
-        `Daily expiry check completed (Rule 5 & 6): ${res.expiredMemberships ?? 0} memberships expired, ${res.reminders7dSent ?? 0} 7-day reminders sent, ${res.reminders1dSent ?? 0} 1-day reminders sent.`
+        `Daily expiry check completed: ${res.expiredMemberships ?? 0} memberships expired, ${res.reminders7dSent ?? 0} 7-day reminders sent, ${res.reminders1dSent ?? 0} 1-day reminders sent.`
       );
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to run expiration check');
@@ -1160,7 +1160,7 @@ export const App: React.FC = () => {
                     </div>
                     <h3 className="text-lg font-bold text-white">Workout Plan Builder</h3>
                     <p className="text-xs text-gray-400 mt-1">
-                      Review AI-generated draft plans (Rule 11) or build custom athlete routines.
+                      Review AI-generated draft plans or build custom athlete routines.
                     </p>
                   </div>
                   <button 

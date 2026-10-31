@@ -180,7 +180,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Front Desk QR Scanner & Check-In
               <span className="px-2 py-0.5 rounded-full bg-green-950 text-green-400 text-[10px] font-bold border border-green-800 uppercase">
-                Rules 7, 8, 9 Live
+                Entrance Scanner
               </span>
             </h3>
             <p className="text-xs text-gray-400">
@@ -287,7 +287,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
             {/* Quick Helper Tips */}
             <div className="mt-4 pt-3 border-t border-charcoal-800 text-[11px] text-gray-400">
               <span className="text-gray-300 font-semibold block mb-1">Supported Scan Formats:</span>
-              <span>• HMAC-SHA256 60s Token (Rule 7)</span><br />
+              <span>• 60s Rotating Dynamic Token</span><br />
               <span>• Registered Member UUID</span>
             </div>
           </div>
@@ -383,11 +383,11 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
             {lastScanResult.status === 'denied' && (
               <div className="mt-3 p-3 rounded-xl bg-charcoal-950 border border-charcoal-800 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-red-400 block">Denial Reason (Rule 8 / 9)</span>
+                  <span className="text-[10px] uppercase font-bold text-red-400 block">Denial Reason</span>
                   <span className="text-gray-200 font-medium">{lastScanResult.denialReason}</span>
                   {lastScanResult.minutesSinceLastCheckin !== undefined && (
                     <span className="text-[11px] text-gray-400 block mt-0.5">
-                      Last check-in was {lastScanResult.minutesSinceLastCheckin} minutes ago (2-hour rule).
+                      Last check-in was {lastScanResult.minutesSinceLastCheckin} minutes ago (Anti-passback cooldown).
                     </span>
                   )}
                 </div>

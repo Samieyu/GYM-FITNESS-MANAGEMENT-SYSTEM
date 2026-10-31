@@ -111,8 +111,8 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 4. Membership Plans & Billing (Member, Trainer, Admin, NOT Reception) */}
-          {role !== 'reception' && (
+          {/* 4. Membership Plans (Admin & Trainer only - Not shown in paid member sidebar) */}
+          {(role === 'admin' || role === 'trainer') && (
             <button
               onClick={() => onSelectTab('plans')}
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${

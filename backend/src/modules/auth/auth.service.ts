@@ -44,7 +44,7 @@ export interface AuthResponse {
 }
 
 export class AuthService {
-  async registerMember(input: RegisterMemberInput): Promise<{ message: string; userId: string }> {
+  async registerMember(input: RegisterMemberInput): Promise<any> {
     const existing = await authRepository.findUserByEmail(input.email);
     if (existing) {
       throw new ConflictError('An account with this email already exists');
@@ -59,7 +59,7 @@ export class AuthService {
       lastName: input.lastName,
       phone: input.phone,
       photoUrl: input.photoUrl,
-      isVerified: false,
+      isVerified: true,
     });
 
     const memberCode = `MEM-${Date.now().toString().slice(-6)}`;
@@ -70,17 +70,28 @@ export class AuthService {
       emergencyContact: input.emergencyContact,
     });
 
-    // Verification token valid for 24 hours
-    const verificationToken = generateRandomToken(32);
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24);
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
-    await authRepository.saveEmailVerificationToken(user.id, verificationToken, expiresAt);
-    await sendVerificationEmail(user.email, user.first_name, verificationToken);
+    const { token: refreshToken, hash: refreshHash, expiresAt: refExpiresAt } = generateRefreshToken(7);
+    await authRepository.saveRefreshToken(user.id, refreshHash, refExpiresAt);
 
     return {
-      message: 'Registration successful. Please verify your email before logging in.',
+      message: 'Registration successful. Welcome to Titan Fitness!',
       userId: user.id,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        photoUrl: user.photo_url,
+      },
     };
   }
 
@@ -138,9 +149,8 @@ export class AuthService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
-    if (!user.is_verified) {
-      throw new ForbiddenError('Email not verified. Please verify your email before logging in.');
-    }
+// Email verification bypassed during sign in
+
 
     if (!user.is_active) {
       throw new ForbiddenError('Your account has been deactivated. Please contact management.');

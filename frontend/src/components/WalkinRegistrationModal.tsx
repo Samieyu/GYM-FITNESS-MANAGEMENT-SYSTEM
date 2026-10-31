@@ -159,7 +159,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Walk-In Member Registration
               <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-orange-primary text-[10px] font-bold border border-orange-primary/30 uppercase">
-                Rule 10
+                Member Registration
               </span>
             </h3>
             <p className="text-xs text-gray-400">

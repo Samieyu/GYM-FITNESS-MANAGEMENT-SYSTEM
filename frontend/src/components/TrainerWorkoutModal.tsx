@@ -103,7 +103,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
     setSuccessMessage(null);
     try {
       const approved = await approveWorkoutPlanApi(planId);
-      setSuccessMessage(`Routine "${approved.title}" successfully approved and activated for the member (Rule 11)!`);
+      setSuccessMessage(`Routine "${approved.title}" successfully approved and activated for the member !`);
       await loadData();
     } catch (err: any) {
       setErrorMessage(err.message || 'Approval failed');
@@ -189,7 +189,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Trainer Workout Workspace & Review Gate
               <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-orange-primary text-[10px] font-bold border border-orange-primary/30 uppercase">
-                Rule 11 Approval
+                Coach Approval
               </span>
             </h3>
             <p className="text-xs text-gray-400">Coach: <strong className="text-gray-200">{trainerName}</strong></p>
@@ -237,7 +237,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
           </div>
         )}
 
-        {/* TAB 1: PENDING DRAFTS QUEUE (Business Rule 11 Approval Gate) */}
+        {/* TAB 1: PENDING DRAFTS QUEUE (Business Coach Approval Gate) */}
         {activeTab === 'pending' && (
           <div className="space-y-4">
             <div className="p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 leading-relaxed">

@@ -95,7 +95,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
 
       const result = await requestAiWorkoutPlanApi(payload);
       setSuccessMessage(
-        `AI Draft Routine "${result.title}" created successfully! Pursuant to Business Rule 11, it is in DRAFT status awaiting review and approval from your coach.`
+        `AI Draft Routine "${result.title}" created successfully! It is currently in draft status awaiting review and approval from your coach.`
       );
       await loadData();
       setActiveTab('history');
@@ -139,7 +139,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Workout Routine & AI Coach
               <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-orange-primary text-[10px] font-bold border border-orange-primary/30 uppercase">
-                Rules 10 & 11
+                AI Coaching
               </span>
             </h3>
             <p className="text-xs text-gray-400">Athlete: <strong className="text-gray-200">{memberName}</strong></p>
@@ -168,7 +168,7 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" /> Request AI Routine (Rule 10)
+            <Sparkles className="w-3.5 h-3.5" /> Request AI Routine
           </button>
           <button
             type="button"
@@ -318,17 +318,17 @@ export const MemberWorkoutModal: React.FC<MemberWorkoutModalProps> = ({
           </div>
         )}
 
-        {/* TAB 2: REQUEST AI WORKOUT PLAN (Business Rules 10 & 11) */}
+        {/* TAB 2: REQUEST AI WORKOUT PLAN (Business AI Coaching) */}
         {activeTab === 'request' && (
           <form onSubmit={handleRequestAiPlan} className="space-y-4">
             <div className="p-3.5 rounded-xl bg-orange-primary/10 border border-orange-primary/30 text-xs text-orange-200 leading-relaxed">
-              <strong>Business Rules 10 & 11:</strong> Select your goals and physical preferences. The Gemini AI engine will generate a comprehensive draft routine. Your certified coach will review and approve it before activation.
+              <strong>Business AI Coaching:</strong> Select your goals and physical preferences. The Gemini AI engine will generate a comprehensive draft routine. Your certified coach will review and approve it before activation.
             </div>
 
             {/* Goal Selection */}
             <div>
               <label className="text-xs font-semibold text-gray-300 block mb-1.5">
-                Primary Fitness Goal (Rule 10)
+                Primary Fitness Goal
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[

@@ -121,7 +121,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
           </div>
           <div>
             <h3 className="text-xl font-bold text-white">Schedule Group Fitness Class</h3>
-            <p className="text-xs text-gray-400">Rule 12: Capacity limit and automated waitlist queue</p>
+            <p className="text-xs text-gray-400">Capacity limit and automated waitlist queue</p>
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Max Capacity (Rule 12) *</label>
+              <label className="block text-gray-300 font-semibold mb-1">Max Capacity *</label>
               <div className="relative">
                 <Users className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
                 <input
