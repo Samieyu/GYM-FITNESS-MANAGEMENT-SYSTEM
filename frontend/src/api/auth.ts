@@ -57,6 +57,12 @@ export const registerMemberApi = async (data: {
   });
   const json = await res.json();
   if (!res.ok) throw new Error(json.error?.message || 'Registration failed');
+  if (json.data?.accessToken && json.data?.user) {
+    setStoredAuth(
+      { accessToken: json.data.accessToken, refreshToken: json.data.refreshToken || '' },
+      json.data.user
+    );
+  }
   return json;
 };
 
