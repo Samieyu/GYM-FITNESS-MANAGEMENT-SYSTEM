@@ -823,18 +823,37 @@ export const App: React.FC = () => {
       {currentUser && (
         <SidebarNavigation
           currentUser={currentUser}
+          isPaidMember={Boolean(myMembership && myMembership.status === 'active')}
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           onOpenWorkout={() => {
-            if (currentUser.role === 'member') setIsMemberWorkoutModalOpen(true);
-            else setIsTrainerWorkoutModalOpen(true);
+            if (currentUser.role === 'member') {
+              if (myMembership && myMembership.status === 'active') {
+                setIsMemberWorkoutModalOpen(true);
+              }
+            } else {
+              setIsTrainerWorkoutModalOpen(true);
+            }
           }}
           onOpenProgress={() => {
-            if (currentUser.role === 'member') setIsMemberProgressModalOpen(true);
-            else setIsTrainerProgressModalOpen(true);
+            if (currentUser.role === 'member') {
+              if (myMembership && myMembership.status === 'active') {
+                setIsMemberProgressModalOpen(true);
+              }
+            } else {
+              setIsTrainerProgressModalOpen(true);
+            }
           }}
-          onOpenAiCoach={() => setIsAiModalOpen(true)}
-          onOpenQrPass={() => setIsMemberQrModalOpen(true)}
+          onOpenAiCoach={() => {
+            if (currentUser.role !== 'member' || (myMembership && myMembership.status === 'active')) {
+              setIsAiModalOpen(true);
+            }
+          }}
+          onOpenQrPass={() => {
+            if (currentUser.role === 'member' && myMembership && myMembership.status === 'active') {
+              setIsMemberQrModalOpen(true);
+            }
+          }}
           onOpenScanner={() => setIsReceptionScannerOpen(true)}
           onOpenWalkin={() => setIsWalkinModalOpen(true)}
           onOpenEquipment={() => setIsEquipmentModalOpen(true)}
@@ -868,7 +887,7 @@ export const App: React.FC = () => {
 
           {currentUser ? (
             <div className="flex items-center gap-3">
-              {currentUser.role !== 'reception' && (
+              {currentUser.role !== 'reception' && (currentUser.role !== 'member' || Boolean(myMembership && myMembership.status === 'active')) && (
                 <button
                   type="button"
                   onClick={() => setIsAiModalOpen(true)}
@@ -1001,8 +1020,8 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* MEMBER WORKSPACE: ACTIVATION CHECK */}
-            {currentUser.role === 'member' && activeTab === 'home' && (!myMembership || myMembership.status !== 'active') && (
+            {/* UNPAID MEMBER WORKSPACE: ONLY MEMBERSHIP PLANS & PRICING SCREEN */}
+            {currentUser.role === 'member' && (!myMembership || myMembership.status !== 'active') ? (
               <div className="p-8 sm:p-12 rounded-3xl bg-[#0E1116] border border-slate-800 text-center max-w-4xl mx-auto space-y-8 shadow-2xl animate-fadeIn">
                 <div className="w-16 h-16 rounded-2xl bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center justify-center mx-auto shadow-lg shadow-[#B4F82C]/10">
                   <CreditCard className="w-8 h-8" />
@@ -1079,7 +1098,8 @@ export const App: React.FC = () => {
                   </button>
                 </div>
               </div>
-            )}
+            ) : (
+              <>
 
             {/* MEMBER WORKSPACE: FULL DASHBOARD (When paid & active) */}
             {currentUser.role === 'member' && activeTab === 'home' && myMembership && myMembership.status === 'active' && (
@@ -1971,6 +1991,8 @@ export const App: React.FC = () => {
                   ))}
                 </div>
               </div>
+            )}
+              </>
             )}
 
           </div>

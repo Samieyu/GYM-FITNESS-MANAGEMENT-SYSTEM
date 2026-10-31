@@ -16,6 +16,7 @@ import { User } from '../api/auth';
 
 interface SidebarNavigationProps {
   currentUser: User | null;
+  isPaidMember?: boolean;
   activeTab: 'home' | 'plans' | 'classes';
   onSelectTab: (tab: 'home' | 'plans' | 'classes') => void;
   onOpenWorkout: () => void;
@@ -31,6 +32,7 @@ interface SidebarNavigationProps {
 
 export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   currentUser,
+  isPaidMember = false,
   activeTab,
   onSelectTab,
   onOpenWorkout,
@@ -46,6 +48,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   if (!currentUser) return null;
 
   const role = currentUser.role;
+  const isPaid = role === 'member' ? Boolean(isPaidMember) : true;
 
   // AI assistant button tooltip & styling based on persona
   const aiTooltip =
@@ -60,7 +63,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
       {/* TOP BRAND LOGO */}
       <div className="flex flex-col items-center gap-6">
         <button
-          onClick={() => onSelectTab('home')}
+          onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
           className="w-11 h-11 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-[#B4F82C] shadow-lg shadow-[#B4F82C]/10 hover:scale-105 transition"
           title="Titan Fitness Management System"
         >
@@ -72,21 +75,23 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 
         {/* PRIMARY VERTICAL NAV ICONS */}
         <nav className="flex flex-col items-center gap-3">
-          {/* 1. Home / Dashboard (All roles) */}
-          <button
-            onClick={() => onSelectTab('home')}
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
-              activeTab === 'home'
-                ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
-            }`}
-            title="Dashboard • መነሻ ገጽ"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-          </button>
+          {/* 1. Athlete Dashboard (Staff and Paid members only; HIDDEN for unpaid members) */}
+          {(role !== 'member' || isPaid) && (
+            <button
+              onClick={() => onSelectTab('home')}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
+                activeTab === 'home'
+                  ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+              title="Dashboard • መነሻ ገጽ"
+            >
+              <LayoutDashboard className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* 2. Workout Routines (Members and Trainers only, NOT Reception) */}
-          {(role === 'member' || role === 'trainer') && (
+          {/* 2. Workout Routines (Paid members and Trainers only; HIDDEN for unpaid members) */}
+          {((role === 'member' && isPaid) || role === 'trainer') && (
             <button
               onClick={onOpenWorkout}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
@@ -96,8 +101,8 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 3. Group Fitness Classes (Member, Trainer, Admin, NOT Reception) */}
-          {role !== 'reception' && (
+          {/* 3. Group Fitness Classes (Paid Member, Trainer, Admin only; HIDDEN for unpaid members) */}
+          {role !== 'reception' && (role !== 'member' || isPaid) && (
             <button
               onClick={() => onSelectTab('classes')}
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
@@ -111,23 +116,23 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 4. Membership Plans (Admin & Trainer only - Not shown in paid member sidebar) */}
-          {(role === 'admin' || role === 'trainer') && (
+          {/* 4. Membership Plans & Pricing (Admin, Trainer, and Unpaid Members; HIDDEN for paid members) */}
+          {(role === 'admin' || role === 'trainer' || (role === 'member' && !isPaid)) && (
             <button
               onClick={() => onSelectTab('plans')}
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition ${
-                activeTab === 'plans'
+                activeTab === 'plans' || (role === 'member' && !isPaid)
                   ? 'bg-[#B4F82C] text-slate-950 font-black shadow-md shadow-[#B4F82C]/20 scale-105'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900'
               }`}
-              title={role === 'admin' ? 'Manage Membership Plans • የእቅድ አስተዳደር' : 'Membership Plans • የደንበኝነት እቅዶች'}
+              title={role === 'admin' ? 'Manage Membership Plans • የእቅድ አስተዳደር' : 'Membership Plans & Pricing • የደንበኝነት እቅዶች'}
             >
               <CreditCard className="w-5 h-5" />
             </button>
           )}
 
-          {/* 5. Athlete Body Progress (Member & Trainer only, NOT Reception) */}
-          {(role === 'member' || role === 'trainer') && (
+          {/* 5. Athlete Body Progress (Paid Member & Trainer only; HIDDEN for unpaid members) */}
+          {((role === 'member' && isPaid) || role === 'trainer') && (
             <button
               onClick={onOpenProgress}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-900 transition"
@@ -137,8 +142,8 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 6. Dynamic QR Pass (Member only) */}
-          {role === 'member' && (
+          {/* 6. Dynamic QR Pass (Paid Member only; HIDDEN for unpaid members) */}
+          {role === 'member' && isPaid && (
             <button
               onClick={onOpenQrPass}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
@@ -192,8 +197,8 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             </button>
           )}
 
-          {/* 11. Single Merged AI Assistant (Tailored per role: Member, Trainer, Admin; REMOVED from reception) */}
-          {role !== 'reception' && (
+          {/* 11. Single Merged AI Assistant (Paid Member, Trainer, Admin only; HIDDEN for unpaid members) */}
+          {role !== 'reception' && (role !== 'member' || isPaid) && (
             <button
               onClick={onOpenAiCoach}
               className="w-11 h-11 rounded-2xl flex items-center justify-center text-[#B4F82C] hover:text-white hover:bg-slate-900 transition group"
