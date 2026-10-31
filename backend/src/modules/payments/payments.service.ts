@@ -106,7 +106,9 @@ export class PaymentsService {
             last_name: memberUser.lastName,
             tx_ref: txRef,
             callback_url: `${config.corsOrigin.replace(':5173', ':5000')}/api/v1/payments/chapa/webhook`,
-            return_url: returnUrl || `${config.corsOrigin}/?tx_ref=${txRef}`,
+            return_url: returnUrl 
+              ? (returnUrl.includes('tx_ref=') ? returnUrl : `${returnUrl}${returnUrl.includes('?') ? '&' : '?'}tx_ref=${txRef}`)
+              : `${config.corsOrigin}/?tx_ref=${txRef}&payment=success`,
             customization: {
               title: 'Titan Fitness',
               description: `Payment for ${plan.name}`,
@@ -543,7 +545,23 @@ export class PaymentsService {
    * Fetch active membership for member dashboard
    */
   async getMemberActiveMembership(memberId: string): Promise<any | null> {
-    const membership = await this.repo.findActiveMembershipByMemberId(memberId);
+    let membership = await this.repo.findActiveMembershipByMemberId(memberId);
+
+    // Auto-verify latest pending payment with Chapa if no active membership is found
+    if (!membership) {
+      try {
+        const pendingPayment = await this.repo.findLatestPendingPaymentByMemberId(memberId);
+        if (pendingPayment && pendingPayment.payment_reference) {
+          const verifyResult = await this.verifyChapaTransaction(pendingPayment.payment_reference);
+          if (verifyResult.isCompleted) {
+            membership = await this.repo.findActiveMembershipByMemberId(memberId);
+          }
+        }
+      } catch (checkErr) {
+        // Silently continue if pending check encounters error
+      }
+    }
+
     if (!membership) return null;
 
     // Calculate days remaining

@@ -209,6 +209,27 @@ export class PaymentsRepository {
     return res.rows[0] ? this.mapPayment(res.rows[0]) : null;
   }
 
+  async findLatestPendingPaymentByMemberId(memberId: string): Promise<PaymentRecord | null> {
+    const query = `
+      SELECT 
+        p.*,
+        u.email as member_email,
+        u.first_name as member_first_name,
+        u.last_name as member_last_name,
+        mp.name as plan_name,
+        m.plan_id
+      FROM payments p
+      JOIN users u ON p.member_id = u.id
+      LEFT JOIN memberships m ON p.membership_id = m.id
+      LEFT JOIN membership_plans mp ON m.plan_id = mp.id
+      WHERE p.member_id = $1 AND p.status = 'pending'
+      ORDER BY p.created_at DESC
+      LIMIT 1;
+    `;
+    const res = await this.db.query(query, [memberId]);
+    return res.rows[0] ? this.mapPayment(res.rows[0]) : null;
+  }
+
   async findPaymentById(id: string, client?: PoolClient): Promise<PaymentRecord | null> {
     const runner = client || this.db;
     const query = `
@@ -335,7 +356,8 @@ export class PaymentsRepository {
         entity_id,
         old_values,
         new_values,
-        ip_address
+        ip_address
+
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7);
     `;
@@ -346,7 +368,8 @@ export class PaymentsRepository {
       audit.entityId || null,
       audit.oldValues ? JSON.stringify(audit.oldValues) : null,
       audit.newValues ? JSON.stringify(audit.newValues) : null,
-      audit.ipAddress || null,
+      audit.ipAddress || null,
+
     ]);
   }
 

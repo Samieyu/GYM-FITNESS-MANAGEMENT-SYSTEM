@@ -243,9 +243,13 @@ export const App: React.FC = () => {
       }
     }
 
-    // Check for ?tx_ref= or ?trx_ref= in URL (Chapa hosted gateway return)
-    const txRefParam = params.get('tx_ref') || params.get('trx_ref');
+    // Check for ?tx_ref= or ?trx_ref= in URL (Chapa hosted gateway return) or cached pending tx
+    const txRefParam =
+      params.get('tx_ref') ||
+      params.get('trx_ref') ||
+      localStorage.getItem('titan_pending_tx_ref');
     if (txRefParam) {
+      localStorage.removeItem('titan_pending_tx_ref');
       handleAutoVerifyChapaTx(txRefParam);
     }
   }, []);
@@ -334,6 +338,7 @@ export const App: React.FC = () => {
       const res = await verifyChapaTransactionApi(txRef);
       if (res.status === 'success' || res.isCompleted) {
         setSuccessMessage('Payment successfully confirmed with Chapa! Your membership is now active.');
+        setActiveTab('home');
         await loadMemberMembershipAndPayments();
         setPaymentSuccessDetails({
           txRef,
@@ -443,6 +448,9 @@ export const App: React.FC = () => {
       ]);
       setMyMembership(mem);
       setMyPayments(history);
+      if (mem && mem.status === 'active') {
+        setActiveTab('home');
+      }
     } catch {
       // Silently ignore if unauthenticated
     }
@@ -482,6 +490,9 @@ export const App: React.FC = () => {
     try {
       const returnUrl = `${window.location.origin}/?payment=success`;
       const res = await initializeChapaApi(plan.id, returnUrl);
+      if (res.txRef) {
+        localStorage.setItem('titan_pending_tx_ref', res.txRef);
+      }
       if (res.checkoutUrl) {
         window.location.href = res.checkoutUrl;
         return;
@@ -3234,6 +3245,7 @@ export const App: React.FC = () => {
                     setPaymentStep('form');
                     setPaymentError(null);
                     setPaymentSuccessDetails(null);
+                    setActiveTab('home');
                     await loadMemberMembershipAndPayments();
                   }}
                   className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-sm shadow-lg shadow-orange-primary/30 transition flex items-center justify-center gap-2"
