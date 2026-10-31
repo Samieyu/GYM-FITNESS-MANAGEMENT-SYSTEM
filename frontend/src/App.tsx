@@ -94,7 +94,7 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
   const [authModalMode, setAuthModalMode] = useState<
-    'login' | 'register' | 'verification-sent' | 'set-password' | 'forgot-password' | null
+    'login' | 'register' | 'set-password' | 'forgot-password' | null
   >(null);
   const [resetPasswordToken, setResetPasswordToken] = useState<string | null>(null);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -746,7 +746,7 @@ export const App: React.FC = () => {
     setSuccessMessage(null);
 
     try {
-      await registerMemberApi({
+      const res = await registerMemberApi({
         firstName: regFirstName,
         lastName: regLastName,
         email: cleanEmail,
@@ -755,10 +755,40 @@ export const App: React.FC = () => {
         fitnessGoals: regGoals,
       });
 
-      setRegisteredEmail(cleanEmail);
-      setLoginEmail(cleanEmail);
-      setLoginPassword('');
-      setAuthModalMode('verification-sent');
+      // Immediately log in new user without any email verification screen
+      const token = res.data?.accessToken;
+      const rToken = res.data?.refreshToken;
+      const user = res.data?.user;
+
+      if (token && user) {
+        setStoredAuth({ accessToken: token, refreshToken: rToken || '' }, user);
+        setCurrentUser(user);
+        setAuthModalMode(null);
+        setActiveTab('home');
+        setRegFirstName('');
+        setRegLastName('');
+        setRegEmail('');
+        setRegPassword('');
+        setRegPhone('');
+        await loadMemberMembershipAndPayments();
+      } else {
+        const loginRes = await loginApi(cleanEmail, regPassword);
+        if (loginRes.data?.accessToken && loginRes.data?.user) {
+          setStoredAuth(
+            { accessToken: loginRes.data.accessToken, refreshToken: loginRes.data.refreshToken },
+            loginRes.data.user
+          );
+          setCurrentUser(loginRes.data.user);
+          setAuthModalMode(null);
+          setActiveTab('home');
+          setRegFirstName('');
+          setRegLastName('');
+          setRegEmail('');
+          setRegPassword('');
+          setRegPhone('');
+          await loadMemberMembershipAndPayments();
+        }
+      }
     } catch (err: any) {
       setErrorMessage(err.message || 'Registration failed.');
     } finally {
@@ -2278,8 +2308,7 @@ export const App: React.FC = () => {
             </button>
 
             {/* Modal Header for Login & Register */}
-            {authModalMode !== 'verification-sent' && (
-              <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-3 mb-5">
                 <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
                   {authModalMode === 'set-password' ? (
                     <ShieldCheck className="w-5 h-5" />
@@ -2310,7 +2339,6 @@ export const App: React.FC = () => {
                   </p>
                 </div>
               </div>
-            )}
 
             {/* In-Modal Alert Banners (Always visible inside modal) */}
             {errorMessage && (
@@ -2345,61 +2373,7 @@ export const App: React.FC = () => {
               </div>
             )}
 
-            {/* VIEW 1: VERIFICATION EMAIL SENT */}
-            {authModalMode === 'verification-sent' ? (
-              <div className="flex flex-col items-center text-center py-2">
-                <div className="w-16 h-16 rounded-full bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4 shadow-lg shadow-orange-primary/10">
-                  <Mail className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-bold text-white">Verification Email Sent!</h3>
-                <p className="text-sm text-gray-300 mt-2 max-w-sm">
-                  We sent an activation link to <span className="font-semibold text-white">{registeredEmail}</span>.
-                </p>
-                <p className="text-xs text-gray-400 mt-2 leading-relaxed">
-                  Please check your inbox and click the verification link to activate your account before signing in.
-                </p>
-                
-                <div className="mt-5 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-700 w-full text-left">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-orange-primary mb-1">
-                    <Sparkles className="w-3.5 h-3.5" /> Testing Locally?
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    Verification emails are captured by Mailpit. Open your local inbox at{' '}
-                    <a 
-                      href="http://localhost:8025" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-orange-primary hover:underline font-mono"
-                    >
-                      http://localhost:8025
-                    </a>
-                  </p>
-                </div>
-
-                <div className="w-full space-y-2.5 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginEmail(registeredEmail);
-                      setLoginPassword('');
-                      setAuthModalMode('login');
-                      setErrorMessage(null);
-                    }}
-                    className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition"
-                  >
-                    Proceed to Sign In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleResendVerification}
-                    disabled={isSubmitting}
-                    className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 border border-charcoal-700 text-xs font-semibold transition disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Resending...' : 'Resend Verification Email'}
-                  </button>
-                </div>
-              </div>
-            ) : authModalMode === 'set-password' ? (
+            {authModalMode === 'set-password' ? (
               /* VIEW: SET / RESET PASSWORD FORM */
               <div>
                 <form onSubmit={handleSetPasswordSubmit} className="space-y-4">
