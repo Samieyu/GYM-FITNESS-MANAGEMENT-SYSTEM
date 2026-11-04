@@ -25,18 +25,18 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **PUB-PAGE-14**: Set Password for Invited Members (`/set-password?token=...`) — First-time onboarding card for reception-registered athletes.
 
 ### 1.2 Member / Athlete Pages (Role: `member`)
-- [ ] **MEM-PAGE-01**: Athlete Command Dashboard — Personalized greeting, streak badge, quick check-in QR trigger, next workout card.
-- [ ] **MEM-PAGE-02**: Membership Status Card — Circular progress ring displaying active plan days remaining, validity dates in Ethiopian Calendar, and renewal action.
-- [ ] **MEM-PAGE-03**: Next Up / Upcoming Class Card — Live countdown to next booked class, instructor avatar, location room, and cancel/calendar actions.
-- [ ] **MEM-PAGE-04**: Body Transformation Quick Stats — Weight, BMI, body fat percentage, and goal target progress bars with delta chips (+/- kg).
-- [ ] **MEM-PAGE-05**: Check-In Pass (`/member/qr`) — Full-screen mobile-optimized 60-second dynamic TOTP QR pass with pulsating countdown and anti-passback indicator.
-- [ ] **MEM-PAGE-06**: Workout Routines View — Day-by-day split tabs, exercise cards with target sets/reps/tempo, video/gif cue links, and one-tap "Mark Set Complete".
-- [ ] **MEM-PAGE-07**: Transformation & Progress Logs View — Historical weight/measurement chart with range filters (4 Weeks, 3 Months, All Time).
-- [ ] **MEM-PAGE-08**: Class Booking & Schedule View — Interactive week date strip, category filter chips (Cardio, Strength, Recovery), class cards with waitlist status.
-- [ ] **MEM-PAGE-09**: Billing & Payment History View — Active subscription overview, past transactions list with Chapa/Cash receipts and ETB breakdowns.
-- [ ] **MEM-PAGE-10**: SWEATBOX AI Fitness Coach View — Chat interface with Ethiopian nutrition awareness, form cues, and workout formulation.
-- [ ] **MEM-PAGE-11**: Athlete Profile & Settings — Edit avatar with crop preview, personal fitness goals, phone, emergency contact, and notifications.
-- [ ] **MEM-PAGE-12**: Unpaid Member Subscription Gate Screen — Focused Plan Selection view shown exclusively to newly signed-up or expired members before full feature unlock.
+- [x] **MEM-PAGE-01**: Athlete Command Dashboard — Personalized greeting, streak badge, quick check-in QR trigger, next workout card.
+- [x] **MEM-PAGE-02**: Membership Status Card — Circular progress ring displaying active plan days remaining, validity dates in Ethiopian Calendar, and renewal action.
+- [x] **MEM-PAGE-03**: Next Up / Upcoming Class Card — Live countdown to next booked class, instructor avatar, location room, and cancel/calendar actions.
+- [x] **MEM-PAGE-04**: Body Transformation Quick Stats — Weight, BMI, body fat percentage, and goal target progress bars with delta chips (+/- kg).
+- [x] **MEM-PAGE-05**: Check-In Pass (`/member/qr`) — Full-screen mobile-optimized 60-second dynamic TOTP QR pass with pulsating countdown and anti-passback indicator.
+- [x] **MEM-PAGE-06**: Workout Routines View — Day-by-day split tabs, exercise cards with target sets/reps/tempo, video/gif cue links, and one-tap "Mark Set Complete".
+- [x] **MEM-PAGE-07**: Transformation & Progress Logs View — Historical weight/measurement chart with range filters (4 Weeks, 3 Months, All Time).
+- [x] **MEM-PAGE-08**: Class Booking & Schedule View — Interactive week date strip, category filter chips (Cardio, Strength, Recovery), class cards with waitlist status.
+- [x] **MEM-PAGE-09**: Billing & Payment History View — Active subscription overview, past transactions list with Chapa/Cash receipts and ETB breakdowns.
+- [x] **MEM-PAGE-10**: SWEATBOX AI Fitness Coach View — Chat interface with Ethiopian nutrition awareness, form cues, and workout formulation.
+- [x] **MEM-PAGE-11**: Athlete Profile & Settings — Edit avatar with crop preview, personal fitness goals, phone, emergency contact, and notifications.
+- [x] **MEM-PAGE-12**: Unpaid Member Subscription Gate Screen — Focused Plan Selection view shown exclusively to newly signed-up or expired members before full feature unlock.
 
 ### 1.3 Front Desk & Reception Pages (Role: `reception`)
 - [ ] **REC-PAGE-01**: Front Desk Operational Dashboard — Shift summary stat cards (Active Check-Ins Today, Peak Hour Volume, Pending Registrations).
@@ -77,14 +77,14 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [ ] **POP-AUTH-05**: Logout Confirmation Dialog — Destructive warning dialog with safe "Cancel" and bold "Log Out" action.
 
 ### 2.2 Member Popups & Bottom Sheets
-- [ ] **POP-MEM-01**: Member 60s Dynamic QR Pass Modal — High-contrast dark modal with animated circular timer ring and anti-passback security notice.
-- [ ] **POP-MEM-02**: Log Progress & Body Transformation Sheet — Mobile bottom sheet for quick input of Weight (kg), Chest, Waist, Bicep measurements with instant delta calculation.
-- [ ] **POP-MEM-03**: Workout Routine Detail Modal — Exercise breakdown modal with muscle group tags, movement instructions, and tempo guides.
-- [ ] **POP-MEM-04**: Class Booking Confirmation Dialog — Clear modal detailing class name, time, trainer, room location, and cancellation policy.
-- [ ] **POP-MEM-05**: Cancel Class Booking Dialog — Safe destructive dialog with spot release confirmation.
-- [ ] **POP-MEM-06**: Join Waitlist Confirmation Sheet — Notification of queue position and auto-booking policy if a spot frees up.
-- [ ] **POP-MEM-07**: SWEATBOX AI Fitness Coach Sheet — Mobile sliding chat drawer with Ethiopian nutrition suggestions and pre-populated query chips.
-- [ ] **POP-MEM-08**: Renew Membership Plan Modal — Tier review, duration summary, and instant checkout redirect to Chapa.
+- [x] **POP-MEM-01**: Member 60s Dynamic QR Pass Modal — High-contrast dark modal with animated circular timer ring and anti-passback security notice.
+- [x] **POP-MEM-02**: Log Progress & Body Transformation Sheet — Mobile bottom sheet for quick input of Weight (kg), Chest, Waist, Bicep measurements with instant delta calculation.
+- [x] **POP-MEM-03**: Workout Routine Detail Modal — Exercise breakdown modal with muscle group tags, movement instructions, and tempo guides.
+- [x] **POP-MEM-04**: Class Booking Confirmation Dialog — Clear modal detailing class name, time, trainer, room location, and cancellation policy.
+- [x] **POP-MEM-05**: Cancel Class Booking Dialog — Safe destructive dialog with spot release confirmation.
+- [x] **POP-MEM-06**: Join Waitlist Confirmation Sheet — Notification of queue position and auto-booking policy if a spot frees up.
+- [x] **POP-MEM-07**: SWEATBOX AI Fitness Coach Sheet — Mobile sliding chat drawer with Ethiopian nutrition suggestions and pre-populated query chips.
+- [x] **POP-MEM-08**: Renew Membership Plan Modal — Tier review, duration summary, and instant checkout redirect to Chapa.
 
 ### 2.3 Reception Popups & Sheets
 - [ ] **POP-REC-01**: Camera QR Scanner Modal — Viewfinder overlay with animated scanning beam, camera flip toggle, and manual token lookup bar.
@@ -125,9 +125,9 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [ ] **STATE-LOAD-05**: Button loading spinners with disabled state and fixed dimensions (preventing layout shift).
 
 ### 3.2 Empty States
-- [ ] **STATE-EMPTY-01**: No Active Workout Routine — Athlete prompt to formulate an AI plan or request one from a trainer.
-- [ ] **STATE-EMPTY-02**: No Booked Classes — Clean illustration with a "Browse Classes" action button.
-- [ ] **STATE-EMPTY-03**: No Progress Logs — Prompt with "Log Your First Weigh-In" button.
+- [x] **STATE-EMPTY-01**: No Active Workout Routine — Athlete prompt to formulate an AI plan or request one from a trainer.
+- [x] **STATE-EMPTY-02**: No Booked Classes — Clean illustration with a "Browse Classes" action button.
+- [x] **STATE-EMPTY-03**: No Progress Logs — Prompt with "Log Your First Weigh-In" button.
 - [ ] **STATE-EMPTY-04**: No Equipment Faults — Positive green health status indicator.
 - [ ] **STATE-EMPTY-05**: No Search Results — Informative message suggesting query adjustment.
 

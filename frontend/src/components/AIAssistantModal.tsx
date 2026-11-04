@@ -136,7 +136,6 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     setIsTyping(true);
 
     try {
-      // Pass role context to enhance prompt
       const contextPrefix = isAdmin
         ? `[Admin Facility Context: You are advising gym management]: `
         : isTrainer
@@ -198,20 +197,25 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#0E1116] border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+      <div 
+        className="bg-surface border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto text-text transition-colors"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-modal-title"
+      >
         {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#0B0D10]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-xl text-[#B4F82C]">
+            <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl text-primary shrink-0">
               {isAdmin ? <Building className="w-6 h-6" /> : isTrainer ? <Dumbbell className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 id="ai-modal-title" className="text-xl font-bold text-text flex items-center gap-2">
                 {assistantTitle}
               </h2>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="text-[#B4F82C] font-medium">
+              <div className="flex items-center gap-2 text-xs text-text-muted">
+                <span className="text-primary font-semibold">
                   {formatEthiopianDate(new Date())} E.C. (ዓ.ም)
                 </span>
                 <span>•</span>
@@ -221,31 +225,34 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-2 text-text-muted hover:text-text rounded-lg hover:bg-background transition"
+            aria-label="Close AI assistant"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 px-6 pt-2 border-b border-slate-800 bg-[#0B0D10]/50">
+        <div className="flex items-center gap-2 px-6 pt-2 border-b border-border bg-surface">
           <button
+            type="button"
             onClick={() => setActiveTab('chat')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition ${
               activeTab === 'chat'
-                ? 'border-[#B4F82C] text-[#B4F82C]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-text-muted hover:text-text'
             }`}
           >
             <MessageSquare className="w-4 h-4" />
             {isAdmin ? 'Facility Management Advisory' : isTrainer ? 'Coaching Co-Pilot Chat' : 'Fitness & Nutrition Q&A'}
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab('exercise')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition ${
               activeTab === 'exercise'
-                ? 'border-[#B4F82C] text-[#B4F82C]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-text-muted hover:text-text'
             }`}
           >
             <BookOpen className="w-4 h-4" />
@@ -253,11 +260,12 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           </button>
           {userRole === 'member' && (
             <button
+              type="button"
               onClick={() => setActiveTab('progress')}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition ${
                 activeTab === 'progress'
-                  ? 'border-[#B4F82C] text-[#B4F82C]'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-text-muted hover:text-text'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -267,7 +275,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         </div>
 
         {/* Body Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {/* TAB 1: FITNESS / CONSULTING CHAT */}
           {activeTab === 'chat' && (
             <div className="flex flex-col h-[520px]">
@@ -281,35 +289,35 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                     }`}
                   >
                     {m.sender === 'ai' && (
-                      <div className="w-8 h-8 rounded-full bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-2xl p-4 text-sm whitespace-pre-wrap leading-relaxed ${
+                      className={`max-w-[80%] rounded-2xl p-4 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
                         m.sender === 'user'
-                          ? 'bg-[#B4F82C] text-slate-950 font-medium'
-                          : 'bg-slate-800/80 border border-slate-700/60 text-slate-200'
+                          ? 'bg-primary text-primary-foreground font-medium'
+                          : 'bg-background border border-border text-text'
                       }`}
                     >
                       {m.text}
                       <span
                         className={`block text-[10px] mt-1.5 ${
-                          m.sender === 'user' ? 'text-slate-950/70' : 'text-slate-500'
+                          m.sender === 'user' ? 'text-primary-foreground/75' : 'text-text-muted'
                         }`}
                       >
                         {m.time}
                       </span>
                     </div>
                     {m.sender === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-surface border border-border text-text flex items-center justify-center shrink-0 font-bold text-xs">
                         <UserIcon className="w-4 h-4" />
                       </div>
                     )}
                   </div>
                 ))}
                 {isTyping && (
-                  <div className="flex items-center gap-2 text-xs text-[#B4F82C] italic py-1">
+                  <div className="flex items-center gap-2 text-xs text-primary italic py-1">
                     <Sparkles className="w-3.5 h-3.5 animate-spin" />
                     <span>Analyzing your request with sports science intelligence...</span>
                   </div>
@@ -321,8 +329,9 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 {quickPrompts.map((prompt, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => handleSendMessage(prompt)}
-                    className="shrink-0 text-xs px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-[#B4F82C]/50 hover:text-[#B4F82C] transition"
+                    className="shrink-0 text-xs px-3.5 py-1.5 rounded-full bg-background border border-border text-text-muted hover:border-primary/50 hover:text-primary transition"
                   >
                     💡 {prompt}
                   </button>
@@ -330,19 +339,20 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               </div>
 
               {/* Chat Input */}
-              <div className="mt-2 flex items-center gap-2 pt-2 border-t border-slate-800">
+              <div className="mt-2 flex items-center gap-2 pt-2 border-t border-border">
                 <input
                   type="text"
                   placeholder={isAdmin ? "Ask about gym revenue, member retention, equipment lifecycles..." : isTrainer ? "Ask about workout splits, exercise progressions, recovery..." : "Ask anything about workouts, Ethiopian nutrition, or lifting form..."}
                   value={inputQuery}
                   onChange={(e) => setInputQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1 px-4 py-2.5 bg-slate-800/60 border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#B4F82C]"
+                  className="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-sm text-text placeholder-text-muted focus:outline-none focus:border-primary"
                 />
                 <button
+                  type="button"
                   onClick={() => handleSendMessage()}
                   disabled={!inputQuery.trim() || isTyping}
-                  className="px-4 py-2.5 bg-[#B4F82C] text-slate-950 font-bold rounded-xl hover:bg-[#a3e524] transition disabled:opacity-40 flex items-center gap-1.5 shadow-md shadow-[#B4F82C]/20"
+                  className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:bg-primary-hover transition disabled:opacity-40 flex items-center gap-1.5 shadow-sm active:scale-95"
                 >
                   <Send className="w-4 h-4" />
                   <span>Send</span>
@@ -357,35 +367,37 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
               {/* Exercise Search & Quick Buttons */}
               <div className="flex flex-wrap gap-2 items-center">
                 <div className="relative flex-1 min-w-[240px]">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
                   <input
                     type="text"
                     placeholder="Search exercise (e.g. Bench Press, Deadlift)..."
                     value={searchExercise}
                     onChange={(e) => setSearchExercise(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleFetchExerciseGuide(searchExercise)}
-                    className="w-full pl-9 pr-4 py-2 bg-slate-800/60 border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#B4F82C]"
+                    className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-xl text-sm text-text placeholder-text-muted focus:outline-none focus:border-primary"
                   />
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleFetchExerciseGuide(searchExercise)}
-                  className="px-4 py-2 bg-[#B4F82C] text-slate-950 font-bold text-sm rounded-xl hover:bg-[#a3e524] transition shadow-md shadow-[#B4F82C]/20"
+                  className="px-5 py-2.5 bg-primary text-primary-foreground font-extrabold text-xs rounded-xl hover:bg-primary-hover transition shadow-sm active:scale-95"
                 >
                   Explain Biomechanics
                 </button>
               </div>
 
               {/* Popular exercise chips */}
-              <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400 pt-1">
+              <div className="flex items-center gap-2 flex-wrap text-xs text-text-muted pt-1">
                 <span>Quick Select:</span>
                 {popularExercises.map((ex) => (
                   <button
                     key={ex}
+                    type="button"
                     onClick={() => handleFetchExerciseGuide(ex)}
-                    className={`px-2.5 py-1 rounded-lg border transition ${
+                    className={`px-3 py-1 rounded-lg border text-xs font-semibold transition ${
                       searchExercise === ex
-                        ? 'bg-[#B4F82C]/10 border-[#B4F82C] text-[#B4F82C]'
-                        : 'bg-slate-800/40 border-slate-700 text-slate-300 hover:bg-slate-800'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                        : 'bg-background border-border text-text-muted hover:text-text'
                     }`}
                   >
                     {ex}
@@ -395,27 +407,27 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
 
               {/* Guide Display Card */}
               {loadingGuide ? (
-                <div className="p-12 text-center text-slate-400">
-                  <RefreshCw className="w-8 h-8 animate-spin mx-auto text-[#B4F82C] mb-2" />
+                <div className="p-12 text-center text-text-muted">
+                  <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary mb-2" />
                   <p className="text-sm">Synthesizing biomechanical execution breakdown...</p>
                 </div>
               ) : exerciseGuide ? (
-                <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-6 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-700/40 pb-3">
+                <div className="bg-background border border-border rounded-2xl p-6 space-y-4">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/20 rounded-xl text-[#B4F82C]">
+                      <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl text-primary">
                         <Dumbbell className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-white">{exerciseGuide.exerciseName}</h3>
-                        <p className="text-xs text-slate-400">
+                        <h3 className="text-lg font-bold text-text">{exerciseGuide.exerciseName}</h3>
+                        <p className="text-xs text-text-muted">
                           {exerciseGuide.dbDetails?.category || 'Strength'} • Target: {exerciseGuide.dbDetails?.muscle_group || 'Compound'}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="prose prose-invert max-w-none text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">
+                  <div className="prose max-w-none text-sm text-text whitespace-pre-wrap leading-relaxed">
                     {exerciseGuide.aiGuide}
                   </div>
                 </div>
@@ -426,15 +438,16 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           {/* TAB 3: AI PROGRESS INSIGHTS (Member Only) */}
           {activeTab === 'progress' && (
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-[#B4F82C]/10 via-[#B4F82C]/5 to-transparent border border-[#B4F82C]/20 rounded-2xl p-5">
+              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-[#B4F82C] font-bold">
+                  <div className="flex items-center gap-2 text-primary font-bold">
                     <Sparkles className="w-5 h-5" />
                     <span>Personal AI Transformation Analysis</span>
                   </div>
                   <button
+                    type="button"
                     onClick={handleLoadProgressSummary}
-                    className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+                    className="p-1.5 text-text-muted hover:text-text rounded-lg hover:bg-background transition"
                     title="Refresh AI Analysis"
                   >
                     <RefreshCw className={`w-4 h-4 ${loadingSummary ? 'animate-spin' : ''}`} />
@@ -442,29 +455,29 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                 </div>
 
                 {loadingSummary ? (
-                  <div className="py-8 text-center text-slate-400">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#B4F82C] mb-2" />
+                  <div className="py-8 text-center text-text-muted">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-primary mb-2" />
                     <p className="text-xs">Analyzing weight records, BMI trajectory, and adherence...</p>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm text-text leading-relaxed whitespace-pre-wrap">
                     {progressSummary}
                   </p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                <div className="p-3.5 bg-slate-800/40 border border-slate-700/50 rounded-xl">
-                  <span className="font-bold text-white block mb-1">🎯 Adaptive Pacing</span>
-                  <p className="text-slate-400">AI monitors your weekly weight delta to confirm healthy fat loss (0.5–1 kg/week) or lean mass accrual.</p>
+                <div className="p-4 bg-background border border-border rounded-xl">
+                  <span className="font-bold text-text block mb-1">🎯 Adaptive Pacing</span>
+                  <p className="text-text-muted">AI monitors your weekly weight delta to confirm healthy fat loss (0.5–1 kg/week) or lean mass accrual.</p>
                 </div>
-                <div className="p-3.5 bg-slate-800/40 border border-slate-700/50 rounded-xl">
-                  <span className="font-bold text-white block mb-1">⚖️ Biometric Correlation</span>
-                  <p className="text-slate-400">Cross-analyzes waist and chest circumferences to differentiate muscle hypertrophy from visceral fat.</p>
+                <div className="p-4 bg-background border border-border rounded-xl">
+                  <span className="font-bold text-text block mb-1">⚖️ Biometric Correlation</span>
+                  <p className="text-text-muted">Cross-analyzes waist and chest circumferences to differentiate muscle hypertrophy from visceral fat.</p>
                 </div>
-                <div className="p-3.5 bg-slate-800/40 border border-slate-700/50 rounded-xl">
-                  <span className="font-bold text-white block mb-1">🗓️ Ethiopian Calendar Sync</span>
-                  <p className="text-slate-400">Dates and seasonal fasting periods (tsom) are factored into recommended protein and training splits.</p>
+                <div className="p-4 bg-background border border-border rounded-xl">
+                  <span className="font-bold text-text block mb-1">🗓️ Ethiopian Calendar Sync</span>
+                  <p className="text-text-muted">Dates and seasonal fasting periods (tsom) are factored into recommended protein and training splits.</p>
                 </div>
               </div>
             </div>

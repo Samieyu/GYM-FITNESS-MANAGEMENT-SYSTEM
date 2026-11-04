@@ -1040,44 +1040,44 @@ export const App: React.FC = () => {
 
             {/* UNPAID MEMBER WORKSPACE: ONLY MEMBERSHIP PLANS & PRICING SCREEN */}
             {currentUser.role === 'member' && (!myMembership || myMembership.status !== 'active') ? (
-              <div className="p-8 sm:p-12 rounded-3xl bg-[#0E1116] border border-slate-800 text-center max-w-4xl mx-auto space-y-8 shadow-2xl animate-fadeIn">
-                <div className="w-16 h-16 rounded-2xl bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center justify-center mx-auto shadow-lg shadow-[#B4F82C]/10">
+              <div className="p-8 sm:p-12 rounded-3xl bg-surface border border-border text-center max-w-4xl mx-auto space-y-8 shadow-card animate-fadeIn transition-colors">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center mx-auto shadow-sm">
                   <CreditCard className="w-8 h-8" />
                 </div>
 
                 <div className="max-w-xl mx-auto space-y-2">
-                  <span className="inline-block px-3 py-1 rounded-full bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] text-xs font-semibold">
+                  <span className="inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
                     Step 2: Choose Membership Plan
                   </span>
-                  <h3 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  <h3 className="text-2xl sm:text-4xl font-extrabold text-text tracking-tight">
                     Activate Your Membership, {currentUser.firstName}!
                   </h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">
+                  <p className="text-sm text-text-muted leading-relaxed">
                     Your member account is verified. To access the gym floor, receive your 60-second rotating QR entrance pass, book group classes, and receive custom workout plans, please select a plan below.
                   </p>
                 </div>
 
                 {/* Steps tracker */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left py-2">
-                  <div className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/30 flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">✓</div>
+                  <div className="p-3.5 rounded-xl bg-background border border-emerald-500/30 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-500 font-bold flex items-center justify-center text-xs">✓</div>
                     <div>
-                      <p className="text-xs font-bold text-white">1. Verified Account</p>
-                      <p className="text-[10px] text-slate-400 truncate max-w-[140px]">{currentUser.email}</p>
+                      <p className="text-xs font-bold text-text">1. Verified Account</p>
+                      <p className="text-[10px] text-text-muted truncate max-w-[140px]">{currentUser.email}</p>
                     </div>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-[#B4F82C]/10 border border-[#B4F82C]/40 flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-[#B4F82C] text-slate-950 font-bold flex items-center justify-center text-xs">2</div>
+                  <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/40 flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center text-xs">2</div>
                     <div>
-                      <p className="text-xs font-bold text-[#B4F82C]">2. Select Plan</p>
-                      <p className="text-[10px] text-slate-300">Choose duration & pay</p>
+                      <p className="text-xs font-bold text-primary">2. Select Plan</p>
+                      <p className="text-[10px] text-text-muted">Choose duration & pay</p>
                     </div>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-3 opacity-60">
-                    <div className="w-7 h-7 rounded-full bg-slate-800 text-slate-400 font-bold flex items-center justify-center text-xs">3</div>
+                  <div className="p-3.5 rounded-xl bg-background border border-border flex items-center gap-3 opacity-60">
+                    <div className="w-7 h-7 rounded-full bg-surface border border-border text-text-muted font-bold flex items-center justify-center text-xs">3</div>
                     <div>
-                      <p className="text-xs font-bold text-slate-300">3. Gym Access</p>
-                      <p className="text-[10px] text-slate-500">Dynamic QR unlocked</p>
+                      <p className="text-xs font-bold text-text-muted">3. Gym Access</p>
+                      <p className="text-[10px] text-text-muted">Dynamic QR unlocked</p>
                     </div>
                   </div>
                 </div>
@@ -1085,19 +1085,19 @@ export const App: React.FC = () => {
                 {/* Available Membership Plans Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                   {plans.map((p) => (
-                    <div key={p.id} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-[#B4F82C]/50 transition flex flex-col justify-between">
+                    <div key={p.id} className="p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition flex flex-col justify-between">
                       <div>
-                        <h4 className="text-base font-bold text-white">{p.name}</h4>
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description || 'Full gym facility access & trainer guidance.'}</p>
+                        <h4 className="text-base font-bold text-text">{p.name}</h4>
+                        <p className="text-xs text-text-muted mt-1 line-clamp-2">{p.description || 'Full gym facility access & trainer guidance.'}</p>
                         <div className="mt-4">
-                          <span className="text-2xl font-black text-[#B4F82C]">{p.price.toLocaleString()}</span>
-                          <span className="text-xs text-slate-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                          <span className="text-2xl font-black text-primary">{p.price.toLocaleString()}</span>
+                          <span className="text-xs text-text-muted"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleInitiatePayment(p)}
-                        className="mt-6 w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-[#B4F82C]/20"
+                        className="mt-6 w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-extrabold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
                       >
                         <CreditCard className="w-4 h-4" /> Subscribe with Chapa
                       </button>
@@ -1105,12 +1105,12 @@ export const App: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-400">
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-text-muted">
                   <span>Prefer to pay in person? Visit the front desk to pay with Cash or Telebirr.</span>
                   <button
                     type="button"
                     onClick={loadMemberMembershipAndPayments}
-                    className="text-[#B4F82C] hover:underline font-semibold flex items-center gap-1"
+                    className="text-primary hover:underline font-semibold flex items-center gap-1"
                   >
                     <RefreshCw className="w-3.5 h-3.5" /> Refresh Payment Status
                   </button>
