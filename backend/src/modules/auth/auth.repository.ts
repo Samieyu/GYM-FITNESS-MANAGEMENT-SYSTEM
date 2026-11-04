@@ -198,6 +198,38 @@ export class AuthRepository {
       [newPasswordHash, userId]
     );
   }
+
+  async findStaffUsers(): Promise<UserRow[]> {
+    const res = await query<UserRow>(
+      `
+      SELECT id, email, password_hash, role, first_name, last_name, phone, photo_url, is_verified, is_active, created_at, updated_at
+      FROM users
+      WHERE role IN ('trainer', 'reception')
+      ORDER BY created_at DESC;
+    `
+    );
+    return res.rows;
+  }
+
+  async createTrainerProfile(data: {
+    userId: string;
+    specialization?: string;
+    bio?: string;
+  }): Promise<void> {
+    await query(
+      `
+      INSERT INTO trainers (user_id, specialization, bio, is_available)
+      VALUES ($1, $2, $3, true)
+      ON CONFLICT (user_id) DO UPDATE 
+      SET specialization = EXCLUDED.specialization, bio = EXCLUDED.bio, updated_at = CURRENT_TIMESTAMP;
+    `,
+      [
+        data.userId,
+        data.specialization || 'General Strength & Conditioning',
+        data.bio || 'Staff fitness trainer',
+      ]
+    );
+  }
 }
 
 export const authRepository = new AuthRepository();

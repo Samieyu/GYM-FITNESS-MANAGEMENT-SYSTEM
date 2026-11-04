@@ -22,6 +22,16 @@ export interface FinancialOverview {
   revenueByMonth: Array<{ month: string; amount: number; transactions: number }>;
 }
 
+export interface RecentScanItem {
+  id: string;
+  memberName: string;
+  memberEmail: string;
+  checkinTime: string;
+  status: 'allowed' | 'denied';
+  denialReason?: string | null;
+  checkinType: string;
+}
+
 export interface AttendanceOverview {
   totalCheckins: number;
   grantedCount: number;
@@ -30,6 +40,7 @@ export interface AttendanceOverview {
   hourlyTraffic: Array<{ hour: number; count: number }>;
   topDenialReasons: Array<{ reason: string; count: number }>;
   topActiveMembers: Array<{ name: string; email: string; checkinCount: number }>;
+  recentScans?: RecentScanItem[];
 }
 
 export async function fetchFinancialOverviewApi(): Promise<FinancialOverview> {

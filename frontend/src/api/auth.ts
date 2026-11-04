@@ -140,3 +140,59 @@ export const logoutApi = async () => {
   }
   clearStoredAuth();
 };
+
+export interface StaffMember {
+  id: string;
+  email: string;
+  role: 'trainer' | 'reception';
+  first_name: string;
+  last_name: string;
+  phone?: string | null;
+  photo_url?: string | null;
+  is_verified: boolean;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface RegisterStaffPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: 'trainer' | 'reception';
+  password: string;
+  specialization?: string;
+  bio?: string;
+}
+
+export const fetchStaffMembersApi = async (): Promise<StaffMember[]> => {
+  const token = getStoredAccessToken();
+  const res = await fetch(`${API_BASE}/admin/staff`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to fetch staff members');
+  return json.data;
+};
+
+export const registerStaffApi = async (data: RegisterStaffPayload): Promise<{
+  message: string;
+  staff: StaffMember;
+  inviteSent: boolean;
+}> => {
+  const token = getStoredAccessToken();
+  const res = await fetch(`${API_BASE}/admin/register-staff`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to register staff');
+  return json.data;
+};

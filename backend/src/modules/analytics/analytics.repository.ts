@@ -12,6 +12,16 @@ export interface FinancialOverview {
   revenueByMonth: Array<{ month: string; amount: number; transactions: number }>;
 }
 
+export interface RecentScanItem {
+  id: string;
+  memberName: string;
+  memberEmail: string;
+  checkinTime: string;
+  status: 'allowed' | 'denied';
+  denialReason?: string | null;
+  checkinType: string;
+}
+
 export interface AttendanceOverview {
   totalCheckins: number;
   grantedCount: number;
@@ -20,18 +30,19 @@ export interface AttendanceOverview {
   hourlyTraffic: Array<{ hour: number; count: number }>;
   topDenialReasons: Array<{ reason: string; count: number }>;
   topActiveMembers: Array<{ name: string; email: string; checkinCount: number }>;
+  recentScans: RecentScanItem[];
 }
 
 export class AnalyticsRepository {
   async getFinancialOverview(): Promise<FinancialOverview> {
-    // 1. Revenue metrics
+    // 1. Revenue metrics (Include both 'completed' and 'successful' statuses)
     const revQuery = `
       SELECT 
-        COALESCE(SUM(amount) FILTER (WHERE status = 'successful'), 0)::numeric as total_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status = 'successful' AND payment_method = 'chapa'), 0)::numeric as chapa_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status = 'successful' AND payment_method = 'cash'), 0)::numeric as cash_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status = 'successful' AND payment_method = 'bank_transfer'), 0)::numeric as bank_revenue,
-        COUNT(*) FILTER (WHERE status = 'successful')::int as successful_transactions
+        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful')), 0)::numeric as total_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'chapa'), 0)::numeric as chapa_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'cash'), 0)::numeric as cash_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'bank_transfer'), 0)::numeric as bank_revenue,
+        COUNT(*) FILTER (WHERE status IN ('completed', 'successful'))::int as successful_transactions
       FROM payments
     `;
     const revRes = await pool.query(revQuery);
@@ -54,7 +65,7 @@ export class AnalyticsRepository {
         COALESCE(SUM(amount), 0)::numeric as amount,
         COUNT(*)::int as transactions
       FROM payments
-      WHERE status = 'successful'
+      WHERE status IN ('completed', 'successful')
       GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       ORDER BY month ASC
       LIMIT 6
@@ -142,6 +153,23 @@ export class AnalyticsRepository {
     `;
     const activeRes = await pool.query(activeQuery);
 
+    // 5. Recent Scans (Live real-time scan logs)
+    const recentScansQuery = `
+      SELECT 
+        c.id,
+        TRIM(CONCAT(u.first_name, ' ', u.last_name)) as member_name,
+        u.email as member_email,
+        c.checkin_time,
+        c.status,
+        c.denial_reason,
+        c.checkin_type
+      FROM checkins c
+      JOIN users u ON u.id = c.member_id
+      ORDER BY c.checkin_time DESC
+      LIMIT 15
+    `;
+    const recentScansRes = await pool.query(recentScansQuery);
+
     return {
       totalCheckins: total,
       grantedCount: granted,
@@ -153,6 +181,15 @@ export class AnalyticsRepository {
         name: r.name,
         email: r.email,
         checkinCount: r.checkin_count,
+      })),
+      recentScans: recentScansRes.rows.map((r) => ({
+        id: r.id,
+        memberName: r.member_name,
+        memberEmail: r.member_email,
+        checkinTime: r.checkin_time,
+        status: r.status,
+        denialReason: r.denial_reason,
+        checkinType: r.checkin_type,
       })),
     };
   }

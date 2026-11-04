@@ -256,6 +256,61 @@ export class AuthService {
     const { password_hash, ...safeUser } = user;
     return safeUser;
   }
+
+  async getStaffList(): Promise<Array<Omit<UserRow, 'password_hash'>>> {
+    const users = await authRepository.findStaffUsers();
+    return users.map(({ password_hash, ...safe }) => safe);
+  }
+
+  async registerStaff(input: RegisterStaffInput): Promise<{
+    message: string;
+    staff: Omit<UserRow, 'password_hash'>;
+    inviteSent: boolean;
+  }> {
+    const cleanEmail = input.email.trim().toLowerCase();
+    const existing = await authRepository.findUserByEmail(cleanEmail);
+    if (existing) {
+      throw new ConflictError('An account with this email already exists');
+    }
+
+    const passwordHash = await hashPassword(input.password);
+    const user = await authRepository.createUser({
+      email: cleanEmail,
+      passwordHash,
+      role: input.role,
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      phone: input.phone,
+      isVerified: true,
+    });
+
+    if (input.role === 'trainer') {
+      await authRepository.createTrainerProfile({
+        userId: user.id,
+        specialization: input.specialization,
+        bio: input.bio,
+      });
+    }
+
+    const resetToken = generateRandomToken(32);
+    const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000);
+    await authRepository.savePasswordResetToken(user.id, resetToken, expiresAt);
+
+    let inviteSent = false;
+    try {
+      await sendStaffInvitationEmail(user.email, user.first_name, input.role, resetToken, input.password);
+      inviteSent = true;
+    } catch (err) {
+      console.error('[Staff Registration] Failed to send staff invitation email:', err);
+    }
+
+    const { password_hash, ...safeUser } = user;
+    return {
+      message: `${input.role === 'trainer' ? 'Trainer' : 'Receptionist'} account successfully created and activated`,
+      staff: safeUser,
+      inviteSent,
+    };
+  }
 }
 
 export const authService = new AuthService();

@@ -52,6 +52,32 @@ export const resetPasswordSchema = z.object({
   newPassword: z.string().min(6, 'New password must be at least 6 characters long'),
 });
 
+
+export const registerStaffSchema = z.object({
+  email: z
+    .string()
+    .email('Valid email address is required')
+    .toLowerCase()
+    .trim()
+    .refine((val) => GMAIL_REGEX.test(val), {
+      message: 'Only valid @gmail.com addresses are permitted (e.g. staff@gmail.com)',
+    }),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  firstName: z.string().min(2, 'First name is required').trim(),
+  lastName: z.string().min(2, 'Last name is required').trim(),
+  role: z.enum(['trainer', 'reception'], {
+    errorMap: () => ({ message: 'Role must be either trainer or reception' }),
+  }),
+  phone: z
+    .string({ required_error: 'Ethiopian phone number is required' })
+    .transform((p) => (p || '').replace(/[s-]/g, ''))
+    .refine((val) => ETHIOPIAN_PHONE_REGEX.test(val), {
+      message: 'Must be a valid Ethiopian phone number (+251 9..., +251 7..., 09..., or 07...)',
+    }),
+  specialization: z.string().optional(),
+  bio: z.string().optional(),
+});
+
 export const validateBody = (schema: z.ZodSchema) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     try {

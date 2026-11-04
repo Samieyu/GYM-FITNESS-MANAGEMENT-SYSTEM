@@ -450,6 +450,76 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
                       )}
                     </div>
                   </div>
+
+                  {/* Live Recent Scans Activity Log */}
+                  <div className="p-5 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-sm font-semibold text-slate-200 flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-amber-400" />
+                        <span>Live Entrance & Scan Activity (Recent Check-Ins)</span>
+                      </h4>
+                      <span className="text-[11px] text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
+                        Real-Time Log
+                      </span>
+                    </div>
+
+                    {!attendanceData.recentScans || attendanceData.recentScans.length === 0 ? (
+                      <p className="text-xs text-slate-500 py-4 text-center">No recent scan activity recorded.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead>
+                            <tr className="border-b border-slate-700/80 text-slate-400">
+                              <th className="pb-2.5 font-semibold">Member</th>
+                              <th className="pb-2.5 font-semibold">Time (E.C.)</th>
+                              <th className="pb-2.5 font-semibold">Status</th>
+                              <th className="pb-2.5 font-semibold">Access Detail</th>
+                              <th className="pb-2.5 font-semibold">Check-in Type</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800">
+                            {attendanceData.recentScans.map((scan) => {
+                              const timeStr = new Date(scan.checkinTime).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              });
+                              const ethDate = formatEthiopianDate(scan.checkinTime);
+                              return (
+                                <tr key={scan.id} className="hover:bg-slate-800/50 transition">
+                                  <td className="py-2.5 font-medium text-white">
+                                    {scan.memberName}
+                                    <div className="text-[11px] text-slate-400 font-normal">{scan.memberEmail}</div>
+                                  </td>
+                                  <td className="py-2.5 text-slate-300 font-mono text-[11px]">
+                                    {ethDate} • {timeStr}
+                                  </td>
+                                  <td className="py-2.5">
+                                    {scan.status === 'allowed' ? (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold text-[11px] border border-emerald-500/20">
+                                        <CheckCircle2 className="w-3 h-3" /> Granted
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 font-semibold text-[11px] border border-rose-500/20">
+                                        <XCircle className="w-3 h-3" /> Denied
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 text-slate-400 text-[11px] max-w-xs truncate">
+                                    {scan.denialReason || 'Standard Facility Entrance'}
+                                  </td>
+                                  <td className="py-2.5">
+                                    <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono uppercase">
+                                      {scan.checkinType?.replace('_', ' ') || 'QR PASS'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 

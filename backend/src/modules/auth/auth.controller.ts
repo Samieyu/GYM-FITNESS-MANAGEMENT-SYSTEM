@@ -104,6 +104,30 @@ export class AuthController {
       next(error);
     }
   }
+
+  async getStaff(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const staff = await authService.getStaffList();
+      res.status(200).json({
+        success: true,
+        data: staff,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async registerStaff(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await authService.registerStaff(req.body);
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const authController = new AuthController();

@@ -7,6 +7,7 @@ import {
   refreshTokenSchema,
   requestPasswordResetSchema,
   resetPasswordSchema,
+  registerStaffSchema,
   validateBody,
   validateQuery,
 } from './auth.validation';
@@ -96,5 +97,21 @@ router.get('/admin-check', authGuard, roleGuard('admin'), (_req: Request, res: R
     message: 'Welcome Admin: RBAC authorization granted.',
   });
 });
+
+// Admin Staff Management Endpoints (Admin access only)
+router.get(
+  '/admin/staff',
+  authGuard,
+  roleGuard('admin'),
+  authController.getStaff
+);
+
+router.post(
+  '/admin/register-staff',
+  authGuard,
+  roleGuard('admin'),
+  validateBody(registerStaffSchema),
+  authController.registerStaff
+);
 
 export default router;

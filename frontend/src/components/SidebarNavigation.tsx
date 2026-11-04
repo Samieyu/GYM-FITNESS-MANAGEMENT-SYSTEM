@@ -27,6 +27,7 @@ interface SidebarNavigationProps {
   onOpenWalkin?: () => void;
   onOpenEquipment?: () => void;
   onOpenAnalytics?: () => void;
+  onOpenStaff?: () => void;
   onLogout: () => void;
 }
 
@@ -43,6 +44,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   onOpenWalkin,
   onOpenEquipment,
   onOpenAnalytics,
+  onOpenStaff,
   onLogout,
 }) => {
   if (!currentUser) return null;
@@ -183,6 +185,17 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
               title="Equipment & Maintenance • እቃዎችና ጥገና"
             >
               <Wrench className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* 10. Staff Management (Admin only) */}
+          {role === 'admin' && onOpenStaff && (
+            <button
+              onClick={onOpenStaff}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 hover:text-[#B4F82C] hover:bg-slate-900 transition"
+              title="Staff Management • የአሰልጣኞች እና ሰራተኞች አስተዳደር"
+            >
+              <Shield className="w-5 h-5" />
             </button>
           )}
 

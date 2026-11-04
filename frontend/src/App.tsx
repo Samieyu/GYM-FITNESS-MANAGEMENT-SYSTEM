@@ -67,6 +67,7 @@ import { ReceptionScannerModal } from './components/ReceptionScannerModal';
 import { MemberWorkoutModal } from './components/MemberWorkoutModal';
 import { TrainerWorkoutModal } from './components/TrainerWorkoutModal';
 import { WalkinRegistrationModal } from './components/WalkinRegistrationModal';
+import { StaffManagementModal } from './components/StaffManagementModal';
 import {
   FitnessClass,
   ClassBooking,
@@ -185,6 +186,7 @@ export const App: React.FC = () => {
   const [isMemberWorkoutModalOpen, setIsMemberWorkoutModalOpen] = useState(false);
   const [isTrainerWorkoutModalOpen, setIsTrainerWorkoutModalOpen] = useState(false);
   const [isWalkinModalOpen, setIsWalkinModalOpen] = useState(false);
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [isRunningExpiryCheck, setIsRunningExpiryCheck] = useState(false);
 
   // Group Classes & Waitlists (Rule 12)
@@ -870,6 +872,7 @@ export const App: React.FC = () => {
           onOpenWalkin={() => setIsWalkinModalOpen(true)}
           onOpenEquipment={() => setIsEquipmentModalOpen(true)}
           onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
+          onOpenStaff={() => setIsStaffModalOpen(true)}
           onLogout={handleLogout}
         />
       )}
@@ -1514,6 +1517,14 @@ export const App: React.FC = () => {
                       </button>
                       <button
                         type="button"
+                        onClick={() => setIsStaffModalOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        title="Register Trainers and Front Desk Reception staff"
+                      >
+                        <Shield className="w-4 h-4 text-orange-primary" /> Staff Management
+                      </button>
+                      <button
+                        type="button"
                         onClick={handleRunManualExpiryCheck}
                         disabled={isRunningExpiryCheck}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
@@ -1691,7 +1702,7 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* Other Admin Capabilities */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                     <div>
                       <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
@@ -1723,6 +1734,22 @@ export const App: React.FC = () => {
                       className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-[#B4F82C]/20"
                     >
                       <Wrench className="w-4 h-4" /> Manage Inventory & Maintenance
+                    </button>
+                  </div>
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                    <div>
+                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                        <Shield className="w-5 h-5" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">Staff & Role Management</h3>
+                      <p className="text-xs text-gray-400 mt-1">Register Trainers & Front Desk Receptionists, generate credentials, and dispatch setup emails.</p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsStaffModalOpen(true)}
+                      className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-[#B4F82C]/20"
+                    >
+                      <Shield className="w-4 h-4" /> Register & Manage Staff
                     </button>
                   </div>
                 </div>
@@ -3426,6 +3453,15 @@ export const App: React.FC = () => {
           isOpen={isMemberWorkoutModalOpen}
           onClose={() => setIsMemberWorkoutModalOpen(false)}
           memberName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+        />
+      )}
+
+      {/* ADMIN STAFF MANAGEMENT MODAL (Trainer & Reception Registration) */}
+      {currentUser && currentUser.role === 'admin' && (
+        <StaffManagementModal
+          isOpen={isStaffModalOpen}
+          onClose={() => setIsStaffModalOpen(false)}
+          adminName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
         />
       )}
 

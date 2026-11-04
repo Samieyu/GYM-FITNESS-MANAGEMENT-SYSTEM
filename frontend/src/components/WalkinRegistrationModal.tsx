@@ -56,7 +56,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
         setAmount(activePlans[0].price);
       }
     }
-  }, [isOpen, plans]);
+  }, [isOpen]);
 
   // When plan changes, update amount default
   const handlePlanChange = (selectedId: string) => {
@@ -238,13 +238,32 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={handleResetAndClose}
-              className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs shadow-lg shadow-orange-primary/20 transition"
-            >
-              Done & Register Another Walk-In
-            </button>
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setFirstName('');
+                  setLastName('');
+                  setEmail('');
+                  setPhone('');
+                  setReferenceNote('');
+                  setSuccessResult(null);
+                  setErrorMessage(null);
+                }}
+                className="flex-1 py-3 rounded-xl bg-charcoal-700 hover:bg-charcoal-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5"
+              >
+                <UserPlus className="w-4 h-4 text-orange-primary" />
+                Register Another Walk-In
+              </button>
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="flex-1 py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs shadow-lg shadow-orange-primary/20 transition flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Done & Close
+              </button>
+            </div>
           </div>
         ) : (
           /* REGISTRATION & PAYMENT FORM */

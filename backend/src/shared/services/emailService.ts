@@ -121,6 +121,50 @@ export const sendWalkinInvitationEmail = async (
   }
 };
 
+export const sendStaffInvitationEmail = async (
+  email: string,
+  firstName: string,
+  role: 'trainer' | 'reception',
+  token: string,
+  initialPassword?: string
+): Promise<void> => {
+  const setPasswordUrl = `${config.corsOrigin}/set-password?token=${token}`;
+  const roleTitle = role === 'trainer' ? 'Certified Fitness Trainer' : 'Front Desk Receptionist';
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS STAFF PORTAL</h2>
+      <h3 style="color: #ffffff;">Welcome to the Team, ${firstName}!</h3>
+      <p style="color: #d1d5db;">You have been registered as a <strong>${roleTitle}</strong> by the System Administrator.</p>
+      <p style="color: #d1d5db;">You can log in directly using your email (<strong>${email}</strong>) and assigned credentials, or click below to set your personal password:</p>
+      ${
+        initialPassword
+          ? `<p style="color: #e5e7eb; background: #1f2937; padding: 12px; border-radius: 6px; font-family: monospace;">Initial Temporary Password: <strong>${initialPassword}</strong></p>`
+          : ''
+      }
+      <div style="margin: 25px 0;">
+        <a href="${setPasswordUrl}" style="background-color: #ff6b00; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+          Set Your Password / Access Account
+        </a>
+      </div>
+      <p style="color: #9ca3af; font-size: 12px;">Direct link: ${setPasswordUrl}</p>
+      <p style="color: #6b7280; font-size: 11px; margin-top: 30px;">This setup link will expire in 72 hours. Please change your password upon first login.</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: config.smtp.from,
+      to: email,
+      subject: `Welcome to Titan Fitness - Your Staff Account (${roleTitle})`,
+      html,
+    });
+    console.log(`[Email] Staff invitation sent to ${email} for role ${role}`);
+  } catch (error) {
+    console.error(`[Email] Failed to send staff invitation to ${email}:`, error);
+  }
+};
+
 export const sendPaymentConfirmationEmail = async (
   email: string,
   firstName: string,
