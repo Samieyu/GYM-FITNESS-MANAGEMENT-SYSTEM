@@ -19,7 +19,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="w-full space-y-12">
+    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-12 sm:space-y-16">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <Badge variant="primary">
@@ -34,11 +34,11 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
       </div>
 
       {/* Grid of Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
         {isLoading ? (
           // Skeletons
           Array.from({ length: 3 }).map((_, idx) => (
-            <div key={idx} className="p-8 rounded-2xl bg-surface border border-border animate-pulse space-y-4">
+            <div key={idx} className="p-8 rounded-2xl bg-surface border border-border animate-pulse space-y-4 shadow-sm">
               <div className="w-full h-44 rounded-xl bg-border" />
               <div className="h-6 w-3/4 bg-border rounded" />
               <div className="h-4 w-1/2 bg-border rounded" />
@@ -58,7 +58,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
             return (
               <Card
                 key={p.id}
-                className={`p-6 sm:p-8 flex flex-col justify-between transition group relative ${
+                className={`p-6 sm:p-8 flex flex-col justify-between transition group relative shadow-sm ${
                   isPopular
                     ? 'border-2 border-primary shadow-2xl shadow-primary/10'
                     : 'border-border'
@@ -72,7 +72,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
 
                 <div>
                   {/* Plan Visual Image */}
-                  <div className="w-full h-48 rounded-xl overflow-hidden mb-5 bg-charcoal-900 border border-border">
+                  <div className="w-full h-48 rounded-xl overflow-hidden mb-6 bg-surface-elevated border border-border">
                     <img
                       src={p.imageUrl || DEFAULT_PLAN_IMAGE}
                       alt={p.name}
@@ -97,7 +97,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
 
                   {/* Price */}
                   <div className="mt-6 mb-6 pb-6 border-b border-border">
-                    <div className="flex items-baseline gap-1">
+                    <div className="flex items-baseline gap-1.5">
                       <span className="text-4xl font-black text-text">{p.price.toLocaleString()}</span>
                       <span className="text-sm font-bold text-primary">ETB</span>
                       <span className="text-xs text-text-muted ml-1">
@@ -145,7 +145,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
                   <Button
                     variant={isPopular ? 'primary' : 'secondary'}
                     size="lg"
-                    className="w-full justify-center text-sm font-bold shadow-lg"
+                    className="w-full justify-center text-sm font-black uppercase shadow-sm"
                     onClick={() => onSelectPlan(p)}
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
@@ -163,20 +163,20 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
       </div>
 
       {/* Assurance banner */}
-      <div className="max-w-4xl mx-auto p-6 rounded-2xl bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <ShieldCheck className="w-5 h-5" />
+      <div className="w-full p-6 sm:p-8 rounded-2xl bg-surface border border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0">
+            <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-text">100% Secure Chapa Gateway</h4>
-            <p className="text-xs text-text-muted">
+            <h4 className="text-sm sm:text-base font-bold text-text">100% Secure Chapa Gateway</h4>
+            <p className="text-xs text-text-muted mt-0.5">
               Telebirr, CBE Birr, and Bank Card transactions are encrypted with bank-grade 256-bit SSL.
             </p>
           </div>
         </div>
         <div className="text-xs text-text-muted">
-          Need corporate or team billing? <span className="text-primary font-semibold">Contact Reception</span>
+          Need corporate or team billing? <span className="text-primary font-bold">Contact Reception</span>
         </div>
       </div>
     </div>

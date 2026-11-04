@@ -65,7 +65,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
   }, [classesList, selectedCategory, searchQuery]);
 
   return (
-    <div className="w-full space-y-10">
+    <div className="w-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-10">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <Badge variant="primary">Group Fitness Timetable</Badge>
@@ -78,7 +78,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-surface border border-border">
+      <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-surface border border-border shadow-sm">
         {/* Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
           {CATEGORIES.map((cat) => {
@@ -89,10 +89,10 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap min-h-[40px] ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition whitespace-nowrap min-h-[44px] ${
                   isSelected
                     ? 'bg-primary text-slate-950 shadow-md shadow-primary/20'
-                    : 'bg-charcoal-900 text-text-muted hover:text-text hover:bg-charcoal-850 border border-border'
+                    : 'bg-surface-elevated text-text-muted hover:text-text hover:bg-surface border border-border'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -103,22 +103,22 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
         </div>
 
         {/* Search input */}
-        <div className="w-full sm:w-64">
+        <div className="w-full sm:w-72">
           <input
             type="text"
             placeholder="Search classes or coaches..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-charcoal-900 border border-border rounded-xl px-3.5 py-2 text-xs text-text placeholder-text-muted focus:outline-none focus:border-primary"
+            className="w-full bg-surface-elevated border border-border rounded-xl px-4 py-2.5 text-xs text-text placeholder-text-muted focus:outline-none focus:border-primary min-h-[44px]"
           />
         </div>
       </div>
 
       {/* Classes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, idx) => (
-            <div key={idx} className="p-6 rounded-2xl bg-surface border border-border animate-pulse space-y-4">
+            <div key={idx} className="p-6 rounded-2xl bg-surface border border-border animate-pulse space-y-4 shadow-sm">
               <div className="h-5 w-1/3 bg-border rounded" />
               <div className="h-6 w-3/4 bg-border rounded" />
               <div className="h-4 w-full bg-border rounded" />
@@ -135,11 +135,11 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
             return (
               <Card
                 key={cls.id}
-                className="p-6 flex flex-col justify-between hover:border-primary/50 transition group border-border relative"
+                className="p-6 sm:p-7 flex flex-col justify-between hover:border-primary/50 transition group border-border relative shadow-sm"
               >
                 <div>
                   {/* Top meta */}
-                  <div className="flex items-center justify-between text-xs mb-3">
+                  <div className="flex items-center justify-between text-xs mb-3.5">
                     <span className="flex items-center gap-1.5 font-mono text-primary font-bold">
                       <Clock className="w-3.5 h-3.5" />
                       {formatEthiopianDateTime(cls.start_time)}
@@ -160,7 +160,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
                   <div className="mt-5 space-y-2 text-xs text-text-muted pt-4 border-t border-border">
                     <p className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span>Location: <strong className="text-text">{cls.location}</strong></span>
+                      <span>Room: <strong className="text-text">{cls.location}</strong></span>
                     </p>
                     <p className="flex items-center gap-2">
                       <User className="w-3.5 h-3.5 text-primary shrink-0" />
@@ -178,12 +178,12 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
                   </div>
 
                   {/* Capacity Bar */}
-                  <div className="mt-4">
+                  <div className="mt-5">
                     <div className="flex justify-between text-[11px] text-text-muted mb-1">
                       <span>Occupancy</span>
                       <span className="font-mono font-bold text-text">{pct}%</span>
                     </div>
-                    <div className="w-full bg-charcoal-900 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-border rounded-full h-2 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
                           isFull ? 'bg-amber-500' : 'bg-primary'
@@ -194,7 +194,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
                   </div>
                 </div>
 
-                <div className="mt-6 pt-2">
+                <div className="mt-7 pt-2">
                   <Button
                     variant={isFull ? 'secondary' : 'primary'}
                     size="md"

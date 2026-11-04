@@ -826,7 +826,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen ${currentUser ? 'bg-[#F4F6F8] text-slate-900' : 'bg-charcoal-900 text-gray-100'} flex flex-col justify-between selection:bg-[#B4F82C] selection:text-slate-950`}>
+    <div className="min-h-screen bg-background text-text flex flex-col justify-between transition-colors duration-200">
       {/* Sleek Vertical Navigation Rail (from Design Screenshot) */}
       {currentUser && (
         <>
@@ -1010,7 +1010,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Container */}
-      <main className={`mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-12 flex-1 w-full flex flex-col justify-center ${currentUser ? "max-w-7xl lg:pl-24" : "max-w-6xl"}`}>
+      <main className={currentUser ? "mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-12 flex-1 w-full flex flex-col justify-center max-w-7xl lg:pl-24" : "w-full flex-1 flex flex-col p-0 m-0"}>
 
 
         {/* VIEW A: AUTHENTICATED ROLE DASHBOARD */}

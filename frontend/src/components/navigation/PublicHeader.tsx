@@ -40,7 +40,7 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-surface/95 backdrop-blur-md transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div
           role="button"

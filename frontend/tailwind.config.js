@@ -6,11 +6,13 @@ export default {
     extend: {
       colors: {
         base: 'var(--bg-base)',
+        background: 'var(--bg-base)',
         surface: {
           DEFAULT: 'var(--bg-surface)',
           elevated: 'var(--bg-surface-elevated)',
         },
         border: {
+          DEFAULT: 'var(--border-subtle)',
           subtle: 'var(--border-subtle)',
           strong: 'var(--border-strong)',
         },
@@ -18,6 +20,12 @@ export default {
           primary: 'var(--text-primary)',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
+        },
+        text: {
+          DEFAULT: 'var(--text-primary)',
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-secondary)',
         },
         primary: {
           DEFAULT: 'var(--color-primary)',

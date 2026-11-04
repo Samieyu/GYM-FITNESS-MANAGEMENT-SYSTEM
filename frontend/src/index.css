@@ -20,6 +20,12 @@
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
   --color-info: #3B82F6;
+  --color-background: #0E1116;
+  --color-surface: #161B22;
+  --color-surface-elevated: #1F242D;
+  --color-border: #2D333B;
+  --color-text: #F1F5F9;
+  --color-text-muted: #94A3B8;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -44,6 +50,12 @@
   --color-warning: #D97706;
   --color-danger: #DC2626;
   --color-info: #2563EB;
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F1F5F9;
+  --color-border: #E2E8F0;
+  --color-text: #0F172A;
+  --color-text-muted: #475569;
 }
 
 @layer base {
