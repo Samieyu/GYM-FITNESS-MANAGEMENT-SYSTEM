@@ -2,33 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Default: Dark Athletic Theme */
+  --bg-base: #0E1116;
+  --bg-surface: #161B22;
+  --bg-surface-elevated: #1F242D;
+  --border-subtle: #2D333B;
+  --border-strong: #3D4450;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --color-primary: #FF6B00;
+  --color-primary-hover: #FF8533;
+  --color-primary-dark: #CC5500;
+  --color-primary-contrast: #0E1116;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+[data-theme="light"], .light {
+  --bg-base: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #F1F5F9;
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --color-primary: #EA580C;
+  --color-primary-hover: #C2410C;
+  --color-primary-dark: #9A3412;
+  --color-primary-contrast: #FFFFFF;
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+}
+
 @layer base {
   body {
-    background-color: #090C10;
-    color: #f1f5f9;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Ethiopic', 'Nyala', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
 
-  /* Custom slim sleek dark scrollbars */
+  /* Custom slim sleek scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #090C10;
+    background: var(--bg-base);
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E2638;
+    background: var(--border-subtle);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #B4F82C;
+    background: var(--color-primary);
   }
 
   ::selection {
-    background-color: #B4F82C;
-    color: #090C10;
+    background-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+
+  /* Motion reduction for users with motion sensitivity */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
