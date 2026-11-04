@@ -85,6 +85,8 @@ import { AIAssistantModal } from './components/AIAssistantModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
 import { AthleteDashboardView } from './components/AthleteDashboardView';
 import { SidebarNavigation } from './components/SidebarNavigation';
+import { DevComponentGallery } from './components/DevComponentGallery';
+import { ThemeToggle } from './components/ui/ThemeToggle';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
@@ -93,6 +95,7 @@ import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianC
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
 export const App: React.FC = () => {
+  const [isDevGalleryOpen, setIsDevGalleryOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
   const [authModalMode, setAuthModalMode] = useState<
@@ -883,7 +886,8 @@ export const App: React.FC = () => {
         </div>
 
         {/* Navigation & User Session Bar */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-charcoal-850 border border-charcoal-800 text-xs text-gray-400">
             <Server className={`w-3.5 h-3.5 ${backendStatus === 'connected' ? 'text-green-500' : 'text-amber-500'}`} />
             <span>System: {backendStatus === 'connected' ? 'Online' : 'Offline'}</span>
@@ -3561,9 +3565,20 @@ export const App: React.FC = () => {
 
 
       {/* Footer */}
-      <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} SWEATBOX Fitness Systems. All rights reserved.
+      <footer className="border-t border-border-subtle py-6 px-6 text-center text-xs text-content-secondary flex flex-wrap items-center justify-center gap-4">
+        <span>&copy; {new Date().getFullYear()} SWEATBOX Fitness Systems. All rights reserved.</span>
+        <button
+          type="button"
+          onClick={() => setIsDevGalleryOpen(true)}
+          className="px-2.5 py-1 rounded-md bg-surface-elevated hover:bg-[#FF6B00] hover:text-[#0E1116] border border-border-subtle text-[#FF6B00] font-bold text-[11px] transition select-none"
+        >
+          Dev Component Gallery
+        </button>
       </footer>
+
+      {isDevGalleryOpen && (
+        <DevComponentGallery onClose={() => setIsDevGalleryOpen(false)} />
+      )}
     </div>
   );
 };

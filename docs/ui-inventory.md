@@ -168,12 +168,42 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [ ] **RESP-01**: Mobile Viewport (360px - 480px) — Thumb-zone navigation bar, bottom sheets for all action dialogs, touch targets >= 44px, zero horizontal overflow.
 - [ ] **RESP-02**: Tablet Viewport (768px - 1024px) — Collapsible navigation drawer, 2-column card layouts, adaptive data tables.
 - [ ] **RESP-03**: Desktop Viewport (1280px+) — Persistent left sidebar, 12-column grid system, multi-pane dashboard layouts, centered modal dialogs.
-- [ ] **RESP-04**: Theme Toggle Engine — Seamless instant transition between Dark Athletic Charcoal (`#0E1116`) and Light Athletic White (`#FFFFFF`) with persistent `localStorage` preference.
+- [x] **RESP-04**: Theme Toggle Engine — Seamless instant transition between Dark Athletic Charcoal (`#0E1116`) and Light Athletic White (`#FFFFFF`) with persistent `localStorage` preference.
+
+---
+
+## 6. Phase 1 Design System Component Library (Verified in Dev Gallery)
+- [x] **COMP-BTN**: Button (primary, secondary, outline, ghost, destructive, loading, touch targets >= 44px)
+- [x] **COMP-INP**: Input (text, password with eye toggle, error state, with icons, touch targets >= 44px)
+- [x] **COMP-SEL**: Select (custom chevron, accessible option list)
+- [x] **COMP-TXT**: Textarea (multiline coaching/notes input)
+- [x] **COMP-CHK**: Checkbox (touch-friendly custom indicator with labels)
+- [x] **COMP-RAD**: RadioGroup (custom athletic selection cards)
+- [x] **COMP-SWT**: Switch (Radix UI accessible toggle)
+- [x] **COMP-DAT**: DateInput (with real-time Ethiopian Calendar format display)
+- [x] **COMP-PHO**: PhotoUploader (file picker + mobile camera selfie capture + preview)
+- [x] **COMP-CRD**: Card (default surface, elevated, interactive with athletic glow)
+- [x] **COMP-STC**: StatCard (large tabular metrics, delta indicators, trend arrows)
+- [x] **COMP-BDG**: Badge & Status Chip (success, warning, danger, info, primary with dot indicators)
+- [x] **COMP-TAB**: Tabs (Radix UI accessible tabs with mobile touch overflow)
+- [x] **COMP-MOD**: Modal (Radix UI accessible dialog with focus lock & scale-up animation)
+- [x] **COMP-SHT**: BottomSheet (mobile-first sliding sheet with visual drag handle)
+- [x] **COMP-DRP**: Dropdown (Radix UI accessible menu with collision avoidance)
+- [x] **COMP-TIP**: Tooltip (Radix UI accessible tooltip)
+- [x] **COMP-TST**: Toast System (ToastProvider, useToast hook: success, error, warning, info)
+- [x] **COMP-ALT**: Alert (accessible inline feedback banners)
+- [x] **COMP-SKL**: Skeleton (shimmer loaders, CardSkeleton, TableSkeleton)
+- [x] **COMP-EMP**: EmptyState (athletic icon, title, copy, primary action CTA)
+- [x] **COMP-AVT**: Avatar (initials fallback, image error handling, presence status dot)
+- [x] **COMP-RNG**: ProgressRing (circular SVG progress arc with center metrics)
+- [x] **COMP-PAG**: Pagination (touch-friendly prev/next with page counts)
+- [x] **COMP-TBL**: ResponsiveTable (turns into stacked cards on mobile, tabular on desktop)
+- [x] **COMP-CHW**: ChartWrapper (range filter tabs, loading skeleton, screen-reader table summary)
+- [x] **COMP-GAL**: DevComponentGallery (interactive showcase mounted at footer button / in-app)
 
 ---
 
 ## Summary of Checklist Items
-- **Total Unique Surfaces & Assets**: 68 items
-- **Ticked (Redesigned & Verified)**: 0
-- **Unticked (Pending Implementation)**: 68
-- **Phase 0 Baseline Status**: All items cataloged and ready for systematic phase implementation.
+- **Total Unique Surfaces & Assets**: 68 items + 27 Design System Primitives
+- **Phase 1 Component Primitives Completed**: 28 / 28 (100%)
+- **Full App Pages Pending Integration**: Phases 2–8
