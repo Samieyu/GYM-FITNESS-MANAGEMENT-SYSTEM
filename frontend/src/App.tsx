@@ -84,7 +84,7 @@ import { EquipmentManagementModal } from './components/EquipmentManagementModal'
 import { AIAssistantModal } from './components/AIAssistantModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
 import { AthleteDashboardView } from './components/AthleteDashboardView';
-import { SidebarNavigation } from './components/SidebarNavigation';
+import { PublicHeader, MemberBottomBar, StaffNavigation } from './components/navigation';
 import { DevComponentGallery } from './components/DevComponentGallery';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 
@@ -827,79 +827,119 @@ export const App: React.FC = () => {
     <div className={`min-h-screen ${currentUser ? 'bg-[#F4F6F8] text-slate-900' : 'bg-charcoal-900 text-gray-100'} flex flex-col justify-between selection:bg-[#B4F82C] selection:text-slate-950`}>
       {/* Sleek Vertical Navigation Rail (from Design Screenshot) */}
       {currentUser && (
-        <SidebarNavigation
-          currentUser={currentUser}
-          isPaidMember={Boolean(myMembership && myMembership.status === 'active')}
+        <>
+          <StaffNavigation
+            currentUser={currentUser}
+            isPaidMember={Boolean(myMembership && myMembership.status === 'active')}
+            activeTab={activeTab}
+            onSelectTab={setActiveTab}
+            onOpenWorkout={() => {
+              if (currentUser.role === 'member') {
+                if (myMembership && myMembership.status === 'active') {
+                  setIsMemberWorkoutModalOpen(true);
+                }
+              } else {
+                setIsTrainerWorkoutModalOpen(true);
+              }
+            }}
+            onOpenProgress={() => {
+              if (currentUser.role === 'member') {
+                if (myMembership && myMembership.status === 'active') {
+                  setIsMemberProgressModalOpen(true);
+                }
+              } else {
+                setIsTrainerProgressModalOpen(true);
+              }
+            }}
+            onOpenAiCoach={() => {
+              if (currentUser.role !== 'member' || (myMembership && myMembership.status === 'active')) {
+                setIsAiModalOpen(true);
+              }
+            }}
+            onOpenQrPass={() => {
+              if (currentUser.role === 'member' && myMembership && myMembership.status === 'active') {
+                setIsMemberQrModalOpen(true);
+              }
+            }}
+            onOpenScanner={() => setIsReceptionScannerOpen(true)}
+            onOpenWalkin={() => setIsWalkinModalOpen(true)}
+            onOpenEquipment={() => setIsEquipmentModalOpen(true)}
+            onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
+            onOpenStaff={() => setIsStaffModalOpen(true)}
+            onLogout={handleLogout}
+          />
+
+          {currentUser.role === 'member' && (
+            <MemberBottomBar
+              activeTab={activeTab}
+              isPaidMember={Boolean(myMembership && myMembership.status === 'active')}
+              userName={`${currentUser.firstName} ${currentUser.lastName}`.trim()}
+              onSelectTab={setActiveTab}
+              onOpenQrPass={() => {
+                if (myMembership && myMembership.status === 'active') {
+                  setIsMemberQrModalOpen(true);
+                }
+              }}
+              onOpenProgress={() => {
+                if (myMembership && myMembership.status === 'active') {
+                  setIsMemberProgressModalOpen(true);
+                }
+              }}
+              onOpenAiCoach={() => {
+                if (myMembership && myMembership.status === 'active') {
+                  setIsAiModalOpen(true);
+                }
+              }}
+              onLogout={handleLogout}
+            />
+          )}
+        </>
+      )}
+      {/* Top Header Shell */}
+      {!currentUser ? (
+        <PublicHeader
           activeTab={activeTab}
           onSelectTab={setActiveTab}
-          onOpenWorkout={() => {
-            if (currentUser.role === 'member') {
-              if (myMembership && myMembership.status === 'active') {
-                setIsMemberWorkoutModalOpen(true);
-              }
-            } else {
-              setIsTrainerWorkoutModalOpen(true);
-            }
+          onOpenLogin={() => { setAuthModalMode('login'); setErrorMessage(null); }}
+          onOpenRegister={() => { setAuthModalMode('register'); setErrorMessage(null); }}
+          onScrollToTrainers={() => {
+            const el = document.getElementById('trainers-section') || document.querySelector('[data-section="trainers"]');
+            el?.scrollIntoView({ behavior: 'smooth' });
           }}
-          onOpenProgress={() => {
-            if (currentUser.role === 'member') {
-              if (myMembership && myMembership.status === 'active') {
-                setIsMemberProgressModalOpen(true);
-              }
-            } else {
-              setIsTrainerProgressModalOpen(true);
-            }
-          }}
-          onOpenAiCoach={() => {
-            if (currentUser.role !== 'member' || (myMembership && myMembership.status === 'active')) {
-              setIsAiModalOpen(true);
-            }
-          }}
-          onOpenQrPass={() => {
-            if (currentUser.role === 'member' && myMembership && myMembership.status === 'active') {
-              setIsMemberQrModalOpen(true);
-            }
-          }}
-          onOpenScanner={() => setIsReceptionScannerOpen(true)}
-          onOpenWalkin={() => setIsWalkinModalOpen(true)}
-          onOpenEquipment={() => setIsEquipmentModalOpen(true)}
-          onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
-          onOpenStaff={() => setIsStaffModalOpen(true)}
-          onLogout={handleLogout}
         />
-      )}
-      {/* Sticky Top Header */}
-      <header className="border-b border-charcoal-800 bg-charcoal-950/90 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-        <div 
-          className="flex items-center gap-3 cursor-pointer"
-          onClick={() => setActiveTab('home')}
-        >
-          <div className="p-2 bg-[#B4F82C] rounded-2xl text-slate-950 shadow-md shadow-[#B4F82C]/20 font-black">
-            <Dumbbell className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="font-bold text-xl tracking-tight text-white flex items-center gap-1.5">
-              SWEATBOX <span className="text-[#B4F82C] font-black">FITNESS</span>
-            </h1>
-            <p className="text-xs text-gray-400">Gym & Fitness Management System</p>
-          </div>
-        </div>
-
-        {/* Navigation & User Session Bar */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          <ThemeToggle />
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-charcoal-850 border border-charcoal-800 text-xs text-gray-400">
-            <Server className={`w-3.5 h-3.5 ${backendStatus === 'connected' ? 'text-green-500' : 'text-amber-500'}`} />
-            <span>System: {backendStatus === 'connected' ? 'Online' : 'Offline'}</span>
+      ) : (
+        <header className="border-b border-border-subtle bg-surface/95 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between">
+          <div 
+            className="flex items-center gap-3 cursor-pointer select-none"
+            onClick={() => setActiveTab(currentUser.role === 'member' && !(myMembership && myMembership.status === 'active') ? 'plans' : 'home')}
+          >
+            <div className="w-10 h-10 bg-[#FF6B00] rounded-xl text-[#0E1116] shadow-sm flex items-center justify-center font-black">
+              <Dumbbell className="w-5 h-5 stroke-[2.5]" />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-lg tracking-tight text-content-primary flex items-center gap-1.5 leading-none">
+                SWEATBOX <span className="text-[#FF6B00]">FITNESS</span>
+              </h1>
+              <p className="text-[10px] uppercase font-bold tracking-wider text-content-secondary mt-0.5">
+                {currentUser.role.toUpperCase()} PORTAL
+              </p>
+            </div>
           </div>
 
-          {currentUser ? (
-            <div className="flex items-center gap-3">
+          {/* Navigation & User Session Bar */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <ThemeToggle />
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-surface-elevated border border-border-subtle text-xs text-content-secondary">
+              <Server className={`w-3.5 h-3.5 ${backendStatus === 'connected' ? 'text-emerald-400' : 'text-amber-400'}`} />
+              <span>System: {backendStatus === 'connected' ? 'Online' : 'Offline'}</span>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3">
               {currentUser.role !== 'reception' && (currentUser.role !== 'member' || Boolean(myMembership && myMembership.status === 'active')) && (
                 <button
                   type="button"
                   onClick={() => setIsAiModalOpen(true)}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#B4F82C]/10 hover:bg-[#B4F82C]/20 border border-[#B4F82C]/30 text-[#B4F82C] flex items-center gap-1.5 transition shadow-sm active:scale-95"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#FF6B00]/15 hover:bg-[#FF6B00]/25 border border-[#FF6B00]/30 text-[#FF6B00] flex items-center gap-1.5 transition active:scale-95"
                   title={
                     currentUser.role === 'admin'
                       ? 'Management AI Consultant'
@@ -908,7 +948,7 @@ export const App: React.FC = () => {
                       : 'SWEATBOX AI Fitness Coach'
                   }
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-[#B4F82C]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
                   <span className="hidden md:inline">
                     {currentUser.role === 'admin'
                       ? 'Management AI'
@@ -923,63 +963,31 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsAnalyticsModalOpen(true)}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 flex items-center gap-1.5 transition active:scale-95"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-surface-elevated hover:bg-surface border border-border-subtle text-content-primary flex items-center gap-1.5 transition active:scale-95"
                   title="Financial overview, attendance throughput & CSV exports"
                 >
-                  <TrendingUp className="w-3.5 h-3.5 text-[#B4F82C]" />
+                  <TrendingUp className="w-3.5 h-3.5 text-[#FF6B00]" />
                   <span className="hidden md:inline">Analytics & Reports</span>
                 </button>
               )}
 
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-semibold text-white">{currentUser.firstName} {currentUser.lastName}</p>
-                <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-[#B4F82C]/10 text-[#B4F82C] border border-[#B4F82C]/30">
+                <p className="text-xs font-semibold text-content-primary">{currentUser.firstName} {currentUser.lastName}</p>
+                <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] border border-[#FF6B00]/30">
                   {currentUser.role}
                 </span>
               </div>
               <button
+                type="button"
                 onClick={handleLogout}
-                className="px-3 py-2 text-xs font-semibold rounded-lg bg-charcoal-800 hover:bg-red-950 hover:text-red-400 border border-charcoal-700 text-gray-300 flex items-center gap-1.5 transition"
+                className="px-3 py-2 text-xs font-semibold rounded-lg bg-surface-elevated hover:bg-red-500/10 hover:text-red-400 border border-border-subtle text-content-secondary flex items-center gap-1.5 transition min-h-[38px]"
               >
-                <LogOut className="w-3.5 h-3.5" /> Sign Out
+                <LogOut className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
-          ) : (
-            <nav className="flex items-center gap-2 sm:gap-3">
-              <button 
-                onClick={() => setActiveTab('home')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'home' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
-              >
-                Home
-              </button>
-              <button 
-                onClick={() => setActiveTab('plans')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'plans' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
-              >
-                Plans
-              </button>
-              <button 
-                onClick={() => setActiveTab('classes')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'classes' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
-              >
-                Classes
-              </button>
-              <button 
-                onClick={() => { setAuthModalMode('register'); setErrorMessage(null); }}
-                className="px-3.5 py-2 text-sm font-semibold rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-200 border border-charcoal-700 transition"
-              >
-                Sign Up
-              </button>
-              <button 
-                onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
-              >
-                Sign In
-              </button>
-            </nav>
-          )}
-        </div>
-      </header>
+          </div>
+        </header>
+      )}
 
       {/* Global Toast Alert (When modal is closed) */}
       {!authModalMode && (successMessage || errorMessage) && (
@@ -1000,7 +1008,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Container */}
-      <main className={`mx-auto px-4 sm:px-6 py-8 flex-1 w-full flex flex-col justify-center ${currentUser ? "max-w-7xl md:pl-24" : "max-w-6xl"}`}>
+      <main className={`mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-12 flex-1 w-full flex flex-col justify-center ${currentUser ? "max-w-7xl lg:pl-24" : "max-w-6xl"}`}>
 
 
         {/* VIEW A: AUTHENTICATED ROLE DASHBOARD */}

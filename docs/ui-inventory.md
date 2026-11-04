@@ -165,10 +165,17 @@ This inventory tracks the comprehensive redesign of every user interface surface
 
 ## 5. Mobile & Responsive Layouts (360px, 768px, 1280px)
 
-- [ ] **RESP-01**: Mobile Viewport (360px - 480px) — Thumb-zone navigation bar, bottom sheets for all action dialogs, touch targets >= 44px, zero horizontal overflow.
-- [ ] **RESP-02**: Tablet Viewport (768px - 1024px) — Collapsible navigation drawer, 2-column card layouts, adaptive data tables.
-- [ ] **RESP-03**: Desktop Viewport (1280px+) — Persistent left sidebar, 12-column grid system, multi-pane dashboard layouts, centered modal dialogs.
+- [x] **RESP-01**: Mobile Viewport (360px - 480px) — Thumb-zone navigation bar, bottom sheets for all action dialogs, touch targets >= 44px, zero horizontal overflow.
+- [x] **RESP-02**: Tablet Viewport (768px - 1024px) — Collapsible navigation drawer, 2-column card layouts, adaptive data tables.
+- [x] **RESP-03**: Desktop Viewport (1280px+) — Persistent left sidebar, 12-column grid system, multi-pane dashboard layouts, centered modal dialogs.
 - [x] **RESP-04**: Theme Toggle Engine — Seamless instant transition between Dark Athletic Charcoal (`#0E1116`) and Light Athletic White (`#FFFFFF`) with persistent `localStorage` preference.
+
+---
+
+## 6. Phase 2 App Shells & Navigation Architecture
+- [x] **NAV-PUB**: PublicHeader (slim desktop top bar with logo, Plans, Classes, Trainers, Log In, and persistent Sign Up CTA; mobile hamburger sheet)
+- [x] **NAV-MEM**: MemberBottomBar (fixed mobile thumb navigation with Home, Classes, pulsating 60s QR Pass, Progress, AI Coach, and Profile/Payments menu)
+- [x] **NAV-STF**: StaffNavigation (collapsible 64px/240px desktop sidebar with tooltips + compact bottom bar for top 3 actions and full slide-over tools drawer)
 
 ---
 
