@@ -205,45 +205,50 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
       {/* 1. DESKTOP COLLAPSIBLE SIDEBAR (>=1024px) */}
       <aside
         className={clsx(
-          'hidden lg:flex flex-col justify-between border-r border-border-subtle bg-surface/95 backdrop-blur-md py-6 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left',
+          'hidden lg:flex flex-col justify-between border-r border-border bg-surface/95 backdrop-blur-md py-6 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left',
           isExpanded ? 'w-60 px-4' : 'w-20 px-2'
         )}
       >
+        {/* Sleek Floating Collapse / Expand Edge Toggle Button (Never clips logo) */}
+        <button
+          type="button"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={clsx(
+            'absolute top-8 z-50 w-6 h-6 rounded-full bg-surface border border-border shadow-md flex items-center justify-center text-text-muted hover:text-primary hover:border-primary/50 transition cursor-pointer',
+            isExpanded ? '-right-3' : '-right-3'
+          )}
+          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+        >
+          {isExpanded ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+        </button>
+
         <div className="space-y-6">
-          {/* Logo & Expand Toggle */}
-          <div className="flex items-center justify-between gap-2 px-1">
+          {/* Logo Brand Header */}
+          <div className={clsx('flex items-center', isExpanded ? 'gap-3 px-1' : 'justify-center')}>
             <button
               type="button"
               onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
-              className="flex items-center gap-3 overflow-hidden"
+              className={clsx('flex items-center overflow-hidden focus:outline-none group', isExpanded ? 'gap-3' : 'justify-center')}
               title="SWEATBOX Fitness"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#FF6B00] text-[#0E1116] flex items-center justify-center font-black shrink-0 shadow-sm">
+              <div className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-black shrink-0 shadow-sm group-hover:scale-105 transition">
                 <Dumbbell className="w-5 h-5 stroke-[2.5]" />
               </div>
               {isExpanded && (
                 <div className="truncate">
-                  <span className="font-display text-lg font-black tracking-tight text-content-primary block leading-none">
+                  <span className="font-display text-lg font-black tracking-tight text-text block leading-none">
                     SWEATBOX
                   </span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#FF6B00]">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">
                     {role.toUpperCase()}
                   </span>
                 </div>
               )}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1.5 rounded-lg text-content-muted hover:text-content-primary hover:bg-surface-elevated transition"
-              aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-            >
-              {isExpanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-            </button>
           </div>
-
-          {/* Navigation Items */}
+          
+{/* Navigation Items */}
           <nav className="flex flex-col gap-1.5" aria-label="Staff Desktop Navigation">
             {visibleItems.map((item) => {
               const content = (

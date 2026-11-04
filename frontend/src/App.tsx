@@ -910,7 +910,7 @@ export const App: React.FC = () => {
           }}
         />
       ) : (
-        <header className="border-b border-border-subtle bg-surface/95 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between">
+        <header className="border-b border-border bg-surface/95 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between lg:pl-28 transition-all">
           <div 
             className="flex items-center gap-3 cursor-pointer select-none"
             onClick={() => setActiveTab(currentUser.role === 'member' && !(myMembership && myMembership.status === 'active') ? 'plans' : 'home')}
@@ -995,13 +995,13 @@ export const App: React.FC = () => {
       {!authModalMode && (successMessage || errorMessage) && (
         <div className="max-w-6xl mx-auto w-full px-6 pt-4">
           {successMessage && (
-            <div className="p-3 rounded-lg bg-green-950/70 border border-green-700/60 text-xs sm:text-sm text-green-300 flex items-center justify-between shadow-lg">
+            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 flex items-center justify-between shadow-lg">
               <span>{successMessage}</span>
               <button onClick={() => setSuccessMessage(null)}><X className="w-4 h-4" /></button>
             </div>
           )}
           {errorMessage && (
-            <div className="p-3 rounded-lg bg-red-950/70 border border-red-700/60 text-xs sm:text-sm text-red-300 flex items-center justify-between shadow-lg">
+            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs sm:text-sm text-rose-600 dark:text-rose-400 flex items-center justify-between shadow-lg">
               <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4 text-red-400" /> {errorMessage}</span>
               <button onClick={() => setErrorMessage(null)}><X className="w-4 h-4" /></button>
             </div>
@@ -1016,27 +1016,28 @@ export const App: React.FC = () => {
         {/* VIEW A: AUTHENTICATED ROLE DASHBOARD */}
         {currentUser ? (
           <div className="w-full space-y-8 animate-fadeIn">
-            {/* Role Header Banner */}
-            <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <span className="inline-block text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-[#B4F82C]/20 text-[#B4F82C] border border-[#B4F82C]/30 mb-2">
-                  Role: {currentUser.role.toUpperCase()}
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                  Welcome, {currentUser.firstName} {currentUser.lastName}
-                </h2>
-                <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                  Active account: {currentUser.email} • Verified Account
-                </p>
-              </div>
+            {/* Role Header Banner (Staff Only; Members have dedicated Athlete Command Header) */}
+            {currentUser.role !== 'member' && (
+              <div className="p-6 rounded-2xl bg-surface border border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div>
+                  <span className="inline-block text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
+                    Role: {currentUser.role.toUpperCase()}
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-text">
+                    Welcome, {currentUser.firstName} {currentUser.lastName}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-text-muted mt-1">
+                    Active account: {currentUser.email} • Verified Account
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-3">
-
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-950/60 text-green-400 border border-green-800 text-xs font-semibold">
-                  <UserCheck className="w-4 h-4" /> Account Verified
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xs font-semibold">
+                    <UserCheck className="w-4 h-4" /> Account Verified
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* UNPAID MEMBER WORKSPACE: ONLY MEMBERSHIP PLANS & PRICING SCREEN */}
             {currentUser.role === 'member' && (!myMembership || myMembership.status !== 'active') ? (
