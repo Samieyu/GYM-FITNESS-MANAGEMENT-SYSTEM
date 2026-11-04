@@ -9,20 +9,20 @@ This inventory tracks the comprehensive redesign of every user interface surface
 ## 1. Routes and Pages by Role
 
 ### 1.1 Public Pages (Unauthenticated)
-- [ ] **PUB-PAGE-01**: Home Page — Hero with dynamic value proposition, high-contrast CTAs ("Join SWEATBOX", "Explore Plans"), responsive athletic imagery.
-- [ ] **PUB-PAGE-02**: Home Page — "How It Works" 3-step athletic onboarding flow (Choose Plan -> Instant QR -> Train & Transform).
-- [ ] **PUB-PAGE-03**: Home Page — Class Timetable & Schedule preview with category badges (HIIT, Strength, Yoga, Boxing).
-- [ ] **PUB-PAGE-04**: Home Page — Certified Trainers Showcase with specialization tags and bio highlights.
-- [ ] **PUB-PAGE-05**: Home Page — App Download & Mobile Experience showcase with high-contrast QR pass graphic.
-- [ ] **PUB-PAGE-06**: Home Page — Interactive FAQ accordion (pricing, guest pass, cancellation, Ethiopian calendar).
-- [ ] **PUB-PAGE-07**: Home Page — Global Athletic Footer with operating hours, Addis Ababa gym coordinates, contact channels, and branding.
-- [ ] **PUB-PAGE-08**: Plans & Pricing Catalog (`tab=plans`) — Transparent tiered cards with ETB pricing, duration tags, feature checklists, and "Most Popular" highlight.
-- [ ] **PUB-PAGE-09**: Group Classes Schedule (`tab=classes`) — Day-of-week selector, instructor badges, spots remaining indicators, and direct book triggers.
-- [ ] **PUB-PAGE-10**: Sign-Up Wizard — Stepwise 3-step registration (Account Credentials -> Athlete Profile & Photo -> Plan & Payment Selection).
-- [ ] **PUB-PAGE-11**: Sign-In / Login View — Minimal high-contrast card, email & password inputs, "Show Password" toggle, persistent auth links.
-- [ ] **PUB-PAGE-12**: Forgot Password Request View — Focused email recovery card with clear instructions and Mailpit/live inbox hint.
-- [ ] **PUB-PAGE-13**: Reset Password Form (`/reset-password?token=...`) — Password input with real-time strength meter and confirmation field.
-- [ ] **PUB-PAGE-14**: Set Password for Invited Members (`/set-password?token=...`) — First-time onboarding card for reception-registered athletes.
+- [x] **PUB-PAGE-01**: Home Page — Hero with dynamic value proposition, high-contrast CTAs ("Join SWEATBOX", "Explore Plans"), responsive athletic imagery.
+- [x] **PUB-PAGE-02**: Home Page — "How It Works" 3-step athletic onboarding flow (Choose Plan -> Instant QR -> Train & Transform).
+- [x] **PUB-PAGE-03**: Home Page — Class Timetable & Schedule preview with category badges (HIIT, Strength, Yoga, Boxing).
+- [x] **PUB-PAGE-04**: Home Page — Certified Trainers Showcase with specialization tags and bio highlights.
+- [x] **PUB-PAGE-05**: Home Page — App Download & Mobile Experience showcase with high-contrast QR pass graphic.
+- [x] **PUB-PAGE-06**: Home Page — Interactive FAQ accordion (pricing, guest pass, cancellation, Ethiopian calendar).
+- [x] **PUB-PAGE-07**: Home Page — Global Athletic Footer with operating hours, Addis Ababa gym coordinates, contact channels, and branding.
+- [x] **PUB-PAGE-08**: Plans & Pricing Catalog (`tab=plans`) — Transparent tiered cards with ETB pricing, duration tags, feature checklists, and "Most Popular" highlight.
+- [x] **PUB-PAGE-09**: Group Classes Schedule (`tab=classes`) — Day-of-week selector, instructor badges, spots remaining indicators, and direct book triggers.
+- [x] **PUB-PAGE-10**: Sign-Up Wizard — Stepwise 3-step registration (Account Credentials -> Athlete Profile & Photo -> Plan & Payment Selection).
+- [x] **PUB-PAGE-11**: Sign-In / Login View — Minimal high-contrast card, email & password inputs, "Show Password" toggle, persistent auth links.
+- [x] **PUB-PAGE-12**: Forgot Password Request View — Focused email recovery card with clear instructions and Mailpit/live inbox hint.
+- [x] **PUB-PAGE-13**: Reset Password Form (`/reset-password?token=...`) — Password input with real-time strength meter and confirmation field.
+- [x] **PUB-PAGE-14**: Set Password for Invited Members (`/set-password?token=...`) — First-time onboarding card for reception-registered athletes.
 
 ### 1.2 Member / Athlete Pages (Role: `member`)
 - [ ] **MEM-PAGE-01**: Athlete Command Dashboard — Personalized greeting, streak badge, quick check-in QR trigger, next workout card.
@@ -70,9 +70,9 @@ This inventory tracks the comprehensive redesign of every user interface surface
 ## 2. Popups, Modals, Drawers, Sheets, and Dialogs
 
 ### 2.1 Universal & Authentication Popups
-- [ ] **POP-AUTH-01**: Auth Dialog (Login Mode) — Centered modal (desktop) / bottom sheet (mobile), clean inputs, autofocus, visible error hints.
-- [ ] **POP-AUTH-02**: Auth Dialog (Register Mode) — Stepwise layout, photo upload preview, terms agreement checkbox.
-- [ ] **POP-AUTH-03**: Auth Dialog (Forgot Password) — Single-step recovery prompt with inline feedback.
+- [x] **POP-AUTH-01**: Auth Dialog (Login Mode) — Centered modal (desktop) / bottom sheet (mobile), clean inputs, autofocus, visible error hints.
+- [x] **POP-AUTH-02**: Auth Dialog (Register Mode) — Stepwise layout, photo upload preview, terms agreement checkbox.
+- [x] **POP-AUTH-03**: Auth Dialog (Forgot Password) — Single-step recovery prompt with inline feedback.
 - [ ] **POP-AUTH-04**: Session Expired Dialog — Non-dismissible prompt with re-login action preserving unsaved work.
 - [ ] **POP-AUTH-05**: Logout Confirmation Dialog — Destructive warning dialog with safe "Cancel" and bold "Log Out" action.
 
@@ -139,7 +139,7 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [ ] **STATE-ERR-05**: Form Inline Error Messages — High-contrast red microcopy with icons positioned beneath invalid fields.
 
 ### 3.4 Success & Confirmation States
-- [ ] **STATE-SUCC-01**: Payment Completed Screen — Celebration card with receipt breakdown, Ethiopian calendar dates, and "Open QR Pass" button.
+- [x] **STATE-SUCC-01**: Payment Completed Screen — Celebration card with receipt breakdown, Ethiopian calendar dates, and "Open QR Pass" button.
 - [ ] **STATE-SUCC-02**: Walk-In Registration Complete — Clear counter confirmation displaying member name and password activation notice.
 - [ ] **STATE-SUCC-03**: Class Booking Success Modal — Immediate calendar addition option and class reminder confirmation.
 

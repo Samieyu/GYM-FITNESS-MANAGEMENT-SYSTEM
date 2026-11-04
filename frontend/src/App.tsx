@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Dumbbell, 
-  ShieldCheck, 
   QrCode, 
   Sparkles, 
   Check, 
   X, 
   UserCheck, 
   Calendar,
-  Lock,
-  Mail,
-  ArrowRight,
   Server,
   LogOut,
   UserPlus,
   DollarSign,
   AlertCircle,
-  Phone,
-  Target,
   Plus,
   Edit2,
   Upload,
   Image as ImageIcon,
   Layers,
   CreditCard,
-  ExternalLink,
   RefreshCw,
   Users,
   MapPin,
@@ -87,6 +80,13 @@ import { AthleteDashboardView } from './components/AthleteDashboardView';
 import { PublicHeader, MemberBottomBar, StaffNavigation } from './components/navigation';
 import { DevComponentGallery } from './components/DevComponentGallery';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import {
+  PublicHomePage,
+  PublicPlansCatalog,
+  PublicClassesSchedule,
+  AuthModal,
+  ChapaCheckoutModal,
+} from './components/public';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
@@ -135,6 +135,8 @@ export const App: React.FC = () => {
   const [regPassword, setRegPassword] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regGoals, setRegGoals] = useState('Muscle building and stamina');
+  const [regPhotoUrl, setRegPhotoUrl] = useState<string | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(undefined);
   // const [registeredEmail, setRegisteredEmail] = useState('');
 
   // Membership Plans state
@@ -2040,699 +2042,102 @@ export const App: React.FC = () => {
           /* VIEW B: PUBLIC VISITOR VIEW (When not logged in) */
           <>
             {activeTab === 'home' && (
-              <div className="flex flex-col items-center text-center justify-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] text-xs font-semibold mb-6">
-                  <Sparkles className="w-3.5 h-3.5" /> Next-Generation Gym Management Platform
-                </div>
-                
-                <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight max-w-3xl leading-tight">
-                  Empowering Your Gym with <span className="text-[#B4F82C]">Precision & AI</span>
-                </h2>
-                
-                <p className="mt-6 text-lg text-gray-400 max-w-2xl leading-relaxed">
-                  Integrated member management, 60-second rotating QR check-in, Chapa instant online payments, trainer workout builder, and Gemini AI coaching.
-                </p>
-
-                <div className="flex flex-wrap gap-4 mt-8 justify-center">
-                  <button 
-                    onClick={() => { setAuthModalMode('register'); setErrorMessage(null); }}
-                    className="px-6 py-3 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold flex items-center gap-2 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
-                  >
-                    Join Now <ArrowRight className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('plans')}
-                    className="px-6 py-3 rounded-lg bg-charcoal-850 hover:bg-charcoal-800 text-gray-200 border border-charcoal-700 font-semibold transition"
-                  >
-                    View Membership Plans
-                  </button>
-                </div>
-
-                {/* Feature Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full text-left">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <QrCode className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-white mb-2">Dynamic QR Check-In</h3>
-                    <p className="text-sm text-gray-400">
-                      Anti-passback 60s rotating QR tokens with receptionist verification and 2-hour repeat check-in prevention.
-                    </p>
-                  </div>
-
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-white mb-2">Automated Expiry & Chapa</h3>
-                    <p className="text-sm text-gray-400">
-                      Verified webhook payment confirmation, daily automated expiry jobs, and 7-day/1-day email reminders.
-                    </p>
-                  </div>
-
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <Sparkles className="w-5 h-5" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-white mb-2">Gemini AI Coaching</h3>
-                    <p className="text-sm text-gray-400">
-                      Trainer-approved workout drafts, fitness Q&A, and strict schema validation with medical safety notices.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Featured Plans Preview on Home */}
-                {plans.length > 0 && (
-                  <div className="mt-16 w-full text-left">
-                    <div className="flex items-center justify-between mb-8">
-                      <div>
-                        <h3 className="text-2xl font-extrabold text-white">Featured Membership Plans</h3>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Transparent pricing in Ethiopian Birr (ETB) with instant Chapa & Telebirr activation
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setActiveTab('plans')}
-                        className="text-xs font-semibold text-[#B4F82C] hover:underline flex items-center gap-1"
-                      >
-                        Explore all plans <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {plans.slice(0, 3).map((p) => (
-                        <div
-                          key={p.id}
-                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
-                        >
-                          <div>
-                            <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800">
-                              <img
-                                src={p.imageUrl || DEFAULT_PLAN_IMAGE}
-                                alt={p.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                onError={(e) => {
-                                  (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
-                                }}
-                              />
-                            </div>
-                            <h4 className="font-bold text-white text-base">{p.name}</h4>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                              {p.description || 'Full facility access and gym equipment usage.'}
-                            </p>
-                            <div className="mt-4">
-                              <span className="text-2xl font-black text-white">{p.price.toLocaleString()}</span>
-                              <span className="text-xs text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setAuthModalMode('login');
-                              setErrorMessage('Please sign in or create an account to subscribe.');
-                            }}
-                            className="mt-5 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20"
-                          >
-                            <CreditCard className="w-4 h-4" /> Subscribe with Chapa
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <PublicHomePage
+                plans={plans}
+                classesList={classesList}
+                onJoinNow={() => {
+                  setAuthModalMode('register');
+                  setErrorMessage(null);
+                }}
+                onViewPlans={() => setActiveTab('plans')}
+                onViewClasses={() => setActiveTab('classes')}
+                onSelectPlan={(plan) => {
+                  setSelectedPlanId(plan.id);
+                  setAuthModalMode('register');
+                  setErrorMessage(null);
+                }}
+                onBookClass={() => {
+                  setAuthModalMode('login');
+                  setErrorMessage('Please sign in or create an account to reserve group fitness classes.');
+                }}
+                onOpenDevGallery={() => setIsDevGalleryOpen(true)}
+              />
             )}
 
             {activeTab === 'plans' && (
-              <div className="w-full">
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Membership <span className="text-[#B4F82C]">Plans</span>
-                  </h2>
-                  <p className="mt-4 text-gray-400">Select the tier tailored to your fitness objectives.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {plans.length > 0 ? (
-                    plans.map((p, idx) => (
-                      <div
-                        key={p.id}
-                        className={`p-8 rounded-2xl bg-charcoal-850 border flex flex-col justify-between transition ${
-                          idx === 1
-                            ? 'border-2 border-[#B4F82C] shadow-2xl shadow-[#B4F82C]/10 relative'
-                            : 'border-charcoal-800'
-                        }`}
-                      >
-                        {idx === 1 && (
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#B4F82C] text-slate-950 text-xs font-bold uppercase tracking-wider">
-                            Most Popular
-                          </div>
-                        )}
-                        <div>
-                          <div className="w-full h-44 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800 shadow-md">
-                            <img
-                              src={p.imageUrl || DEFAULT_PLAN_IMAGE}
-                              alt={p.name}
-                              className="w-full h-full object-cover hover:scale-105 transition duration-300"
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
-                              }}
-                            />
-                          </div>
-
-                          <h3 className="text-xl font-bold text-white">{p.name}</h3>
-                          <p className="text-xs text-gray-400 mt-1">{p.description || 'General gym & equipment access'}</p>
-                          <div className="mt-6 mb-8">
-                            <span className="text-4xl font-extrabold text-white">{p.price.toLocaleString()}</span>
-                            <span className="text-sm text-gray-400">
-                              {' '}
-                              ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}
-                            </span>
-                          </div>
-                          <ul className="space-y-3 text-sm text-gray-300">
-                            <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-[#B4F82C]" /> Full Gym Floor Access
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-[#B4F82C]" /> Locker Room & Showers
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-[#B4F82C]" /> 60s Dynamic QR Pass
-                            </li>
-                            {p.durationMonths >= 3 && (
-                              <li className="flex items-center gap-2">
-                                <Check className="w-4 h-4 text-[#B4F82C]" /> Group Class Bookings
-                              </li>
-                            )}
-                            {p.durationMonths >= 12 && (
-                              <li className="flex items-center gap-2">
-                                <Check className="w-4 h-4 text-[#B4F82C]" /> Dedicated Personal Trainer
-                              </li>
-                            )}
-                          </ul>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setAuthModalMode('register')}
-                          className={`mt-8 w-full py-3 rounded-lg font-semibold text-white transition ${
-                            idx === 1
-                              ? 'bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-lg shadow-[#B4F82C]/20'
-                              : 'bg-charcoal-800 hover:bg-charcoal-700'
-                          }`}
-                        >
-                          Choose {p.name}
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-span-3 text-center py-12 text-gray-400">
-                      Loading membership tiers...
-                    </div>
-                  )}
-                </div>
-              </div>
+              <PublicPlansCatalog
+                plans={plans}
+                isLoading={plans.length === 0}
+                onSelectPlan={(plan) => {
+                  setSelectedPlanId(plan.id);
+                  setAuthModalMode('register');
+                  setErrorMessage(null);
+                }}
+              />
             )}
 
             {activeTab === 'classes' && (
-              <div className="w-full">
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Scheduled <span className="text-[#B4F82C]">Classes</span>
-                  </h2>
-                  <p className="mt-4 text-gray-400">
-                    Live schedule with automatic waitlist promotion and Ethiopian Calendar time.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {classesList.length > 0 ? (
-                    classesList.map((cls) => {
-                      const isFull = cls.booked_count >= cls.capacity;
-                      const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
-
-                      return (
-                        <div
-                          key={cls.id}
-                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between text-xs mb-3">
-                              <span className="flex items-center gap-1 font-mono text-[#B4F82C]">
-                                <Calendar className="w-3.5 h-3.5" />
-                                {formatEthiopianDateTime(cls.start_time)}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  isFull
-                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                    : 'bg-green-950 text-green-400 border border-green-800'
-                                }`}
-                              >
-                                {isFull ? `Full (${cls.waitlist_count} Waitlist)` : `${cls.booked_count} / ${cls.capacity} Booked`}
-                              </span>
-                            </div>
-
-                            <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
-                              {cls.title}
-                            </h3>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                              {cls.description || 'Full coaching, mobility guidance, and conditioning.'}
-                            </p>
-
-                            <div className="mt-4 space-y-1.5 text-xs text-gray-300">
-                              <p className="text-gray-400 flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
-                              </p>
-                              <p className="text-gray-400">
-                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'SWEATBOX Coach'}</span>
-                                {cls.trainer_specialization && (
-                                  <span className="text-gray-500"> ({cls.trainer_specialization})</span>
-                                )}
-                              </p>
-                            </div>
-
-                            {/* Capacity bar */}
-                            <div className="mt-4">
-                              <div className="w-full bg-charcoal-900 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full transition-all ${
-                                    isFull ? 'bg-amber-500' : 'bg-green-500'
-                                  }`}
-                                  style={{ width: `${pct}%` }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (!currentUser) {
-                                setAuthModalMode('login');
-                                setErrorMessage('Please sign in or create an account to book fitness classes.');
-                              } else {
-                                handleBookClass(cls);
-                              }
-                            }}
-                            className={`mt-6 w-full py-2.5 rounded-lg font-semibold text-xs transition flex items-center justify-center gap-2 shadow-lg ${
-                              isFull
-                                ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
-                                : 'bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-[#B4F82C]/20'
-                            }`}
-                          >
-                            {isFull ? 'Join Waitlist' : 'Reserve Spot'}
-                          </button>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="col-span-3 text-center py-12 text-gray-400">
-                      Loading scheduled fitness classes...
-                    </div>
-                  )}
-                </div>
-              </div>
+              <PublicClassesSchedule
+                classesList={classesList}
+                isLoading={classesList.length === 0}
+                onBookClass={() => {
+                  setAuthModalMode('login');
+                  setErrorMessage('Please sign in or create an account to reserve group fitness classes.');
+                }}
+              />
             )}
           </>
         )}
       </main>
 
-      {/* AUTH MODAL (LOGIN OR REGISTER) */}
+      {/* AUTH MODAL (LOGIN, REGISTER WIZARD, FORGOT PASSWORD, SET PASSWORD) */}
       {authModalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
-            <button 
-              onClick={() => { setAuthModalMode(null); setErrorMessage(null); }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Modal Header for Login & Register */}
-            <div className="flex items-center gap-3 mb-5">
-                <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
-                  {authModalMode === 'set-password' ? (
-                    <ShieldCheck className="w-5 h-5" />
-                  ) : authModalMode === 'login' ? (
-                    <Lock className="w-5 h-5" />
-                  ) : (
-                    <UserPlus className="w-5 h-5" />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">
-                    {authModalMode === 'set-password'
-                      ? 'Set Your Password'
-                      : authModalMode === 'forgot-password'
-                      ? 'Reset Your Password'
-                      : authModalMode === 'login'
-                      ? 'Sign In to Your Account'
-                      : 'Member Registration'}
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    {authModalMode === 'set-password'
-                      ? 'Create a secure password to access your member dashboard'
-                      : authModalMode === 'forgot-password'
-                      ? 'Enter your registered Gmail to receive a password reset link'
-                      : authModalMode === 'login'
-                      ? 'Enter your credentials to access your dashboard'
-                      : 'Create an account to start training'}
-                  </p>
-                </div>
-              </div>
-
-            {/* In-Modal Alert Banners (Always visible inside modal) */}
-            {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs sm:text-sm text-red-200 flex items-start justify-between gap-2 shadow-lg shadow-red-950/40 animate-fadeIn">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                  <span className="font-medium">{errorMessage}</span>
-                </div>
-                <button 
-                  type="button" 
-                  onClick={() => setErrorMessage(null)} 
-                  className="text-red-400 hover:text-white transition p-0.5"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-green-950/90 border border-green-700/80 text-xs sm:text-sm text-green-200 flex items-start justify-between gap-2 shadow-lg shadow-green-950/40 animate-fadeIn">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400 shrink-0" />
-                  <span className="font-medium">{successMessage}</span>
-                </div>
-                <button 
-                  type="button" 
-                  onClick={() => setSuccessMessage(null)} 
-                  className="text-green-400 hover:text-white transition p-0.5"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            {authModalMode === 'set-password' ? (
-              /* VIEW: SET / RESET PASSWORD FORM */
-              <div>
-                <form onSubmit={handleSetPasswordSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      New Password (minimum 6 characters)
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                      <input 
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                        minLength={6}
-                        placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Confirm New Password
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                      <input 
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        minLength={6}
-                        placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                      />
-                    </div>
-                  </div>
-
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Saving Password...' : 'Save Password & Access Account'}
-                  </button>
-                </form>
-
-                <div className="mt-4 pt-4 border-t border-charcoal-800 text-center text-xs text-gray-400">
-                  Already have a password?{' '}
-                  <button 
-                    type="button" 
-                    onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                    className="text-[#B4F82C] hover:underline font-semibold"
-                  >
-                    Sign In
-                  </button>
-                </div>
-              </div>
-            ) : authModalMode === 'login' ? (
-              /* VIEW 2: LOGIN FORM (Clean, unified, no admin role buttons) */
-              <div>
-                <form onSubmit={handleLoginSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Email Address</label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                      <input 
-                        type="email"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        required
-                        placeholder="you@example.com"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="block text-xs font-medium text-gray-300">Password</label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuthModalMode('forgot-password');
-                          setForgotEmail(loginEmail);
-                          setForgotSuccess(false);
-                          setErrorMessage(null);
-                        }}
-                        className="text-xs text-[#B4F82C] hover:underline font-semibold"
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                      <input 
-                        type="password"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        required
-                        placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                      />
-                    </div>
-                  </div>
-
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Authenticating...' : 'Sign In'}
-                  </button>
-                </form>
-
-                <div className="mt-4 pt-4 border-t border-charcoal-800 text-center text-xs text-gray-400">
-                  Don't have an account?{' '}
-                  <button 
-                    type="button" 
-                    onClick={() => { setAuthModalMode('register'); setErrorMessage(null); }}
-                    className="text-[#B4F82C] hover:underline font-semibold"
-                  >
-                    Create Member Account
-                  </button>
-                </div>
-              </div>
-            ) : authModalMode === 'forgot-password' ? (
-              /* VIEW 4: FORGOT PASSWORD FORM */
-              <div className="space-y-4">
-                {forgotSuccess ? (
-                  <div className="p-4 rounded-xl bg-green-950/60 border border-green-800 text-green-300 text-xs space-y-3">
-                    <p>
-                      Password reset instructions have been dispatched to <strong>{forgotEmail}</strong>. Please check your inbox or spam folder.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAuthModalMode('login');
-                        setForgotSuccess(false);
-                        setErrorMessage(null);
-                      }}
-                      className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs"
-                    >
-                      Return to Sign In
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-300 mb-1">Registered Gmail Address</label>
-                      <div className="relative">
-                        <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                        <input
-                          type="email"
-                          value={forgotEmail}
-                          onChange={(e) => setForgotEmail(e.target.value)}
-                          required
-                          placeholder="yourname@gmail.com"
-                          className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isForgotSubmitting}
-                      className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
-                    >
-                      {isForgotSubmitting ? 'Sending Reset Link...' : 'Send Password Reset Link'}
-                    </button>
-
-                    <div className="mt-4 pt-4 border-t border-charcoal-800 text-center text-xs text-gray-400">
-                      Remember your password?{' '}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuthModalMode('login');
-                          setErrorMessage(null);
-                        }}
-                        className="text-[#B4F82C] hover:underline font-semibold"
-                      >
-                        Sign In
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-            ) : (
-              /* VIEW 3: REGISTRATION FORM */
-              <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">First Name</label>
-                    <input 
-                      type="text"
-                      value={regFirstName}
-                      onChange={(e) => setRegFirstName(e.target.value)}
-                      required
-                      placeholder="Jane"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-300 mb-1">Last Name</label>
-                    <input 
-                      type="text"
-                      value={regLastName}
-                      onChange={(e) => setRegLastName(e.target.value)}
-                      required
-                      placeholder="Doe"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Gmail Address (@gmail.com) *</label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                    <input 
-                      type="email"
-                      value={regEmail}
-                      onChange={(e) => setRegEmail(e.target.value)}
-                      required
-                      placeholder="yourname@gmail.com"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Password (Min 6 Characters)</label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                    <input 
-                      type="password"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      required
-                      placeholder="••••••••"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Ethiopian Phone Number *</label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                    <input 
-                      type="tel"
-                      value={regPhone}
-                      onChange={(e) => setRegPhone(e.target.value)}
-                      placeholder="+251 9... or 09... (Ethio / Safaricom)"
-                      required
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Primary Fitness Goal</label>
-                  <div className="relative">
-                    <Target className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                    <input 
-                      type="text"
-                      value={regGoals}
-                      onChange={(e) => setRegGoals(e.target.value)}
-                      placeholder="Muscle building, weight loss, endurance"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50 mt-2"
-                >
-                  {isSubmitting ? 'Registering...' : 'Complete Registration'}
-                </button>
-
-                <div className="mt-3 text-center text-xs text-gray-400">
-                  Already have an account?{' '}
-                  <button 
-                    type="button" 
-                    onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                    className="text-[#B4F82C] hover:underline font-semibold"
-                  >
-                    Sign In
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
+        <AuthModal
+          mode={authModalMode}
+          onClose={() => setAuthModalMode(null)}
+          onSwitchMode={(mode) => setAuthModalMode(mode)}
+          errorMessage={errorMessage}
+          successMessage={successMessage}
+          onClearMessages={() => {
+            setErrorMessage(null);
+            setSuccessMessage(null);
+          }}
+          loginEmail={loginEmail}
+          setLoginEmail={setLoginEmail}
+          loginPassword={loginPassword}
+          setLoginPassword={setLoginPassword}
+          onLoginSubmit={handleLoginSubmit}
+          isSubmitting={isSubmitting}
+          forgotEmail={forgotEmail}
+          setForgotEmail={setForgotEmail}
+          isForgotSubmitting={isForgotSubmitting}
+          forgotSuccess={forgotSuccess}
+          onForgotPasswordSubmit={handleForgotPasswordSubmit}
+          onResetForgotSuccess={() => setForgotSuccess(false)}
+          newPassword={newPassword}
+          setNewPassword={setNewPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
+          onSetPasswordSubmit={handleSetPasswordSubmit}
+          regFirstName={regFirstName}
+          setRegFirstName={setRegFirstName}
+          regLastName={regLastName}
+          setRegLastName={setRegLastName}
+          regEmail={regEmail}
+          setRegEmail={setRegEmail}
+          regPassword={regPassword}
+          setRegPassword={setRegPassword}
+          regPhone={regPhone}
+          setRegPhone={setRegPhone}
+          regGoals={regGoals}
+          setRegGoals={setRegGoals}
+          regPhotoUrl={regPhotoUrl}
+          setRegPhotoUrl={setRegPhotoUrl}
+          onRegisterSubmit={handleRegisterSubmit}
+          plans={plans}
+          selectedPlanId={selectedPlanId}
+          onSelectPlanId={(id) => setSelectedPlanId(id)}
+        />
       )}
 
       {/* ADMIN MEMBERSHIP PLAN EDITOR MODAL */}
@@ -2920,370 +2325,42 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* CHAPA ONLINE CHECKOUT MODAL (Business Rule 3: Authentic Ethiopian Payment Gateway) */}
+      {/* CHAPA ONLINE CHECKOUT MODAL (Phase 3 Redesign) */}
       {checkoutModalData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative overflow-hidden max-h-[92vh] overflow-y-auto">
-            {/* Top decorative gradient bar */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-orange-primary to-amber-400" />
-
-            {/* Close Button */}
-            {paymentStep !== 'processing' && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCheckoutModalData(null);
-                  setPaymentStep('form');
-                  setPaymentError(null);
-                }}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
-
-            {/* STEP 1: AUTHENTIC PAYMENT FORM */}
-            {paymentStep === 'form' && (
-              <div>
-                {/* Header with Chapa Branding */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-charcoal-800">
-                  <div className="flex items-center gap-3">
-
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 font-black text-lg">
-                      C
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base font-bold text-white">Chapa Secure Checkout</h3>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
-                          VERIFIED
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-400">SWEATBOX Fitness Club • Addis Ababa, Ethiopia</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Amount Due Card */}
-                <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 flex items-center justify-between mb-5">
-                  <div>
-                    <span className="text-xs text-gray-400">Membership Plan</span>
-                    <h4 className="font-bold text-white text-sm">{checkoutModalData.planName}</h4>
-                    <span className="font-mono text-[10px] text-gray-400">Ref: {checkoutModalData.txRef}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-gray-400">Total Due</span>
-                    <div className="text-xl font-black text-[#B4F82C]">
-                      {checkoutModalData.amount.toLocaleString()} <span className="text-xs font-semibold text-gray-300">ETB</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Error Banner if any */}
-                {paymentError && (
-                  <div className="mb-4 p-3 rounded-xl bg-red-950/80 border border-red-700/80 text-xs text-red-200 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                    <span>{paymentError}</span>
-                  </div>
-                )}
-
-                {/* Payment Methods Tabs */}
-                <div className="mb-4">
-                  <label className="block text-xs font-semibold text-gray-300 mb-2">Select Payment Method</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethodTab('telebirr')}
-                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
-                        paymentMethodTab === 'telebirr'
-                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white shadow-md shadow-[#B4F82C]/10'
-                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center font-bold text-xs">
-                        📱
-                      </div>
-                      <span>Telebirr</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethodTab('cbe')}
-                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
-                        paymentMethodTab === 'cbe'
-                          ? 'border-purple-500 bg-purple-500/10 text-white shadow-md shadow-purple-500/10'
-                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">
-                        🏦
-                      </div>
-                      <span>CBE Birr</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethodTab('card')}
-                      className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
-                        paymentMethodTab === 'card'
-                          ? 'border-blue-500 bg-blue-500/10 text-white shadow-md shadow-blue-500/10'
-                          : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">
-                        💳
-                      </div>
-                      <span>Bank Card</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Form Inputs based on active tab */}
-                <form onSubmit={handleCompleteChapaPayment} className="space-y-4">
-                  {paymentMethodTab === 'telebirr' && (
-                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-300 mb-1">
-                          Telebirr Registered Phone Number *
-                        </label>
-                        <div className="relative">
-                          <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                          <input
-                            type="tel"
-                            required
-                            value={telebirrPhone}
-                            onChange={(e) => setTelebirrPhone(e.target.value)}
-                            placeholder="+251 911 234 567"
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
-                          />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-gray-400 leading-relaxed">
-                        ⚡ Enter your Ethio telecom mobile number. You will receive an instant payment authorization prompt on your handset.
-                      </p>
-                    </div>
-                  )}
-
-                  {paymentMethodTab === 'cbe' && (
-                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-300 mb-1">
-                          CBE Birr Mobile / Account Number *
-                        </label>
-                        <div className="relative">
-                          <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                          <input
-                            type="text"
-                            required
-                            value={cbePhone}
-                            onChange={(e) => setCbePhone(e.target.value)}
-                            placeholder="+251 9xx xxx xxx or 1000..."
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
-                          />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-gray-400 leading-relaxed">
-                        🏛️ Commercial Bank of Ethiopia direct debit. Instant verification through CBE Birr integration.
-                      </p>
-                    </div>
-                  )}
-
-                  {paymentMethodTab === 'card' && (
-                    <div className="space-y-3 p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-300 mb-1">Cardholder Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={cardHolder}
-                          onChange={(e) => setCardHolder(e.target.value)}
-                          placeholder="Abebe Bikila"
-                          className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-300 mb-1">Card Number (Visa / Mastercard)</label>
-                        <div className="relative">
-                          <CreditCard className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                          <input
-                            type="text"
-                            required
-                            maxLength={19}
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
-                            placeholder="4111 2222 3333 4444"
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-300 mb-1">Expiry (MM/YY)</label>
-                          <input
-                            type="text"
-                            required
-                            maxLength={5}
-                            value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
-                            placeholder="12/28"
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-300 mb-1">CVV</label>
-                          <input
-                            type="password"
-                            required
-                            maxLength={4}
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value)}
-                            placeholder="•••"
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {checkoutModalData.checkoutUrl && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (checkoutModalData.checkoutUrl) {
-                          window.location.href = checkoutModalData.checkoutUrl;
-                        }
-                      }}
-                      className="mb-3 w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-950/50 transition active:scale-[0.99]"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Proceed to Official Chapa Gateway ({checkoutModalData.amount.toLocaleString()} ETB)</span>
-                    </button>
-                  )}
-                  {/* Single Authentic Pay Button */}
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/30 transition active:scale-[0.99]"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>
-                      Pay {checkoutModalData.amount.toLocaleString()} ETB with{' '}
-                      {paymentMethodTab === 'telebirr' ? 'Telebirr' : paymentMethodTab === 'cbe' ? 'CBE Birr' : 'Card'}
-                    </span>
-                  </button>
-                </form>
-
-                {/* If live key is active and provided a valid external checkout url */}
-                {checkoutModalData.isLiveGateway && checkoutModalData.checkoutUrl && (
-                  <div className="mt-3 text-center">
-                    <a
-                      href={checkoutModalData.checkoutUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-gray-400 hover:text-[#B4F82C] transition underline flex items-center justify-center gap-1"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" /> Or pay on official Chapa Hosted Page
-                    </a>
-                  </div>
-                )}
-
-                <div className="mt-4 pt-3 border-t border-charcoal-800 flex items-center justify-between text-[11px] text-gray-500">
-                  <span className="flex items-center gap-1">🔒 256-Bit Bank Grade Encryption</span>
-                  <span>Powered by Chapa</span>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2: PROCESSING ANIMATION */}
-            {paymentStep === 'processing' && (
-              <div className="py-12 px-4 text-center space-y-5 animate-fadeIn">
-                <div className="w-16 h-16 rounded-full bg-[#B4F82C]/10 border-2 border-[#B4F82C] border-t-transparent animate-spin mx-auto flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-charcoal-900 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-[#B4F82C]" />
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-1">
-                    Processing {paymentMethodTab === 'telebirr' ? 'Telebirr' : paymentMethodTab === 'cbe' ? 'CBE Birr' : 'Card'} Payment...
-                  </h4>
-                  <p className="text-xs text-gray-400">
-                    Connecting with Chapa payment gateway and confirming HMAC-SHA256 signature...
-                  </p>
-                </div>
-                <div className="p-3 max-w-xs mx-auto rounded-lg bg-charcoal-900 border border-charcoal-800 text-[11px] text-gray-400 font-mono">
-                  TxRef: {checkoutModalData.txRef}
-                </div>
-              </div>
-            )}
-
-            {/* STEP 3: PAYMENT SUCCESS CONFIRMATION */}
-            {paymentStep === 'success' && paymentSuccessDetails && (
-              <div className="py-6 px-2 text-center space-y-5 animate-fadeIn">
-                <div className="w-16 h-16 rounded-full bg-green-500/20 border-2 border-green-500 text-green-400 flex items-center justify-center mx-auto shadow-lg shadow-green-500/20">
-                  <Check className="w-8 h-8 stroke-[3]" />
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-black text-white">Payment Confirmed!</h3>
-                  <p className="text-xs text-green-400 font-semibold mt-1">
-                    Your membership is now ACTIVE with full gym facility access.
-                  </p>
-                </div>
-
-                {/* Receipt Card */}
-                <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-2 text-left">
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Plan Activated</span>
-                    <span className="font-bold text-white">{paymentSuccessDetails.planName}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Amount Paid</span>
-                    <span className="font-extrabold text-[#B4F82C]">
-                      {paymentSuccessDetails.amount.toLocaleString()} ETB
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Payment Channel</span>
-                    <span className="font-medium text-white">{paymentSuccessDetails.method}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Transaction Ref</span>
-                    <span className="font-mono text-[11px] text-gray-300 truncate max-w-[200px]">
-                      {paymentSuccessDetails.txRef}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-gray-400">Timestamp (E.C.)</span>
-                    <span className="text-gray-300">{paymentSuccessDetails.date}</span>
-                  </div>
-                </div>
-
-                {/* Email Notice */}
-                <div className="p-3 rounded-lg bg-charcoal-900 border border-charcoal-800 flex items-center gap-2.5 text-xs text-gray-300 text-left">
-                  <Mail className="w-4 h-4 text-[#B4F82C] shrink-0" />
-                  <span>
-                    A payment receipt has been delivered to your email inbox (Mailpit running at port 8025).
-                  </span>
-                </div>
-
-                {/* Finish & View QR Button */}
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setCheckoutModalData(null);
-                    setPaymentStep('form');
-                    setPaymentError(null);
-                    setPaymentSuccessDetails(null);
-                    setActiveTab('home');
-                    await loadMemberMembershipAndPayments();
-                  }}
-                  className="w-full py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-sm shadow-lg shadow-orange-primary/30 transition flex items-center justify-center gap-2"
-                >
-                  <QrCode className="w-4 h-4" /> Go to Dashboard & View QR Pass
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <ChapaCheckoutModal
+          checkoutData={checkoutModalData}
+          onClose={() => {
+            setCheckoutModalData(null);
+            setPaymentStep('form');
+            setPaymentError(null);
+          }}
+          paymentStep={paymentStep}
+          paymentError={paymentError}
+          paymentSuccessDetails={paymentSuccessDetails}
+          paymentMethodTab={paymentMethodTab}
+          setPaymentMethodTab={setPaymentMethodTab}
+          telebirrPhone={telebirrPhone}
+          setTelebirrPhone={setTelebirrPhone}
+          cbePhone={cbePhone}
+          setCbePhone={setCbePhone}
+          cardHolder={cardHolder}
+          setCardHolder={setCardHolder}
+          cardNumber={cardNumber}
+          setCardNumber={setCardNumber}
+          cardExpiry={cardExpiry}
+          setCardExpiry={setCardExpiry}
+          cardCvv={cardCvv}
+          setCardCvv={setCardCvv}
+          onCompletePayment={handleCompleteChapaPayment}
+          onFinishAndAccessPass={async () => {
+            setCheckoutModalData(null);
+            setPaymentStep('form');
+            setPaymentError(null);
+            setPaymentSuccessDetails(null);
+            setActiveTab('home');
+            await loadMemberMembershipAndPayments();
+          }}
+        />
       )}
 
       {/* RECEPTION & ADMIN OFFLINE PAYMENT MODAL (Business Rule 4) */}
