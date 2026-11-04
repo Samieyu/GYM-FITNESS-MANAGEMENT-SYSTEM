@@ -58,7 +58,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
       ? 'Management AI Consultant • የአስተዳደር አማካሪ'
       : role === 'trainer'
       ? 'Trainer AI Coaching Co-Pilot • የአሰልጣኝ ረዳት'
-      : 'Titan AI Fitness Coach • የአካል ብቃት አሰልጣኝ';
+      : 'SWEATBOX AI Fitness Coach • የአካል ብቃት አሰልጣኝ';
 
   return (
     <aside className="w-20 bg-[#0B0D10] border-r border-slate-900 flex flex-col justify-between items-center py-6 fixed left-0 top-0 bottom-0 z-40 select-none">
@@ -67,7 +67,7 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
         <button
           onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
           className="w-11 h-11 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-[#B4F82C] shadow-lg shadow-[#B4F82C]/10 hover:scale-105 transition"
-          title="Titan Fitness Management System"
+          title="SWEATBOX Fitness Management System"
         >
           {/* Geometric Triangle Gym Brand Icon */}
           <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">

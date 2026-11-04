@@ -116,20 +116,20 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
   return (
     <div className="w-full space-y-6">
       {/* TOP HEADER BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl font-black text-white tracking-tight">
               {greetingEn}, {currentUser.firstName}
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#B4F82C]/30 text-slate-900 font-bold border border-[#B4F82C]">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#B4F82C]/30 text-white font-bold border border-[#B4F82C]">
               {todayEth}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1 flex items-center gap-2">
             <span>Let's do some workout today...</span>
             <span className="text-slate-400">•</span>
-            <span className="font-medium text-slate-700">{greetingAm}! ዛሬ ጠንክረን እንስራ።</span>
+            <span className="font-medium text-slate-300">{greetingAm}! ዛሬ ጠንክረን እንስራ።</span>
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
               placeholder="Search classes, workout... / ፈልግ"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 w-48 lg:w-60 transition"
+              className="pl-9 pr-4 py-2 bg-[#131722] border border-slate-800 rounded-full text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-slate-400 w-48 lg:w-60 transition"
             />
           </div>
 
@@ -169,8 +169,8 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
           {/* AI Coach Floating Trigger */}
           <button
             onClick={onOpenAiCoach}
-            className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-            title="Consult Titan AI Coach"
+            className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-300 transition"
+            title="Consult SWEATBOX AI Coach"
           >
             <Sparkles className="w-4 h-4 text-amber-500" />
           </button>
@@ -180,57 +180,57 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
       {/* TOP 4 METRIC CARDS ROW */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Hydration */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-black text-slate-900">2.4 <span className="text-xs font-normal text-slate-400">Liters</span></div>
+            <div className="text-2xl font-black text-white">2.4 <span className="text-xs font-normal text-slate-400">Liters</span></div>
             <p className="text-xs text-slate-500 font-medium mt-1">Water Intake • ውሃ</p>
             <div className="mt-2 text-[11px] text-sky-600 font-semibold flex items-center gap-1">
               <span>Goal: 3.0 Liters</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center">
             <Droplets className="w-6 h-6" />
           </div>
         </div>
 
         {/* Card 2: Calories */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-black text-slate-900">2,150 <span className="text-xs font-normal text-slate-400">kcal</span></div>
+            <div className="text-2xl font-black text-white">2,150 <span className="text-xs font-normal text-slate-400">kcal</span></div>
             <p className="text-xs text-slate-500 font-medium mt-1">Active Calories • ካሎሪ</p>
             <div className="mt-2 text-[11px] text-amber-600 font-semibold flex items-center gap-1">
               <span>Daily Target: 2,400</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center">
             <Flame className="w-6 h-6" />
           </div>
         </div>
 
         {/* Card 3: Heart Rate */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-black text-slate-900">122 <span className="text-xs font-normal text-slate-400">BPM</span></div>
+            <div className="text-2xl font-black text-white">122 <span className="text-xs font-normal text-slate-400">BPM</span></div>
             <p className="text-xs text-slate-500 font-medium mt-1">Heart Intensity • የልብ ምት</p>
             <div className="mt-2 text-[11px] text-rose-600 font-semibold flex items-center gap-1">
               <span>Aerobic Zone</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center">
             <Heart className="w-6 h-6" />
           </div>
         </div>
 
         {/* Card 4: Attendance Streak */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-black text-slate-900">4 <span className="text-xs font-normal text-slate-400">Days</span></div>
+            <div className="text-2xl font-black text-white">4 <span className="text-xs font-normal text-slate-400">Days</span></div>
             <p className="text-xs text-slate-500 font-medium mt-1">Weekly Streak • ፅናት</p>
             <div className="mt-2 text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
               <span>Consistency: 80%</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
             <Trophy className="w-6 h-6" />
           </div>
         </div>
@@ -241,18 +241,18 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
         {/* LEFT / CENTER COLUMN (8 COLS) */}
         <div className="lg:col-span-8 space-y-6">
           {/* WORKOUT ACTIVITY CHART CARD */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Workout Activity</h3>
+                <h3 className="text-base font-bold text-white">Workout Activity</h3>
                 <p className="text-xs text-slate-400">Weekly training intensity & gym visits</p>
               </div>
               <div className="flex items-center gap-4 text-xs">
-                <span className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="flex items-center gap-1.5 text-slate-300 font-medium">
                   <span className="w-2.5 h-2.5 rounded-full bg-slate-900 inline-block"></span>
                   Gym Scans
                 </span>
-                <span className="flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="flex items-center gap-1.5 text-slate-300 font-medium">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#B4F82C] inline-block border border-slate-400"></span>
                   Intensity Wave
                 </span>
@@ -269,9 +269,9 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                   </linearGradient>
                 </defs>
                 {/* Horizontal reference grid lines */}
-                <line x1="0" y1="20" x2="600" y2="20" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="0" y1="60" x2="600" y2="60" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="0" y1="100" x2="600" y2="100" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="0" y1="20" x2="600" y2="20" stroke="#1E2638" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="0" y1="60" x2="600" y2="60" stroke="#1E2638" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="0" y1="100" x2="600" y2="100" stroke="#1E2638" strokeWidth="1" strokeDasharray="4 4" />
 
                 {/* Shaded Area under wave */}
                 <path
@@ -292,19 +292,19 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                 <path
                   d="M 0,60 Q 90,85 180,45 T 350,70 T 500,45 T 600,80"
                   fill="none"
-                  stroke="#0F172A"
+                  stroke="#38BDF8"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
 
                 {/* Interactive Peak Point at Wednesday */}
-                <circle cx="300" cy="50" r="5" fill="#0F172A" stroke="#FFFFFF" strokeWidth="2.5" />
+                <circle cx="300" cy="50" r="5" fill="#38BDF8" stroke="#FFFFFF" strokeWidth="2.5" />
                 <circle cx="300" cy="50" r="10" fill="#B4F82C" fillOpacity="0.4" />
               </svg>
 
               {/* Floating Pill Tag at Wed peak */}
               <div
-                className="absolute text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-950 text-white shadow-md -translate-x-1/2 flex items-center gap-1"
+                className="absolute text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#090C10] text-white border border-slate-800 shadow-md -translate-x-1/2 flex items-center gap-1"
                 style={{ left: '50%', top: '22px' }}
               >
                 <Scale className="w-3 h-3 text-[#B4F82C]" />
@@ -313,11 +313,11 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             </div>
 
             {/* Days of Week Labels */}
-            <div className="flex justify-between items-center text-xs font-semibold text-slate-400 pt-2 border-t border-slate-100 mt-2 px-2">
+            <div className="flex justify-between items-center text-xs font-semibold text-slate-400 pt-2 border-t border-slate-800/80 mt-2 px-2">
               <span>Sun</span>
               <span>Mon</span>
               <span>Tue</span>
-              <span className="text-slate-900 font-bold">Wed</span>
+              <span className="text-white font-bold">Wed</span>
               <span>Thu</span>
               <span>Fri</span>
               <span>Sat</span>
@@ -327,7 +327,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
           {/* ROW OF 3 ACTION & SUMMARY CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 1. Subscription Card */}
-            <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+            <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Subscription</span>
@@ -335,7 +335,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                     {myMembership?.status === 'active' ? 'Active' : 'Unsubscribed'}
                   </span>
                 </div>
-                <h4 className="text-base font-extrabold text-slate-900">
+                <h4 className="text-base font-extrabold text-white">
                   {myMembership?.plan_name || 'No Active Plan'}
                 </h4>
                 <p className="text-xs text-slate-500 mt-1">
@@ -345,11 +345,11 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100">
+              <div className="mt-4 pt-3 border-t border-slate-800/80">
                 {myMembership?.status === 'active' ? (
                   <button
                     onClick={() => onNavigateTab('plans')}
-                    className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5"
                   >
                     <span>View Plan Details</span>
                     <ArrowUpRight className="w-3.5 h-3.5 text-slate-500" />
@@ -367,14 +367,14 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             </div>
 
             {/* 2. Payment Renewal Card */}
-            <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+            <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Payment & Renewal</span>
                   <CreditCard className="w-4 h-4 text-slate-400" />
                 </div>
                 <p className="text-xs text-slate-500">Renew by / የሚያበቃበት</p>
-                <h4 className="text-sm font-bold text-slate-900 mt-0.5">
+                <h4 className="text-sm font-bold text-white mt-0.5">
                   {myMembership?.end_date ? formatEthiopianDate(myMembership.end_date) : 'Not Subscribed'}
                 </h4>
                 <p className="text-[11px] text-slate-400 mt-2">
@@ -382,7 +382,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
+              <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   {myMembership?.status !== 'active' && plans.length > 0 ? (
                     <button
@@ -417,26 +417,26 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             </div>
 
             {/* 3. Daily Workout Split Card */}
-            <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+            <div className="bg-[#0D1017] rounded-3xl p-5 shadow-xl border border-slate-800/80 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Assigned Routine</span>
                   <Dumbbell className="w-4 h-4 text-[#9FE01B]" />
                 </div>
-                <h4 className="text-base font-extrabold text-slate-900">Today's Workout</h4>
-                <div className="mt-2 space-y-1.5 text-xs text-slate-600">
+                <h4 className="text-base font-extrabold text-white">Today's Workout</h4>
+                <div className="mt-2 space-y-1.5 text-xs text-slate-300">
                   <div className="flex justify-between items-center py-1 border-b border-slate-50">
                     <span className="font-medium">Barbell Bench Press</span>
-                    <span className="font-bold text-slate-900">4 × 8</span>
+                    <span className="font-bold text-white">4 × 8</span>
                   </div>
                   <div className="flex justify-between items-center py-1">
                     <span className="font-medium">Back Squats</span>
-                    <span className="font-bold text-slate-900">4 × 8</span>
+                    <span className="font-bold text-white">4 × 8</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100">
+              <div className="mt-4 pt-3 border-t border-slate-800/80">
                 <button
                   onClick={onOpenWorkout}
                   className="w-full py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95"
@@ -450,15 +450,15 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
 
           {/* ACTIVE BOOKINGS SECTION (IF ANY RESERVATIONS) */}
           {myBookings.length > 0 && (
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Bookmark className="w-5 h-5 text-slate-900" />
-                  <h3 className="text-base font-bold text-slate-900">My Reserved Classes & Waitlist</h3>
+                  <Bookmark className="w-5 h-5 text-white" />
+                  <h3 className="text-base font-bold text-white">My Reserved Classes & Waitlist</h3>
                 </div>
                 <button
                   onClick={onRefreshClasses}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 transition"
+                  className="p-1.5 text-slate-400 hover:text-slate-300 transition"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                 </button>
@@ -468,10 +468,10 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                 {myBookings.map((bk) => (
                   <div
                     key={bk.booking_id}
-                    className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between"
+                    className="p-4 rounded-2xl bg-[#131722] border border-slate-800 flex items-center justify-between"
                   >
                     <div>
-                      <p className="font-bold text-slate-900 text-sm">{bk.title}</p>
+                      <p className="font-bold text-white text-sm">{bk.title}</p>
                       <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-slate-400" />
                         {formatEthiopianDateTime(bk.start_time)}
@@ -492,7 +492,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                           const cls = classesList.find((c) => c.id === bk.class_id);
                           if (cls) onCancelBooking(cls);
                         }}
-                        className="px-2 py-0.5 rounded text-[10px] text-rose-500 hover:bg-rose-50 font-medium transition"
+                        className="px-2 py-0.5 rounded text-[10px] text-rose-400 hover:bg-rose-950/60 font-medium transition"
                         title="Cancel reservation"
                       >
                         Cancel
@@ -508,53 +508,53 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
         {/* RIGHT COLUMN: ATHLETE PROFILE & CALENDAR (4 COLS) */}
         <div className="lg:col-span-4 space-y-6">
           {/* ATHLETE PROFILE MINI-CARD */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-slate-900 to-slate-700 text-[#B4F82C] font-black text-2xl flex items-center justify-center border-2 border-white shadow">
                 {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900 leading-tight">
+                <h3 className="text-lg font-bold text-white leading-tight">
                   {currentUser.firstName} {currentUser.lastName}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">{currentUser.email}</p>
-                <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-300">
                   {currentUser.role} • Verified
                 </span>
               </div>
             </div>
 
             {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-slate-100 text-center">
+            <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-slate-800/80 text-center">
               <div>
                 <p className="text-[11px] text-slate-400">Height</p>
-                <p className="text-sm font-bold text-slate-900">178 cm</p>
+                <p className="text-sm font-bold text-white">178 cm</p>
               </div>
-              <div className="border-x border-slate-100">
+              <div className="border-x border-slate-800/80">
                 <p className="text-[11px] text-slate-400">Weight</p>
-                <p className="text-sm font-bold text-slate-900">78 kg</p>
+                <p className="text-sm font-bold text-white">78 kg</p>
               </div>
               <div>
                 <p className="text-[11px] text-slate-400">Fitness Goal</p>
-                <p className="text-sm font-bold text-slate-900">Build</p>
+                <p className="text-sm font-bold text-white">Build</p>
               </div>
             </div>
 
             <button
               onClick={onOpenProgress}
-              className="mt-4 w-full py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-200"
+              className="mt-4 w-full py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-800"
             >
-              <Scale className="w-3.5 h-3.5 text-slate-700" />
+              <Scale className="w-3.5 h-3.5 text-slate-300" />
               <span>Update Weight & Measurements</span>
             </button>
           </div>
 
           {/* MONTHLY ATTENDANCE CALENDAR WIDGET */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+              <h3 className="text-base font-bold text-white flex items-center gap-1.5">
                 <span>Attendance</span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-300">
                   {todayEth.split(' ')[0]} {todayEth.split(' ')[2]}
                 </span>
               </h3>
@@ -575,7 +575,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             {/* Calendar Days Matrix */}
             <div className="grid grid-cols-7 gap-1 text-center text-xs">
               {calendarDays.map((item) => {
-                let cellClass = 'text-slate-700 hover:bg-slate-100';
+                let cellClass = 'text-slate-300 hover:bg-slate-100';
                 if (item.attended) {
                   cellClass = 'bg-[#B4F82C] text-slate-950 font-black shadow-sm';
                 } else if (item.denied) {
@@ -594,7 +594,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             </div>
 
             {/* Legend */}
-            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-4 mt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-4 mt-4 border-t border-slate-800/80">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#B4F82C] inline-block"></span>
                 <span>Check-in Allowed</span>
@@ -607,15 +607,15 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
           </div>
 
           {/* TRENDING GROUP FITNESS CLASSES CARD */}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-[#0D1017] rounded-3xl p-6 shadow-xl border border-slate-800/80">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Upcoming Classes</h3>
+                <h3 className="text-base font-bold text-white">Upcoming Classes</h3>
                 <p className="text-xs text-slate-400">Strict capacity & automated waitlist</p>
               </div>
               <button
                 onClick={() => onNavigateTab('classes')}
-                className="text-xs font-bold text-slate-900 hover:text-slate-600 transition"
+                className="text-xs font-bold text-white hover:text-slate-300 transition"
               >
                 View All
               </button>
@@ -634,10 +634,10 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                   return (
                     <div
                       key={cls.id}
-                      className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3"
+                      className="p-3.5 rounded-2xl bg-[#131722] border border-slate-800 flex items-center justify-between gap-3"
                     >
                       <div>
-                        <h4 className="font-bold text-slate-900 text-xs leading-tight">{cls.title}</h4>
+                        <h4 className="font-bold text-white text-xs leading-tight">{cls.title}</h4>
                         <p className="text-[11px] text-slate-500 mt-0.5">Coach: {cls.trainer_name || 'Alex Strong'}</p>
                         <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
                           <Clock className="w-3 h-3" />

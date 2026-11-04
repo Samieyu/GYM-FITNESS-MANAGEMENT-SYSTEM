@@ -171,7 +171,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-3xl rounded-3xl p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-3xl rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
         {/* Close Button */}
         <button 
           onClick={onClose}
@@ -182,13 +182,13 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-orange-primary/15 border border-orange-primary/30 flex items-center justify-center text-orange-primary">
+          <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/15 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C]">
             <Dumbbell className="w-5 h-5" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Trainer Workout Workspace & Review Gate
-              <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-orange-primary text-[10px] font-bold border border-orange-primary/30 uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-[#B4F82C] text-[10px] font-bold border border-[#B4F82C]/30 uppercase">
                 Coach Approval
               </span>
             </h3>
@@ -203,7 +203,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
             onClick={() => setActiveTab('pending')}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${
               activeTab === 'pending'
-                ? 'bg-orange-primary text-white shadow-md'
+                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -214,7 +214,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
             onClick={() => setActiveTab('builder')}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${
               activeTab === 'builder'
-                ? 'bg-orange-primary text-white shadow-md'
+                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -246,7 +246,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
 
             {isLoading ? (
               <div className="py-12 text-center text-gray-400 text-xs flex flex-col items-center justify-center gap-2">
-                <RefreshCw className="w-6 h-6 animate-spin text-orange-primary" />
+                <RefreshCw className="w-6 h-6 animate-spin text-[#B4F82C]" />
                 Loading pending routine drafts...
               </div>
             ) : pendingPlans.length > 0 ? (
@@ -321,7 +321,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                                     </span>
                                   )}
                                 </div>
-                                <span className="font-mono text-orange-primary font-semibold text-xs whitespace-nowrap">
+                                <span className="font-mono text-[#B4F82C] font-semibold text-xs whitespace-nowrap">
                                   {ex.sets} Sets × {ex.reps} Reps ({ex.rest_seconds || 60}s rest)
                                 </span>
                               </div>
@@ -354,7 +354,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                   value={customMemberId}
                   onChange={(e) => setCustomMemberId(e.target.value)}
                   placeholder="Enter member's UUID..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white font-mono text-xs focus:outline-none focus:border-orange-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white font-mono text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 />
               </div>
 
@@ -367,7 +367,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
                   placeholder="e.g. 4-Week Hypertrophy Split"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:outline-none focus:border-orange-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 />
               </div>
             </div>
@@ -381,7 +381,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                 onChange={(e) => setCustomDescription(e.target.value)}
                 rows={2}
                 placeholder="Targeted recommendations, progression guide..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:outline-none focus:border-orange-primary"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
               />
             </div>
 
@@ -394,7 +394,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddBuilderExercise}
-                  className="px-2.5 py-1 rounded-lg bg-charcoal-800 hover:bg-orange-primary text-white text-xs font-semibold transition flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-lg bg-charcoal-800 hover:bg-[#B4F82C] text-slate-950 text-xs font-semibold transition flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Exercise
                 </button>
@@ -491,7 +491,7 @@ export const TrainerWorkoutModal: React.FC<TrainerWorkoutModalProps> = ({
             <button
               type="submit"
               disabled={isSavingCustom}
-              className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20 disabled:opacity-50"
             >
               {isSavingCustom ? (
                 <>

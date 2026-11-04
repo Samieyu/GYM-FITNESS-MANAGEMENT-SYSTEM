@@ -92,7 +92,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-5xl bg-[#0D1017] border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/80 overflow-hidden flex flex-col max-h-[92vh] animate-scaleUp">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">
           <div className="flex items-center space-x-3">
@@ -101,7 +101,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
             </div>
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                Titan Analytics & Intelligence
+                SWEATBOX Analytics & Intelligence
                 <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                   {todayEth}
                 </span>
@@ -617,7 +617,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 
         {/* Footer */}
         <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
-          <span>Titan Fitness Management System v2.0 • Ethiopian Calendar Engine</span>
+          <span>SWEATBOX Fitness Management System v2.0 • Ethiopian Calendar Engine</span>
           <button
             onClick={onClose}
             className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"

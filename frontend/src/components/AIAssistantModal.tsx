@@ -47,10 +47,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   const isAdmin = userRole === 'admin';
 
   const assistantTitle = isAdmin
-    ? 'Titan Management Consultant AI'
+    ? 'SWEATBOX Management Consultant AI'
     : isTrainer
     ? 'Trainer AI Coaching Co-Pilot'
-    : 'Titan AI Fitness Coach';
+    : 'SWEATBOX AI Fitness Coach';
 
   const assistantSubtitle = isAdmin
     ? 'Gym Operations, Member Retention & Revenue Strategy Advisor'
@@ -59,10 +59,10 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     : 'Personalized Workout Advice & Ethiopian Nutrition Companion';
 
   const welcomeMessage = isAdmin
-    ? `Hello ${userName}! I'm Titan Management Consultant AI, your gym business and operations advisory co-pilot. Ask me anything about member retention tactics, off-peak pricing strategy, commercial equipment maintenance lifecycles, or staff scheduling optimization.`
+    ? `Hello ${userName}! I'm SWEATBOX Management Consultant AI, your gym business and operations advisory co-pilot. Ask me anything about member retention tactics, off-peak pricing strategy, commercial equipment maintenance lifecycles, or staff scheduling optimization.`
     : isTrainer
     ? `Hello Coach ${userName}! I'm your Coaching Co-Pilot. I assist with exercise progression design, periodized hypertrophy/strength splits, client macronutrient targets during Ethiopian fasting (tsom), and injury regressions. What program are you building today?`
-    : `Hello ${userName}! I'm Titan AI Fitness Coach, your sports science and training assistant. Ask me anything about workout routines, Ethiopian nutrition (teff, fasting diet/tsom), exercise biomechanics, or recovery!`;
+    : `Hello ${userName}! I'm SWEATBOX AI Fitness Coach, your sports science and training assistant. Ask me anything about workout routines, Ethiopian nutrition (teff, fasting diet/tsom), exercise biomechanics, or recovery!`;
 
   // Chat state
   const [messages, setMessages] = useState<MessageItem[]>([]);

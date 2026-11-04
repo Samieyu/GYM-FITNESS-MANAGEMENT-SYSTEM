@@ -1,6 +1,6 @@
 /**
  * Comprehensive System Verification Test
- * Accurately testing all 10 feature suites of Titan Fitness Management System
+ * Accurately testing all 10 feature suites of Sweatbox Fitness Management System
  */
 
 const BASE_URL = 'http://127.0.0.1:5000';
@@ -31,7 +31,7 @@ async function request(method, path, body = null, headers = {}) {
 
 async function runAllTests() {
   console.log('========================================================================');
-  console.log('TITAN FITNESS MANAGEMENT SYSTEM - FULL FUNCTIONALITY & E2E VERIFICATION');
+  console.log('SWEATBOX FITNESS MANAGEMENT SYSTEM - FULL FUNCTIONALITY & E2E VERIFICATION');
   console.log('========================================================================\n');
 
   let passed = 0;

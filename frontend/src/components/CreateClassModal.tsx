@@ -107,7 +107,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-3xl p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
         <button
           onClick={onClose}
           className="absolute top-5 right-5 text-gray-400 hover:text-white transition p-1 rounded-full hover:bg-charcoal-800"
@@ -116,7 +116,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
         </button>
 
         <div className="flex items-center gap-3 mb-5">
-          <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary">
+          <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C]">
             <Dumbbell className="w-6 h-6" />
           </div>
           <div>
@@ -141,7 +141,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. HIIT Strength & Core conditioning"
               required
-              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
+              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
             />
           </div>
 
@@ -152,7 +152,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="High energy workout details, target muscle groups, prerequisites..."
-              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-orange-primary resize-none"
+              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 resize-none"
             />
           </div>
 
@@ -163,7 +163,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                 value={trainerId}
                 onChange={(e) => setTrainerId(e.target.value)}
                 required
-                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
+                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
               >
                 {trainers.length === 0 ? (
                   <option value="">Loading trainers...</option>
@@ -188,7 +188,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                   value={capacity}
                   onChange={(e) => setCapacity(parseInt(e.target.value) || 1)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary font-mono"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                 />
               </div>
             </div>
@@ -204,7 +204,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 />
               </div>
             </div>
@@ -218,7 +218,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 />
               </div>
             </div>
@@ -232,7 +232,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 />
               </div>
             </div>
@@ -248,14 +248,14 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Studio A - Cardio Deck or Heavy Iron Zone"
                 required
-                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-orange-primary"
+                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
               />
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-[11px] text-gray-400 space-y-1">
             <p className="font-semibold text-gray-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-orange-primary" /> Automated Waitlist Engine Active
+              <Sparkles className="w-3.5 h-3.5 text-[#B4F82C]" /> Automated Waitlist Engine Active
             </p>
             <p>
               Once {capacity} spots are booked, additional registrations enter the waitlist queue and are auto-promoted when any member cancels.
@@ -273,7 +273,7 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50 active:scale-98"
+              className="px-5 py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-[#B4F82C]/20 disabled:opacity-50 active:scale-98"
             >
               <Calendar className="w-4 h-4" />
               {isSubmitting ? 'Scheduling...' : 'Confirm Schedule'}

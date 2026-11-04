@@ -16,9 +16,9 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-const ACCESS_TOKEN_KEY = 'titan_gym_access_token';
-const REFRESH_TOKEN_KEY = 'titan_gym_refresh_token';
-const USER_KEY = 'titan_gym_user';
+const ACCESS_TOKEN_KEY = 'sweatbox_gym_access_token';
+const REFRESH_TOKEN_KEY = 'sweatbox_gym_refresh_token';
+const USER_KEY = 'sweatbox_gym_user';
 
 export const getStoredAccessToken = (): string | null => localStorage.getItem(ACCESS_TOKEN_KEY);
 export const getStoredRefreshToken = (): string | null => localStorage.getItem(REFRESH_TOKEN_KEY);

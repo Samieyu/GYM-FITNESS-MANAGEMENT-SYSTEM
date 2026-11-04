@@ -110,7 +110,7 @@ export class PaymentsService {
               ? (returnUrl.includes('tx_ref=') ? returnUrl : `${returnUrl}${returnUrl.includes('?') ? '&' : '?'}tx_ref=${txRef}`)
               : `${config.corsOrigin}/?tx_ref=${txRef}&payment=success`,
             customization: {
-              title: 'Titan Fitness',
+              title: 'SWEATBOX Fitness',
               description: `Payment for ${plan.name}`,
             },
           }),

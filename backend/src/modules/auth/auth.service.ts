@@ -80,7 +80,7 @@ export class AuthService {
     await authRepository.saveRefreshToken(user.id, refreshHash, refExpiresAt);
 
     return {
-      message: 'Registration successful. Welcome to Titan Fitness!',
+      message: 'Registration successful. Welcome to SWEATBOX Fitness!',
       userId: user.id,
       accessToken,
       refreshToken,

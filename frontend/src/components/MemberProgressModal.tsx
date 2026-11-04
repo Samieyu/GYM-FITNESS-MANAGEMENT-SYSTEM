@@ -133,13 +133,13 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
           </button>
 
           <div className="flex items-start gap-3.5 mb-5">
-            <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary shrink-0">
+            <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C] shrink-0">
               <Scale className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold text-white">Body Transformation & Progress Logs</h3>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-orange-primary/20 text-orange-primary border border-orange-primary/30">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-orange-primary/20 text-[#B4F82C] border border-[#B4F82C]/30">
                   Athlete Tracking
                 </span>
               </div>
@@ -200,7 +200,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                     {summary.current_bmi ? `${summary.current_bmi}` : '—'}
                   </span>
                   {summary.current_bmi_category && (
-                    <span className="text-[10px] block text-orange-primary font-medium">
+                    <span className="text-[10px] block text-[#B4F82C] font-medium">
                       {summary.current_bmi_category}
                     </span>
                   )}
@@ -223,7 +223,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
             <button
               type="button"
               onClick={() => setShowLogForm(!showLogForm)}
-              className="px-3.5 py-1.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-lg shadow-orange-primary/20"
+              className="px-3.5 py-1.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold flex items-center gap-1.5 transition shadow-lg shadow-[#B4F82C]/20"
             >
               <Plus className="w-3.5 h-3.5" /> {showLogForm ? 'Close Entry Form' : 'Log New Measurements'}
             </button>
@@ -233,7 +233,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
               onClick={loadData}
               className="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-orange-primary' : ''}`} /> Refresh
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
             </button>
           </div>
 
@@ -257,7 +257,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
           {/* New Entry Form Card */}
           {showLogForm && (
             <form onSubmit={handleSubmitMetric} className="p-4 rounded-2xl bg-charcoal-900 border border-charcoal-700 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-orange-primary flex items-center gap-1.5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#B4F82C] flex items-center gap-1.5">
                 <Scale className="w-4 h-4" /> Record Today's Metrics
               </h4>
 
@@ -273,7 +273,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                     placeholder="e.g. 78.5"
                     value={weightKg}
                     onChange={(e) => setWeightKg(e.target.value)}
-                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-orange-primary font-mono"
+                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                   />
                 </div>
 
@@ -287,7 +287,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                     placeholder="e.g. 178"
                     value={heightCm}
                     onChange={(e) => setHeightCm(e.target.value)}
-                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-orange-primary font-mono"
+                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                   />
                 </div>
 
@@ -301,7 +301,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                     placeholder="e.g. 15.2"
                     value={bodyFat}
                     onChange={(e) => setBodyFat(e.target.value)}
-                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-orange-primary font-mono"
+                    className="w-full bg-charcoal-850 border border-charcoal-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                   />
                 </div>
               </div>
@@ -318,7 +318,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                       placeholder="cm"
                       value={waistCm}
                       onChange={(e) => setWaistCm(e.target.value)}
-                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-orange-primary font-mono"
+                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                     />
                   </div>
                   <div>
@@ -329,7 +329,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                       placeholder="cm"
                       value={chestCm}
                       onChange={(e) => setChestCm(e.target.value)}
-                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-orange-primary font-mono"
+                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                     />
                   </div>
                   <div>
@@ -340,7 +340,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                       placeholder="cm"
                       value={hipsCm}
                       onChange={(e) => setHipsCm(e.target.value)}
-                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-orange-primary font-mono"
+                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                     />
                   </div>
                   <div>
@@ -351,7 +351,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                       placeholder="cm"
                       value={armsCm}
                       onChange={(e) => setArmsCm(e.target.value)}
-                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-orange-primary font-mono"
+                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                     />
                   </div>
                   <div>
@@ -362,7 +362,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                       placeholder="cm"
                       value={thighsCm}
                       onChange={(e) => setThighsCm(e.target.value)}
-                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-orange-primary font-mono"
+                      className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
                     />
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-1.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Entry'}
                 </button>
@@ -406,7 +406,7 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-charcoal-800/80 pb-2.5">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-orange-primary flex items-center gap-1 font-semibold">
+                        <span className="font-mono text-xs text-[#B4F82C] flex items-center gap-1 font-semibold">
                           <Calendar className="w-3.5 h-3.5" />
                           {formatEthiopianDate(m.recorded_date)} E.C.
                         </span>
@@ -479,8 +479,8 @@ export const MemberProgressModal: React.FC<MemberProgressModalProps> = ({
 
                     {/* Personal Trainer Feedback comment */}
                     {m.trainer_comment ? (
-                      <div className="p-3 rounded-xl bg-orange-950/20 border border-orange-primary/30 mt-2">
-                        <div className="flex items-center justify-between text-[11px] text-orange-primary font-semibold mb-1">
+                      <div className="p-3 rounded-xl bg-orange-950/20 border border-[#B4F82C]/30 mt-2">
+                        <div className="flex items-center justify-between text-[11px] text-[#B4F82C] font-semibold mb-1">
                           <span className="flex items-center gap-1.5">
                             <MessageSquare className="w-3.5 h-3.5" />
                             Coach Note • {m.trainer_name || 'Coach'}

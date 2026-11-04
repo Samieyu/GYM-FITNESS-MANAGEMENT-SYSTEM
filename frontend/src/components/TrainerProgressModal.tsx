@@ -127,13 +127,13 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
           </button>
 
           <div className="flex items-start gap-3.5 mb-4">
-            <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary shrink-0">
+            <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C] shrink-0">
               <Users className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold text-white">Athlete Transformation & Weight Reviews</h3>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-charcoal-800 text-orange-primary border border-charcoal-700">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-charcoal-800 text-[#B4F82C] border border-charcoal-700">
                   Coach Portal
                 </span>
               </div>
@@ -186,7 +186,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                         onClick={() => handleSelectMember(m)}
                         className={`p-3 rounded-xl cursor-pointer transition border ${
                           isSelected
-                            ? 'bg-orange-primary/10 border-orange-primary/50 text-white'
+                            ? 'bg-[#B4F82C]/10 border-orange-primary/50 text-white'
                             : 'bg-charcoal-850 border-charcoal-800 hover:border-charcoal-700 text-gray-300'
                         }`}
                       >
@@ -226,7 +226,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                       {selectedMember.first_name} {selectedMember.last_name}
                     </h4>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {selectedMember.email} • Goal: <span className="text-orange-primary">{selectedMember.fitness_goals || 'General Fitness'}</span>
+                      {selectedMember.email} • Goal: <span className="text-[#B4F82C]">{selectedMember.fitness_goals || 'General Fitness'}</span>
                     </p>
                   </div>
 
@@ -278,7 +278,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                         className="p-3.5 rounded-xl bg-charcoal-850 border border-charcoal-800 space-y-2 hover:border-charcoal-750 transition"
                       >
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-mono text-orange-primary flex items-center gap-1 font-semibold">
+                          <span className="font-mono text-[#B4F82C] flex items-center gap-1 font-semibold">
                             <Calendar className="w-3.5 h-3.5" />
                             {formatEthiopianDate(m.recorded_date)} E.C.
                           </span>
@@ -320,8 +320,8 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
 
                         {/* Coach feedback or inline comment trigger */}
                         {m.trainer_comment ? (
-                          <div className="p-2.5 rounded-lg bg-orange-950/20 border border-orange-primary/30 text-xs">
-                            <div className="flex items-center justify-between text-[10px] text-orange-primary font-semibold mb-0.5">
+                          <div className="p-2.5 rounded-lg bg-orange-950/20 border border-[#B4F82C]/30 text-xs">
+                            <div className="flex items-center justify-between text-[10px] text-[#B4F82C] font-semibold mb-0.5">
                               <span>Coach Feedback:</span>
                               <button
                                 type="button"
@@ -345,7 +345,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                                   setActiveCommentMetricId(m.id);
                                   setCommentText('');
                                 }}
-                                className="text-[11px] text-orange-primary hover:underline flex items-center gap-1 font-semibold"
+                                className="text-[11px] text-[#B4F82C] hover:underline flex items-center gap-1 font-semibold"
                               >
                                 <MessageSquare className="w-3 h-3" /> Add Coaching Guidance Note
                               </button>
@@ -355,7 +355,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
 
                         {/* Active inline feedback form */}
                         {activeCommentMetricId === m.id && (
-                          <div className="p-3 rounded-xl bg-charcoal-900 border border-orange-primary/40 space-y-2 mt-2">
+                          <div className="p-3 rounded-xl bg-charcoal-900 border border-[#B4F82C]/40 space-y-2 mt-2">
                             <label className="block text-[11px] text-white font-semibold">
                               Provide Feedback to Athlete (dispatches email alert):
                             </label>
@@ -364,7 +364,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
                               placeholder="e.g. Excellent reduction in waist circumference! Keep your hydration up and stay consistent."
-                              className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-orange-primary resize-none"
+                              className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 resize-none"
                             />
                             <div className="flex justify-end gap-2">
                               <button
@@ -378,7 +378,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                                 type="button"
                                 disabled={submittingComment || !commentText.trim()}
                                 onClick={() => handlePostComment(m.id)}
-                                className="px-3 py-1 rounded bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs flex items-center gap-1 disabled:opacity-50"
+                                className="px-3 py-1 rounded bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs flex items-center gap-1 disabled:opacity-50"
                               >
                                 <Send className="w-3 h-3" />
                                 {submittingComment ? 'Sending...' : 'Send Note'}

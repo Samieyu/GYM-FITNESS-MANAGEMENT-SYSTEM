@@ -74,7 +74,7 @@ export async function downloadAttendanceCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'titan_attendance_logs.csv';
+  a.download = 'sweatbox_attendance_logs.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -91,7 +91,7 @@ export async function downloadMembersCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'titan_members_roster.csv';
+  a.download = 'sweatbox_members_roster.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -108,7 +108,7 @@ export async function downloadFinancialCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'titan_financial_report.csv';
+  a.download = 'sweatbox_financial_report.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();

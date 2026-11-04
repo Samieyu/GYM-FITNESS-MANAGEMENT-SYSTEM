@@ -47,7 +47,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [specialization, setSpecialization] = useState('Strength & Functional Conditioning');
-  const [bio, setBio] = useState('Certified Titan Fitness Trainer');
+  const [bio, setBio] = useState('Certified SWEATBOX Trainer');
 
   // Execution states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,7 +80,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
   const generateRandomPassword = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
-    let pwd = 'Titan@';
+    let pwd = 'Sweatbox@';
     for (let i = 0; i < 6; i++) {
       pwd += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -153,7 +153,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-2xl rounded-3xl p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -164,7 +164,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-orange-primary/15 border border-orange-primary/30 flex items-center justify-center text-orange-primary">
+          <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/15 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C]">
             <Shield className="w-5 h-5" />
           </div>
           <div>
@@ -186,7 +186,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
             onClick={() => setActiveTab('register')}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-2 ${
               activeTab === 'register'
-                ? 'bg-orange-primary text-white shadow-md'
+                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -200,7 +200,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
             }}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-2 ${
               activeTab === 'directory'
-                ? 'bg-orange-primary text-white shadow-md'
+                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -244,7 +244,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                   </div>
                   <div className="flex justify-between py-1 border-b border-charcoal-800">
                     <span className="text-gray-400">Assigned Role</span>
-                    <span className="font-bold uppercase tracking-wider text-orange-primary">
+                    <span className="font-bold uppercase tracking-wider text-[#B4F82C]">
                       {successResult.staff.role === 'trainer' ? 'Certified Trainer' : 'Reception Desk'}
                     </span>
                   </div>
@@ -270,7 +270,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
                 {successResult.inviteSent && (
                   <div className="p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-1">
-                    <div className="flex items-center gap-1.5 text-orange-primary font-semibold text-[11px]">
+                    <div className="flex items-center gap-1.5 text-[#B4F82C] font-semibold text-[11px]">
                       <Mail className="w-3.5 h-3.5" /> Set Password Invitation Dispatched
                     </div>
                     <p className="text-[11px] text-gray-400 leading-relaxed">
@@ -286,7 +286,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                     onClick={resetForm}
                     className="flex-1 py-3 rounded-xl bg-charcoal-700 hover:bg-charcoal-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5"
                   >
-                    <UserPlus className="w-4 h-4 text-orange-primary" />
+                    <UserPlus className="w-4 h-4 text-[#B4F82C]" />
                     Register Another Staff
                   </button>
                   <button
@@ -295,7 +295,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       resetForm();
                       setActiveTab('directory');
                     }}
-                    className="flex-1 py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs shadow-lg shadow-orange-primary/20 transition flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center justify-center gap-1.5"
                   >
                     <Users className="w-4 h-4" />
                     View Staff Directory
@@ -316,11 +316,11 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       onClick={() => setRole('trainer')}
                       className={`p-3.5 rounded-xl border text-left transition flex items-start gap-3 ${
                         role === 'trainer'
-                          ? 'border-orange-primary bg-orange-primary/10 text-white'
+                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white'
                           : 'border-charcoal-700 bg-charcoal-900/50 text-gray-400 hover:border-charcoal-600'
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${role === 'trainer' ? 'bg-orange-primary text-white' : 'bg-charcoal-800 text-gray-400'}`}>
+                      <div className={`p-2 rounded-lg ${role === 'trainer' ? 'bg-[#B4F82C] text-slate-950' : 'bg-charcoal-800 text-gray-400'}`}>
                         <Dumbbell className="w-4 h-4" />
                       </div>
                       <div>
@@ -336,11 +336,11 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       onClick={() => setRole('reception')}
                       className={`p-3.5 rounded-xl border text-left transition flex items-start gap-3 ${
                         role === 'reception'
-                          ? 'border-orange-primary bg-orange-primary/10 text-white'
+                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white'
                           : 'border-charcoal-700 bg-charcoal-900/50 text-gray-400 hover:border-charcoal-600'
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${role === 'reception' ? 'bg-orange-primary text-white' : 'bg-charcoal-800 text-gray-400'}`}>
+                      <div className={`p-2 rounded-lg ${role === 'reception' ? 'bg-[#B4F82C] text-slate-950' : 'bg-charcoal-800 text-gray-400'}`}>
                         <Shield className="w-4 h-4" />
                       </div>
                       <div>
@@ -363,7 +363,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="e.g. Abebe"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                     />
                   </div>
                   <div>
@@ -374,7 +374,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="e.g. Bikila"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 {/* Email (Gmail Strict) */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Staff Gmail Address <span className="text-orange-primary text-[11px] font-normal">(@gmail.com required)</span>
+                    Staff Gmail Address <span className="text-[#B4F82C] text-[11px] font-normal">(@gmail.com required)</span>
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
@@ -392,7 +392,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="staffmember@gmail.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                     />
                   </div>
                   <p className="text-[11px] text-gray-500 mt-1">
@@ -413,7 +413,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+251 911 234 567 or 0911234567"
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                     <button
                       type="button"
                       onClick={generateRandomPassword}
-                      className="text-[11px] text-orange-primary hover:text-orange-hover flex items-center gap-1 font-semibold"
+                      className="text-[11px] text-[#B4F82C] hover:text-orange-hover flex items-center gap-1 font-semibold"
                     >
                       <Sparkles className="w-3 h-3" /> Auto-Generate
                     </button>
@@ -440,7 +440,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimum 6 characters"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-charcoal-900 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                     />
                     <button
                       type="button"
@@ -464,7 +464,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                         value={specialization}
                         onChange={(e) => setSpecialization(e.target.value)}
                         placeholder="e.g. Bodybuilding, Powerlifting, HIIT Cardio"
-                        className="w-full px-3 py-2 rounded-lg bg-charcoal-850 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-[#161B28] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -476,7 +476,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         placeholder="e.g. Certified NASM Personal Trainer • 5+ years experience"
-                        className="w-full px-3 py-2 rounded-lg bg-charcoal-850 border border-charcoal-700 text-white text-xs focus:border-orange-primary focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-[#161B28] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -486,7 +486,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl bg-orange-primary hover:bg-orange-hover disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-orange-primary/20 transition flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -514,7 +514,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 type="button"
                 onClick={loadStaff}
                 disabled={isLoadingList}
-                className="text-[11px] text-orange-primary hover:text-orange-hover flex items-center gap-1 font-semibold"
+                className="text-[11px] text-[#B4F82C] hover:text-orange-hover flex items-center gap-1 font-semibold"
               >
                 <RefreshCw className={`w-3 h-3 ${isLoadingList ? 'animate-spin' : ''}`} /> Refresh
               </button>

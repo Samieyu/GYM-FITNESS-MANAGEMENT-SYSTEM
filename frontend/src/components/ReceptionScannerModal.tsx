@@ -232,7 +232,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
                 <button
                   type="button"
                   onClick={startCameraScanner}
-                  className="w-full py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20"
+                  className="w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20"
                 >
                   <Camera className="w-4 h-4" /> Start Camera Scan
                 </button>

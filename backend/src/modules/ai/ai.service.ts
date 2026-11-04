@@ -56,7 +56,7 @@ export class AiService {
    * Interactive Fitness Q&A Coach
    */
   async askFitnessCoach(question: string, profile: UserFitnessProfile = {}): Promise<string> {
-    const prompt = `You are Titan Coach AI, an elite, motivational sports scientist and strength coach working at Titan Fitness Center in Addis Ababa, Ethiopia.
+    const prompt = `You are SWEATBOX Coach AI, an elite, motivational sports scientist and strength coach working at SWEATBOX Fitness Center in Addis Ababa, Ethiopia.
 User Profile:
 - Name: ${profile.name || 'Athlete'}
 - Role: ${profile.role || 'Member'}
@@ -97,12 +97,12 @@ To maximize muscle building:
 3. **Rest Intervals**: Allow 2-3 minutes for heavy compound lifts and 60-90 seconds for isolation exercises.
 4. **Caloric Surplus**: Eat roughly 250-350 calories above maintenance with high protein distribution every 3-4 hours.`;
     } else {
-      fallback = `### 🏋️ Titan Coach Guidance
+      fallback = `### 🏋️ SWEATBOX Coach Guidance
 Here are your key coaching recommendations:
 - **Consistency**: The best training split is the one you can sustain 3-5 days per week without skipping.
 - **Movement Mastery**: Focus on full range of motion, controlled eccentrics (2-3 seconds on the way down), and forceful concentric drive.
 - **Recovery & Mobility**: Dedicate 10 minutes post-workout to dynamic mobility and stretching to prevent joint strain.
-- **Track Your Progress**: Regularly log your weights and measurements in the Titan Transformation tab so we can adjust your volume!`;
+- **Track Your Progress**: Regularly log your weights and measurements in the SWEATBOX Transformation tab so we can adjust your volume!`;
     }
 
     return this.queryGemini(prompt, fallback);

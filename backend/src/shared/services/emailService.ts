@@ -22,7 +22,7 @@ export const sendVerificationEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: #ffffff;">Verify Your Account</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">Thank you for registering. Please verify your email to activate your account and start your membership journey.</p>
@@ -41,7 +41,7 @@ export const sendVerificationEmail = async (
     await transporter.sendMail({
       from: config.smtp.from,
       to: email,
-      subject: 'Verify Your Titan Fitness Account',
+      subject: 'Verify Your SWEATBOX Account',
       html,
     });
     console.log(`[Email] Verification email sent to ${email}`);
@@ -59,7 +59,7 @@ export const sendPasswordResetEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: #ffffff;">Password Reset Request</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">We received a request to reset your password. Click the button below to choose a new password.</p>
@@ -94,8 +94,8 @@ export const sendWalkinInvitationEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
-      <h3 style="color: #ffffff;">Welcome to Titan Fitness!</h3>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
+      <h3 style="color: #ffffff;">Welcome to SWEATBOX Fitness!</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">You have been registered at our reception desk. Please click below to set your password and access your digital membership card.</p>
       <div style="margin: 25px 0;">
@@ -112,7 +112,7 @@ export const sendWalkinInvitationEmail = async (
     await transporter.sendMail({
       from: config.smtp.from,
       to: email,
-      subject: 'Welcome to Titan Fitness - Set Your Password',
+      subject: 'Welcome to SWEATBOX Fitness - Set Your Password',
       html,
     });
     console.log(`[Email] Walk-in invitation sent to ${email}`);
@@ -133,7 +133,7 @@ export const sendStaffInvitationEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS STAFF PORTAL</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS STAFF PORTAL</h2>
       <h3 style="color: #ffffff;">Welcome to the Team, ${firstName}!</h3>
       <p style="color: #d1d5db;">You have been registered as a <strong>${roleTitle}</strong> by the System Administrator.</p>
       <p style="color: #d1d5db;">You can log in directly using your email (<strong>${email}</strong>) and assigned credentials, or click below to set your personal password:</p>
@@ -156,7 +156,7 @@ export const sendStaffInvitationEmail = async (
     await transporter.sendMail({
       from: config.smtp.from,
       to: email,
-      subject: `Welcome to Titan Fitness - Your Staff Account (${roleTitle})`,
+      subject: `Welcome to SWEATBOX Fitness - Your Staff Account (${roleTitle})`,
       html,
     });
     console.log(`[Email] Staff invitation sent to ${email} for role ${role}`);
@@ -179,7 +179,7 @@ export const sendPaymentConfirmationEmail = async (
 ): Promise<void> => {
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: #ffffff;">Payment Confirmed - Membership Activated!</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">We have received your payment. Your membership is now <strong>active</strong>.</p>
@@ -226,7 +226,7 @@ export const sendExpiryReminderEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: ${isUrgent ? '#ef4444' : '#f59e0b'};">
         ${isUrgent ? 'URGENT: Membership Expires Tomorrow!' : 'Notice: Membership Expiring in 7 Days'}
       </h3>
@@ -245,7 +245,7 @@ export const sendExpiryReminderEmail = async (
           Renew Membership
         </a>
       </div>
-      <p style="color: #6b7280; font-size: 11px;">Titan Fitness Club • Addis Ababa, Ethiopia</p>
+      <p style="color: #6b7280; font-size: 11px;">SWEATBOX Fitness Club • Addis Ababa, Ethiopia</p>
     </div>
   `;
 
@@ -253,7 +253,7 @@ export const sendExpiryReminderEmail = async (
     await transporter.sendMail({
       from: config.smtp.from,
       to: email,
-      subject: `${isUrgent ? '🚨 URGENT: Membership Expires Tomorrow' : 'Membership Expiring Soon (7 Days)'} - Titan Fitness`,
+      subject: `${isUrgent ? '🚨 URGENT: Membership Expires Tomorrow' : 'Membership Expiring Soon (7 Days)'} - SWEATBOX Fitness`,
       html,
     });
     console.log(`[Email] Expiry reminder (${details.daysRemaining}d) sent to ${email}`);
@@ -278,7 +278,7 @@ export const sendClassBookingConfirmationEmail = async (
   const isBooked = classDetails.status === 'booked';
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: ${isBooked ? '#22c55e' : '#f59e0b'};">
         ${isBooked ? 'Class Booking Confirmed!' : 'Waitlist Confirmation (Position #' + classDetails.waitlistPosition + ')'}
       </h3>
@@ -310,7 +310,7 @@ export const sendClassBookingConfirmationEmail = async (
     await transporter.sendMail({
       from: config.smtp.from,
       to: email,
-      subject: `${isBooked ? '✅ Confirmed: ' : '📋 Waitlisted: '}${classDetails.title} - Titan Fitness`,
+      subject: `${isBooked ? '✅ Confirmed: ' : '📋 Waitlisted: '}${classDetails.title} - SWEATBOX Fitness`,
       html,
     });
     console.log(`[Email] Class ${classDetails.status} email sent to ${email}`);
@@ -332,7 +332,7 @@ export const sendWaitlistPromotionEmail = async (
 ): Promise<void> => {
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: #22c55e;">🎉 Great News! You Are In!</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">
@@ -379,7 +379,7 @@ export const sendTrainerFeedbackEmail = async (
 ): Promise<void> => {
   const html = `
     <div style="font-family: Arial, sans-serif; background-color: #121212; color: #f3f4f6; padding: 30px; border-radius: 8px;">
-      <h2 style="color: #ff6b00; margin-bottom: 10px;">TITAN FITNESS</h2>
+      <h2 style="color: #ff6b00; margin-bottom: 10px;">SWEATBOX FITNESS</h2>
       <h3 style="color: #ffffff;">Coach Feedback on Your Transformation Log</h3>
       <p style="color: #d1d5db;">Hello <strong>${firstName}</strong>,</p>
       <p style="color: #d1d5db;">

@@ -249,9 +249,9 @@ export const App: React.FC = () => {
     const txRefParam =
       params.get('tx_ref') ||
       params.get('trx_ref') ||
-      localStorage.getItem('titan_pending_tx_ref');
+      localStorage.getItem('sweatbox_pending_tx_ref');
     if (txRefParam) {
-      localStorage.removeItem('titan_pending_tx_ref');
+      localStorage.removeItem('sweatbox_pending_tx_ref');
       handleAutoVerifyChapaTx(txRefParam);
     }
   }, []);
@@ -493,7 +493,7 @@ export const App: React.FC = () => {
       const returnUrl = `${window.location.origin}/?payment=success`;
       const res = await initializeChapaApi(plan.id, returnUrl);
       if (res.txRef) {
-        localStorage.setItem('titan_pending_tx_ref', res.txRef);
+        localStorage.setItem('sweatbox_pending_tx_ref', res.txRef);
       }
       if (res.checkoutUrl) {
         window.location.href = res.checkoutUrl;
@@ -887,7 +887,7 @@ export const App: React.FC = () => {
           </div>
           <div>
             <h1 className="font-bold text-xl tracking-tight text-white flex items-center gap-1.5">
-              TITAN <span className="text-[#B4F82C] font-black">FITNESS</span>
+              SWEATBOX <span className="text-[#B4F82C] font-black">FITNESS</span>
             </h1>
             <p className="text-xs text-gray-400">Gym & Fitness Management System</p>
           </div>
@@ -912,7 +912,7 @@ export const App: React.FC = () => {
                       ? 'Management AI Consultant'
                       : currentUser.role === 'trainer'
                       ? 'Trainer Coaching Co-Pilot'
-                      : 'Titan AI Fitness Coach'
+                      : 'SWEATBOX AI Fitness Coach'
                   }
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#B4F82C]" />
@@ -940,7 +940,7 @@ export const App: React.FC = () => {
 
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-semibold text-white">{currentUser.firstName} {currentUser.lastName}</p>
-                <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-orange-primary/10 text-orange-primary border border-orange-primary/30">
+                <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-[#B4F82C]/10 text-[#B4F82C] border border-[#B4F82C]/30">
                   {currentUser.role}
                 </span>
               </div>
@@ -955,19 +955,19 @@ export const App: React.FC = () => {
             <nav className="flex items-center gap-2 sm:gap-3">
               <button 
                 onClick={() => setActiveTab('home')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'home' ? 'text-orange-primary bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'home' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
               >
                 Home
               </button>
               <button 
                 onClick={() => setActiveTab('plans')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'plans' ? 'text-orange-primary bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'plans' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
               >
                 Plans
               </button>
               <button 
                 onClick={() => setActiveTab('classes')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'classes' ? 'text-orange-primary bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition ${activeTab === 'classes' ? 'text-[#B4F82C] bg-charcoal-800' : 'text-gray-300 hover:text-white'}`}
               >
                 Classes
               </button>
@@ -979,7 +979,7 @@ export const App: React.FC = () => {
               </button>
               <button 
                 onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                className="px-4 py-2 text-sm font-semibold rounded-lg bg-orange-primary hover:bg-orange-hover text-white shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
               >
                 Sign In
               </button>
@@ -1016,7 +1016,7 @@ export const App: React.FC = () => {
             {/* Role Header Banner */}
             <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <span className="inline-block text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-orange-primary/20 text-orange-primary border border-orange-primary/30 mb-2">
+                <span className="inline-block text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-[#B4F82C]/20 text-[#B4F82C] border border-[#B4F82C]/30 mb-2">
                   Role: {currentUser.role.toUpperCase()}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
@@ -1201,7 +1201,7 @@ export const App: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                   <div>
-                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
                       <Users className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-white">Assigned Athletes & Logs</h3>
@@ -1212,7 +1212,7 @@ export const App: React.FC = () => {
                   <button 
                     type="button"
                     onClick={() => setIsTrainerProgressModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                    className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
                   >
                     <Scale className="w-4 h-4" /> Review Athlete Transformation
                   </button>
@@ -1220,7 +1220,7 @@ export const App: React.FC = () => {
 
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                   <div>
-                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
                       <Dumbbell className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-white">Workout Plan Builder</h3>
@@ -1231,7 +1231,7 @@ export const App: React.FC = () => {
                   <button 
                     type="button"
                     onClick={() => setIsTrainerWorkoutModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20 active:scale-98"
+                    className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
                   >
                     <Sparkles className="w-4 h-4" /> Review Queue & Plan Builder
                   </button>
@@ -1239,7 +1239,7 @@ export const App: React.FC = () => {
 
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                   <div>
-                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-white">Group Classes & Roster</h3>
@@ -1261,7 +1261,7 @@ export const App: React.FC = () => {
                               setSelectedRosterClass(cls);
                               setIsRosterModalOpen(true);
                             }}
-                            className="px-2.5 py-1 rounded-md bg-charcoal-800 hover:bg-orange-primary/20 text-orange-primary border border-orange-primary/40 font-bold text-[11px] whitespace-nowrap transition"
+                            className="px-2.5 py-1 rounded-md bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] border border-[#B4F82C]/40 font-bold text-[11px] whitespace-nowrap transition"
                           >
                             Roster
                           </button>
@@ -1273,7 +1273,7 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setIsCreateClassModalOpen(true)}
-                      className="flex-1 py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-orange-primary/20"
+                      className="flex-1 py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20"
                     >
                       <Plus className="w-4 h-4" /> Schedule Class
                     </button>
@@ -1294,7 +1294,7 @@ export const App: React.FC = () => {
                 </div>
                 <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
                   <div>
-                    <div className="w-10 h-10 rounded-lg bg-orange-primary/10 border border-orange-primary/30 flex items-center justify-center text-orange-primary mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
                       <Wrench className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-white">Equipment & Defects</h3>
@@ -1307,7 +1307,7 @@ export const App: React.FC = () => {
                     onClick={() => setIsEquipmentModalOpen(true)}
                     className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs transition flex items-center justify-center gap-1.5 active:scale-98"
                   >
-                    <Wrench className="w-4 h-4 text-orange-primary" /> View & Report Defect
+                    <Wrench className="w-4 h-4 text-[#B4F82C]" /> View & Report Defect
                   </button>
                 </div>
 
@@ -1318,7 +1318,7 @@ export const App: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-orange-primary" />
+                      <Users className="w-5 h-5 text-[#B4F82C]" />
                       <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight</h3>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">
@@ -1332,12 +1332,12 @@ export const App: React.FC = () => {
                       onClick={() => loadClasses()}
                       className="px-3 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-300 text-xs font-semibold flex items-center gap-1.5 transition"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-orange-primary' : ''}`} /> Refresh
+                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsCreateClassModalOpen(true)}
-                      className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                      className="px-4 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
                     >
                       <Plus className="w-4 h-4" /> Schedule New Class
                     </button>
@@ -1357,7 +1357,7 @@ export const App: React.FC = () => {
                         >
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-[11px] font-mono text-orange-primary flex items-center gap-1">
+                              <span className="text-[11px] font-mono text-[#B4F82C] flex items-center gap-1">
                                 <Calendar className="w-3.5 h-3.5" />
                                 {formatEthiopianDateTime(cls.start_time)}
                               </span>
@@ -1414,7 +1414,7 @@ export const App: React.FC = () => {
                                 setSelectedRosterClass(cls);
                                 setIsRosterModalOpen(true);
                               }}
-                              className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-orange-primary/20 text-orange-primary hover:text-white border border-orange-primary/40 font-bold text-xs flex items-center justify-center gap-2 transition"
+                              className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] hover:text-white border border-[#B4F82C]/40 font-bold text-xs flex items-center justify-center gap-2 transition"
                             >
                               <Users className="w-4 h-4" /> View Class Roster & Attendance
                             </button>
@@ -1439,7 +1439,7 @@ export const App: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Layers className="w-5 h-5 text-orange-primary" />
+                        <Layers className="w-5 h-5 text-[#B4F82C]" />
                         <h3 className="text-xl font-bold text-white">Plans & Pricing Engine</h3>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
@@ -1453,26 +1453,26 @@ export const App: React.FC = () => {
                         onClick={() => setIsTrainerWorkoutModalOpen(true)}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                       >
-                        <Dumbbell className="w-4 h-4 text-orange-primary" /> Workout Review Gate
+                        <Dumbbell className="w-4 h-4 text-[#B4F82C]" /> Workout Review Gate
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsReceptionScannerOpen(true)}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                       >
-                        <QrCode className="w-4 h-4 text-orange-primary" /> Front Desk Scanner
+                        <QrCode className="w-4 h-4 text-[#B4F82C]" /> Front Desk Scanner
                       </button>
                       <button
                         type="button"
                         onClick={() => openManualPaymentModal()}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                       >
-                        <DollarSign className="w-4 h-4 text-orange-primary" /> Record Offline Payment
+                        <DollarSign className="w-4 h-4 text-[#B4F82C]" /> Record Offline Payment
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                        className="px-3.5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
                         title="Schedule a new group fitness class with capacity limits"
                       >
                         <Calendar className="w-4 h-4" /> Schedule Class
@@ -1483,7 +1483,7 @@ export const App: React.FC = () => {
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                         title="Review all member transformation metrics and coach feedback"
                       >
-                        <Scale className="w-4 h-4 text-orange-primary" /> Athlete Progress
+                        <Scale className="w-4 h-4 text-[#B4F82C]" /> Athlete Progress
                       </button>
                       <button
                         type="button"
@@ -1491,7 +1491,7 @@ export const App: React.FC = () => {
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                         title="Manage gym equipment inventory, defect reports, and maintenance logs"
                       >
-                        <Wrench className="w-4 h-4 text-orange-primary" /> Equipment & Repairs
+                        <Wrench className="w-4 h-4 text-[#B4F82C]" /> Equipment & Repairs
                       </button>
                       <button
                         type="button"
@@ -1499,21 +1499,21 @@ export const App: React.FC = () => {
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                         title="Financial breakdown, attendance heatmap, and Ethiopian Calendar CSV exports"
                       >
-                        <TrendingUp className="w-4 h-4 text-orange-primary" /> Analytics & CSV Reports
+                        <TrendingUp className="w-4 h-4 text-[#B4F82C]" /> Analytics & CSV Reports
                       </button>
                       <button
                         type="button"
                         onClick={openCreatePlanModal}
                         className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
                       >
-                        <Plus className="w-4 h-4 text-orange-primary" /> Create New Plan
+                        <Plus className="w-4 h-4 text-[#B4F82C]" /> Create New Plan
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsWalkinModalOpen(true)}
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                       >
-                        <UserPlus className="w-4 h-4 text-orange-primary" /> Walk-In Member
+                        <UserPlus className="w-4 h-4 text-[#B4F82C]" /> Walk-In Member
                       </button>
                       <button
                         type="button"
@@ -1521,7 +1521,7 @@ export const App: React.FC = () => {
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
                         title="Register Trainers and Front Desk Reception staff"
                       >
-                        <Shield className="w-4 h-4 text-orange-primary" /> Staff Management
+                        <Shield className="w-4 h-4 text-[#B4F82C]" /> Staff Management
                       </button>
                       <button
                         type="button"
@@ -1530,7 +1530,7 @@ export const App: React.FC = () => {
                         className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
                         title="Scan all memberships, auto-expire overdue, and dispatch 7d/1d reminder emails in Ethiopian Calendar"
                       >
-                        <RefreshCw className={`w-4 h-4 text-orange-primary ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
+                        <RefreshCw className={`w-4 h-4 text-[#B4F82C] ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
                       </button>
                     </div>
                   </div>
@@ -1577,7 +1577,7 @@ export const App: React.FC = () => {
                           onClick={() => openEditPlanModal(p)}
                           className="mt-4 w-full py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                         >
-                          <Edit2 className="w-3.5 h-3.5 text-orange-primary" /> Edit Plan & Image
+                          <Edit2 className="w-3.5 h-3.5 text-[#B4F82C]" /> Edit Plan & Image
                         </button>
                       </div>
                     ))}
@@ -1589,7 +1589,7 @@ export const App: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Users className="w-5 h-5 text-orange-primary" />
+                        <Users className="w-5 h-5 text-[#B4F82C]" />
                         <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight Engine</h3>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
@@ -1603,12 +1603,12 @@ export const App: React.FC = () => {
                         onClick={() => loadClasses()}
                         className="px-3 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-300 text-xs font-semibold flex items-center gap-1.5 transition"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-orange-primary' : ''}`} /> Refresh
+                        <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
-                        className="px-4 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition active:scale-95"
+                        className="px-4 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
                       >
                         <Plus className="w-4 h-4" /> Schedule New Class
                       </button>
@@ -1628,7 +1628,7 @@ export const App: React.FC = () => {
                           >
                             <div>
                               <div className="flex items-center justify-between mb-2">
-                                <span className="text-[11px] font-mono text-orange-primary flex items-center gap-1">
+                                <span className="text-[11px] font-mono text-[#B4F82C] flex items-center gap-1">
                                   <Calendar className="w-3.5 h-3.5" />
                                   {formatEthiopianDateTime(cls.start_time)}
                                 </span>
@@ -1685,7 +1685,7 @@ export const App: React.FC = () => {
                                   setSelectedRosterClass(cls);
                                   setIsRosterModalOpen(true);
                                 }}
-                                className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-orange-primary/20 text-orange-primary hover:text-white border border-orange-primary/40 font-bold text-xs flex items-center justify-center gap-2 transition"
+                                className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] hover:text-white border border-[#B4F82C]/40 font-bold text-xs flex items-center justify-center gap-2 transition"
                               >
                                 <Users className="w-4 h-4" /> View Class Roster & Attendance
                               </button>
@@ -1831,7 +1831,7 @@ export const App: React.FC = () => {
                                 <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
                               </p>
                               <p className="text-gray-400">
-                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Titan Coach'}</span>
+                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'SWEATBOX Coach'}</span>
                                 {cls.trainer_specialization && (
                                   <span className="text-gray-500"> ({cls.trainer_specialization})</span>
                                 )}
@@ -2040,12 +2040,12 @@ export const App: React.FC = () => {
           <>
             {activeTab === 'home' && (
               <div className="flex flex-col items-center text-center justify-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-primary/10 border border-orange-primary/30 text-orange-primary text-xs font-semibold mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B4F82C]/10 border border-[#B4F82C]/30 text-[#B4F82C] text-xs font-semibold mb-6">
                   <Sparkles className="w-3.5 h-3.5" /> Next-Generation Gym Management Platform
                 </div>
                 
                 <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight max-w-3xl leading-tight">
-                  Empowering Your Gym with <span className="text-orange-primary">Precision & AI</span>
+                  Empowering Your Gym with <span className="text-[#B4F82C]">Precision & AI</span>
                 </h2>
                 
                 <p className="mt-6 text-lg text-gray-400 max-w-2xl leading-relaxed">
@@ -2055,7 +2055,7 @@ export const App: React.FC = () => {
                 <div className="flex flex-wrap gap-4 mt-8 justify-center">
                   <button 
                     onClick={() => { setAuthModalMode('register'); setErrorMessage(null); }}
-                    className="px-6 py-3 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold flex items-center gap-2 shadow-lg shadow-orange-primary/25 transition active:scale-95"
+                    className="px-6 py-3 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold flex items-center gap-2 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
                   >
                     Join Now <ArrowRight className="w-4 h-4" />
                   </button>
@@ -2069,8 +2069,8 @@ export const App: React.FC = () => {
 
                 {/* Feature Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full text-left">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-orange-primary/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-orange-primary mb-4">
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
+                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
                       <QrCode className="w-5 h-5" />
                     </div>
                     <h3 className="font-semibold text-lg text-white mb-2">Dynamic QR Check-In</h3>
@@ -2079,8 +2079,8 @@ export const App: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-orange-primary/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-orange-primary mb-4">
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
+                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <h3 className="font-semibold text-lg text-white mb-2">Automated Expiry & Chapa</h3>
@@ -2089,8 +2089,8 @@ export const App: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-orange-primary/50 transition">
-                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-orange-primary mb-4">
+                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 hover:border-[#B4F82C]/50 transition">
+                    <div className="w-10 h-10 rounded-lg bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <h3 className="font-semibold text-lg text-white mb-2">Gemini AI Coaching</h3>
@@ -2112,7 +2112,7 @@ export const App: React.FC = () => {
                       </div>
                       <button
                         onClick={() => setActiveTab('plans')}
-                        className="text-xs font-semibold text-orange-primary hover:underline flex items-center gap-1"
+                        className="text-xs font-semibold text-[#B4F82C] hover:underline flex items-center gap-1"
                       >
                         Explore all plans <ArrowRight className="w-3.5 h-3.5" />
                       </button>
@@ -2122,7 +2122,7 @@ export const App: React.FC = () => {
                       {plans.slice(0, 3).map((p) => (
                         <div
                           key={p.id}
-                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition group"
+                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
                         >
                           <div>
                             <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800">
@@ -2151,7 +2151,7 @@ export const App: React.FC = () => {
                               setAuthModalMode('login');
                               setErrorMessage('Please sign in or create an account to subscribe.');
                             }}
-                            className="mt-5 w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/20"
+                            className="mt-5 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20"
                           >
                             <CreditCard className="w-4 h-4" /> Subscribe with Chapa
                           </button>
@@ -2167,7 +2167,7 @@ export const App: React.FC = () => {
               <div className="w-full">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Membership <span className="text-orange-primary">Plans</span>
+                    Membership <span className="text-[#B4F82C]">Plans</span>
                   </h2>
                   <p className="mt-4 text-gray-400">Select the tier tailored to your fitness objectives.</p>
                 </div>
@@ -2179,12 +2179,12 @@ export const App: React.FC = () => {
                         key={p.id}
                         className={`p-8 rounded-2xl bg-charcoal-850 border flex flex-col justify-between transition ${
                           idx === 1
-                            ? 'border-2 border-orange-primary shadow-2xl shadow-orange-primary/10 relative'
+                            ? 'border-2 border-[#B4F82C] shadow-2xl shadow-[#B4F82C]/10 relative'
                             : 'border-charcoal-800'
                         }`}
                       >
                         {idx === 1 && (
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-orange-primary text-white text-xs font-bold uppercase tracking-wider">
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#B4F82C] text-slate-950 text-xs font-bold uppercase tracking-wider">
                             Most Popular
                           </div>
                         )}
@@ -2211,22 +2211,22 @@ export const App: React.FC = () => {
                           </div>
                           <ul className="space-y-3 text-sm text-gray-300">
                             <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-orange-primary" /> Full Gym Floor Access
+                              <Check className="w-4 h-4 text-[#B4F82C]" /> Full Gym Floor Access
                             </li>
                             <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-orange-primary" /> Locker Room & Showers
+                              <Check className="w-4 h-4 text-[#B4F82C]" /> Locker Room & Showers
                             </li>
                             <li className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-orange-primary" /> 60s Dynamic QR Pass
+                              <Check className="w-4 h-4 text-[#B4F82C]" /> 60s Dynamic QR Pass
                             </li>
                             {p.durationMonths >= 3 && (
                               <li className="flex items-center gap-2">
-                                <Check className="w-4 h-4 text-orange-primary" /> Group Class Bookings
+                                <Check className="w-4 h-4 text-[#B4F82C]" /> Group Class Bookings
                               </li>
                             )}
                             {p.durationMonths >= 12 && (
                               <li className="flex items-center gap-2">
-                                <Check className="w-4 h-4 text-orange-primary" /> Dedicated Personal Trainer
+                                <Check className="w-4 h-4 text-[#B4F82C]" /> Dedicated Personal Trainer
                               </li>
                             )}
                           </ul>
@@ -2236,7 +2236,7 @@ export const App: React.FC = () => {
                           onClick={() => setAuthModalMode('register')}
                           className={`mt-8 w-full py-3 rounded-lg font-semibold text-white transition ${
                             idx === 1
-                              ? 'bg-orange-primary hover:bg-orange-hover shadow-lg shadow-orange-primary/30'
+                              ? 'bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-lg shadow-[#B4F82C]/20'
                               : 'bg-charcoal-800 hover:bg-charcoal-700'
                           }`}
                         >
@@ -2257,7 +2257,7 @@ export const App: React.FC = () => {
               <div className="w-full">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Scheduled <span className="text-orange-primary">Classes</span>
+                    Scheduled <span className="text-[#B4F82C]">Classes</span>
                   </h2>
                   <p className="mt-4 text-gray-400">
                     Live schedule with automatic waitlist promotion and Ethiopian Calendar time.
@@ -2273,11 +2273,11 @@ export const App: React.FC = () => {
                       return (
                         <div
                           key={cls.id}
-                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-orange-primary/50 transition group"
+                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
                         >
                           <div>
                             <div className="flex items-center justify-between text-xs mb-3">
-                              <span className="flex items-center gap-1 font-mono text-orange-primary">
+                              <span className="flex items-center gap-1 font-mono text-[#B4F82C]">
                                 <Calendar className="w-3.5 h-3.5" />
                                 {formatEthiopianDateTime(cls.start_time)}
                               </span>
@@ -2292,7 +2292,7 @@ export const App: React.FC = () => {
                               </span>
                             </div>
 
-                            <h3 className="text-lg font-bold text-white group-hover:text-orange-primary transition">
+                            <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
                               {cls.title}
                             </h3>
                             <p className="text-xs text-gray-400 mt-1 line-clamp-2">
@@ -2304,7 +2304,7 @@ export const App: React.FC = () => {
                                 <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
                               </p>
                               <p className="text-gray-400">
-                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Titan Coach'}</span>
+                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'SWEATBOX Coach'}</span>
                                 {cls.trainer_specialization && (
                                   <span className="text-gray-500"> ({cls.trainer_specialization})</span>
                                 )}
@@ -2337,7 +2337,7 @@ export const App: React.FC = () => {
                             className={`mt-6 w-full py-2.5 rounded-lg font-semibold text-xs transition flex items-center justify-center gap-2 shadow-lg ${
                               isFull
                                 ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
-                                : 'bg-orange-primary hover:bg-orange-hover text-white shadow-orange-primary/20'
+                                : 'bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold shadow-[#B4F82C]/20'
                             }`}
                           >
                             {isFull ? 'Join Waitlist' : 'Reserve Spot'}
@@ -2360,7 +2360,7 @@ export const App: React.FC = () => {
       {/* AUTH MODAL (LOGIN OR REGISTER) */}
       {authModalMode && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
             <button 
               onClick={() => { setAuthModalMode(null); setErrorMessage(null); }}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
@@ -2370,7 +2370,7 @@ export const App: React.FC = () => {
 
             {/* Modal Header for Login & Register */}
             <div className="flex items-center gap-3 mb-5">
-                <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+                <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
                   {authModalMode === 'set-password' ? (
                     <ShieldCheck className="w-5 h-5" />
                   ) : authModalMode === 'login' ? (
@@ -2451,7 +2451,7 @@ export const App: React.FC = () => {
                         required
                         minLength={6}
                         placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                       />
                     </div>
                   </div>
@@ -2469,7 +2469,7 @@ export const App: React.FC = () => {
                         required
                         minLength={6}
                         placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                       />
                     </div>
                   </div>
@@ -2477,7 +2477,7 @@ export const App: React.FC = () => {
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
                   >
                     {isSubmitting ? 'Saving Password...' : 'Save Password & Access Account'}
                   </button>
@@ -2488,7 +2488,7 @@ export const App: React.FC = () => {
                   <button 
                     type="button" 
                     onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                    className="text-orange-primary hover:underline font-semibold"
+                    className="text-[#B4F82C] hover:underline font-semibold"
                   >
                     Sign In
                   </button>
@@ -2508,7 +2508,7 @@ export const App: React.FC = () => {
                         onChange={(e) => setLoginEmail(e.target.value)}
                         required
                         placeholder="you@example.com"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                       />
                     </div>
                   </div>
@@ -2537,7 +2537,7 @@ export const App: React.FC = () => {
                         onChange={(e) => setLoginPassword(e.target.value)}
                         required
                         placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                        className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                       />
                     </div>
                   </div>
@@ -2545,7 +2545,7 @@ export const App: React.FC = () => {
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
                   >
                     {isSubmitting ? 'Authenticating...' : 'Sign In'}
                   </button>
@@ -2635,7 +2635,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setRegFirstName(e.target.value)}
                       required
                       placeholder="Jane"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                   <div>
@@ -2646,7 +2646,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setRegLastName(e.target.value)}
                       required
                       placeholder="Doe"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                 </div>
@@ -2661,7 +2661,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setRegEmail(e.target.value)}
                       required
                       placeholder="yourname@gmail.com"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                 </div>
@@ -2676,7 +2676,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setRegPassword(e.target.value)}
                       required
                       placeholder="••••••••"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                 </div>
@@ -2691,7 +2691,7 @@ export const App: React.FC = () => {
                       onChange={(e) => setRegPhone(e.target.value)}
                       placeholder="+251 9... or 09... (Ethio / Safaricom)"
                       required
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                 </div>
@@ -2705,7 +2705,7 @@ export const App: React.FC = () => {
                       value={regGoals}
                       onChange={(e) => setRegGoals(e.target.value)}
                       placeholder="Muscle building, weight loss, endurance"
-                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                      className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                     />
                   </div>
                 </div>
@@ -2713,7 +2713,7 @@ export const App: React.FC = () => {
                 <button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white font-semibold text-sm shadow-lg shadow-orange-primary/20 transition disabled:opacity-50 mt-2"
+                  className="w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-sm shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50 mt-2"
                 >
                   {isSubmitting ? 'Registering...' : 'Complete Registration'}
                 </button>
@@ -2723,7 +2723,7 @@ export const App: React.FC = () => {
                   <button 
                     type="button" 
                     onClick={() => { setAuthModalMode('login'); setErrorMessage(null); }}
-                    className="text-orange-primary hover:underline font-semibold"
+                    className="text-[#B4F82C] hover:underline font-semibold"
                   >
                     Sign In
                   </button>
@@ -2737,7 +2737,7 @@ export const App: React.FC = () => {
       {/* ADMIN MEMBERSHIP PLAN EDITOR MODAL */}
       {isPlanModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
             <button 
               type="button"
               onClick={() => { setIsPlanModalOpen(false); setPlanModalError(null); }}
@@ -2747,7 +2747,7 @@ export const App: React.FC = () => {
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+              <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
@@ -2785,7 +2785,7 @@ export const App: React.FC = () => {
                   onChange={(e) => setPlanName(e.target.value)}
                   required
                   placeholder="e.g. Monthly Standard, Annual VIP"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                 />
               </div>
 
@@ -2796,7 +2796,7 @@ export const App: React.FC = () => {
                   value={planDescription}
                   onChange={(e) => setPlanDescription(e.target.value)}
                   placeholder="Short description of plan features and access..."
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                 />
               </div>
 
@@ -2810,7 +2810,7 @@ export const App: React.FC = () => {
                     value={planDuration}
                     onChange={(e) => setPlanDuration(parseInt(e.target.value, 10) || 1)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                   />
                 </div>
 
@@ -2823,7 +2823,7 @@ export const App: React.FC = () => {
                     value={planPrice}
                     onChange={(e) => setPlanPrice(parseFloat(e.target.value) || 0)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                   />
                 </div>
               </div>
@@ -2834,7 +2834,7 @@ export const App: React.FC = () => {
                   id="planIsActive"
                   checked={planIsActive}
                   onChange={(e) => setPlanIsActive(e.target.checked)}
-                  className="rounded border-charcoal-700 bg-charcoal-900 text-orange-primary focus:ring-0 w-4 h-4"
+                  className="rounded border-charcoal-700 bg-charcoal-900 text-[#B4F82C] focus:ring-0 w-4 h-4"
                 />
                 <label htmlFor="planIsActive" className="text-xs font-medium text-gray-300 cursor-pointer">
                   Active (visible to public visitors & members for purchase)
@@ -2865,7 +2865,7 @@ export const App: React.FC = () => {
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
                       <label
                         htmlFor="plan-image-file-input"
-                        className="px-3 py-1.5 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow"
+                        className="px-3 py-1.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow"
                       >
                         <Upload className="w-3.5 h-3.5" /> Choose Different Image
                       </label>
@@ -2874,15 +2874,15 @@ export const App: React.FC = () => {
                 ) : (
                   <label
                     htmlFor="plan-image-file-input"
-                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-charcoal-700 hover:border-orange-primary/60 rounded-xl cursor-pointer bg-charcoal-900/60 hover:bg-charcoal-900 transition text-center"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-charcoal-700 hover:border-[#B4F82C]/60 rounded-xl cursor-pointer bg-charcoal-900/60 hover:bg-charcoal-900 transition text-center"
                   >
-                    <Upload className="w-6 h-6 text-orange-primary mb-2" />
+                    <Upload className="w-6 h-6 text-[#B4F82C] mb-2" />
                     <span className="text-xs font-semibold text-white">Click to select photo from device</span>
                     <span className="text-[10px] text-gray-400 mt-1">PNG, JPG, or WEBP up to 5MB</span>
                   </label>
                 )}
                 {planImageName && (
-                  <p className="text-[11px] text-orange-primary mt-1.5 truncate">
+                  <p className="text-[11px] text-[#B4F82C] mt-1.5 truncate">
                     Selected file: {planImageName}
                   </p>
                 )}
@@ -2899,7 +2899,7 @@ export const App: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSavingPlan}
-                  className="px-5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
                 >
                   {isSavingPlan ? (
                     'Saving...'
@@ -2958,7 +2958,7 @@ export const App: React.FC = () => {
                           VERIFIED
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400">Titan Fitness Club • Addis Ababa, Ethiopia</p>
+                      <p className="text-xs text-gray-400">SWEATBOX Fitness Club • Addis Ababa, Ethiopia</p>
                     </div>
                   </div>
                 </div>
@@ -2972,7 +2972,7 @@ export const App: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <span className="text-xs text-gray-400">Total Due</span>
-                    <div className="text-xl font-black text-orange-primary">
+                    <div className="text-xl font-black text-[#B4F82C]">
                       {checkoutModalData.amount.toLocaleString()} <span className="text-xs font-semibold text-gray-300">ETB</span>
                     </div>
                   </div>
@@ -2995,7 +2995,7 @@ export const App: React.FC = () => {
                       onClick={() => setPaymentMethodTab('telebirr')}
                       className={`p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition text-xs font-medium ${
                         paymentMethodTab === 'telebirr'
-                          ? 'border-orange-primary bg-orange-primary/10 text-white shadow-md shadow-orange-primary/10'
+                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white shadow-md shadow-[#B4F82C]/10'
                           : 'border-charcoal-700 bg-charcoal-900 text-gray-400 hover:text-white hover:border-charcoal-600'
                       }`}
                     >
@@ -3053,7 +3053,7 @@ export const App: React.FC = () => {
                             value={telebirrPhone}
                             onChange={(e) => setTelebirrPhone(e.target.value)}
                             placeholder="+251 911 234 567"
-                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                            className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                           />
                         </div>
                       </div>
@@ -3161,7 +3161,7 @@ export const App: React.FC = () => {
                   {/* Single Authentic Pay Button */}
                   <button
                     type="submit"
-                    className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/30 transition active:scale-[0.99]"
+                    className="w-full py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-primary/30 transition active:scale-[0.99]"
                   >
                     <ShieldCheck className="w-4 h-4" />
                     <span>
@@ -3178,7 +3178,7 @@ export const App: React.FC = () => {
                       href={checkoutModalData.checkoutUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-gray-400 hover:text-orange-primary transition underline flex items-center justify-center gap-1"
+                      className="text-xs text-gray-400 hover:text-[#B4F82C] transition underline flex items-center justify-center gap-1"
                     >
                       <ExternalLink className="w-3.5 h-3.5" /> Or pay on official Chapa Hosted Page
                     </a>
@@ -3195,9 +3195,9 @@ export const App: React.FC = () => {
             {/* STEP 2: PROCESSING ANIMATION */}
             {paymentStep === 'processing' && (
               <div className="py-12 px-4 text-center space-y-5 animate-fadeIn">
-                <div className="w-16 h-16 rounded-full bg-orange-primary/10 border-2 border-orange-primary border-t-transparent animate-spin mx-auto flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-[#B4F82C]/10 border-2 border-[#B4F82C] border-t-transparent animate-spin mx-auto flex items-center justify-center">
                   <div className="w-10 h-10 rounded-full bg-charcoal-900 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-orange-primary" />
+                    <CreditCard className="w-5 h-5 text-[#B4F82C]" />
                   </div>
                 </div>
                 <div>
@@ -3236,7 +3236,7 @@ export const App: React.FC = () => {
                   </div>
                   <div className="flex justify-between py-1 border-b border-charcoal-800">
                     <span className="text-gray-400">Amount Paid</span>
-                    <span className="font-extrabold text-orange-primary">
+                    <span className="font-extrabold text-[#B4F82C]">
                       {paymentSuccessDetails.amount.toLocaleString()} ETB
                     </span>
                   </div>
@@ -3258,7 +3258,7 @@ export const App: React.FC = () => {
 
                 {/* Email Notice */}
                 <div className="p-3 rounded-lg bg-charcoal-900 border border-charcoal-800 flex items-center gap-2.5 text-xs text-gray-300 text-left">
-                  <Mail className="w-4 h-4 text-orange-primary shrink-0" />
+                  <Mail className="w-4 h-4 text-[#B4F82C] shrink-0" />
                   <span>
                     A payment receipt has been delivered to your email inbox (Mailpit running at port 8025).
                   </span>
@@ -3275,7 +3275,7 @@ export const App: React.FC = () => {
                     setActiveTab('home');
                     await loadMemberMembershipAndPayments();
                   }}
-                  className="w-full py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-sm shadow-lg shadow-orange-primary/30 transition flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-sm shadow-lg shadow-orange-primary/30 transition flex items-center justify-center gap-2"
                 >
                   <QrCode className="w-4 h-4" /> Go to Dashboard & View QR Pass
                 </button>
@@ -3298,7 +3298,7 @@ export const App: React.FC = () => {
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 bg-orange-primary/10 border border-orange-primary/30 rounded-lg text-orange-primary">
+              <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
                 <DollarSign className="w-5 h-5" />
               </div>
               <div>
@@ -3336,7 +3336,7 @@ export const App: React.FC = () => {
                   onChange={(e) => setManualMemberId(e.target.value)}
                   required
                   placeholder="e.g. c0000000-0000-0000-0000-000000000003"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary font-mono text-xs"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] font-mono text-xs"
                 />
               </div>
 
@@ -3353,7 +3353,7 @@ export const App: React.FC = () => {
                     if (selPlan) setManualAmount(selPlan.price);
                   }}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                 >
                   {plans.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -3371,7 +3371,7 @@ export const App: React.FC = () => {
                   <select
                     value={manualPaymentMethod}
                     onChange={(e) => setManualPaymentMethod(e.target.value as 'cash' | 'bank_transfer')}
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary capitalize"
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] capitalize"
                   >
                     <option value="cash">Cash (Front Desk)</option>
                     <option value="bank_transfer">Bank Transfer (CBE / Telebirr)</option>
@@ -3389,7 +3389,7 @@ export const App: React.FC = () => {
                     value={manualAmount}
                     onChange={(e) => setManualAmount(parseFloat(e.target.value) || 0)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
                   />
                 </div>
               </div>
@@ -3403,7 +3403,7 @@ export const App: React.FC = () => {
                   value={manualReferenceNote}
                   onChange={(e) => setManualReferenceNote(e.target.value)}
                   placeholder="e.g. Receipt #4421, CBE Ref #987654321"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-primary text-xs"
+                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] text-xs"
                 />
               </div>
 
@@ -3418,7 +3418,7 @@ export const App: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSavingManualPayment}
-                  className="px-5 py-2 rounded-lg bg-orange-primary hover:bg-orange-hover text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-orange-primary/20 transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
                 >
                   {isSavingManualPayment ? 'Recording...' : 'Record Payment & Activate'}
                 </button>
@@ -3537,7 +3537,7 @@ export const App: React.FC = () => {
         />
       )}
 
-            {/* TITAN AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
+            {/* SWEATBOX AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
 
       {currentUser && (
 
@@ -3557,7 +3557,7 @@ export const App: React.FC = () => {
 
 
 
-      {/* TITAN ANALYTICS & CSV REPORTING MODAL */}
+      {/* SWEATBOX ANALYTICS & CSV REPORTING MODAL */}
 
       <AnalyticsModal
 
@@ -3573,7 +3573,7 @@ export const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-charcoal-800 py-6 px-6 text-center text-xs text-gray-500">
-        &copy; {new Date().getFullYear()} Titan Fitness Systems. All rights reserved.
+        &copy; {new Date().getFullYear()} SWEATBOX Fitness Systems. All rights reserved.
       </footer>
     </div>
   );

@@ -141,7 +141,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-xl rounded-3xl p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
         {/* Close Button */}
         <button
           onClick={handleResetAndClose}
@@ -152,13 +152,13 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-orange-primary/15 border border-orange-primary/30 flex items-center justify-center text-orange-primary">
+          <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/15 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C]">
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               Walk-In Member Registration
-              <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-orange-primary text-[10px] font-bold border border-orange-primary/30 uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-orange-primary/20 text-[#B4F82C] text-[10px] font-bold border border-[#B4F82C]/30 uppercase">
                 Member Registration
               </span>
             </h3>
@@ -192,7 +192,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-2">
+            <div className="p-4 rounded-xl bg-[#131722] border border-slate-800 text-xs text-gray-300 space-y-2">
               <div className="flex justify-between py-1 border-b border-charcoal-800">
                 <span className="text-gray-400">Member</span>
                 <span className="font-bold text-white">
@@ -201,7 +201,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
               </div>
               <div className="flex justify-between py-1 border-b border-charcoal-800">
                 <span className="text-gray-400">Membership Plan</span>
-                <span className="font-semibold text-orange-primary">{selectedPlan?.name || 'Gym Tier'}</span>
+                <span className="font-semibold text-[#B4F82C]">{selectedPlan?.name || 'Gym Tier'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-charcoal-800">
                 <span className="text-gray-400">Validity (E.C.)</span>
@@ -227,8 +227,8 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
 
             {/* Password Invitation Info */}
             {successResult.inviteSent && (
-              <div className="p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-1">
-                <div className="flex items-center gap-1.5 text-orange-primary font-semibold text-[11px]">
+              <div className="p-3.5 rounded-xl bg-[#131722] border border-slate-800 text-xs text-gray-300 space-y-1">
+                <div className="flex items-center gap-1.5 text-[#B4F82C] font-semibold text-[11px]">
                   <Mail className="w-3.5 h-3.5" /> Password Setup Invitation Dispatched
                 </div>
                 <p className="text-[11px] text-gray-400 leading-relaxed">
@@ -252,13 +252,13 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                 }}
                 className="flex-1 py-3 rounded-xl bg-charcoal-700 hover:bg-charcoal-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5"
               >
-                <UserPlus className="w-4 h-4 text-orange-primary" />
+                <UserPlus className="w-4 h-4 text-[#B4F82C]" />
                 Register Another Walk-In
               </button>
               <button
                 type="button"
                 onClick={handleResetAndClose}
-                className="flex-1 py-3 rounded-xl bg-orange-primary hover:bg-orange-hover text-white font-bold text-xs shadow-lg shadow-orange-primary/20 transition flex items-center justify-center gap-1.5"
+                className="flex-1 py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center justify-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 Done & Close
@@ -269,8 +269,8 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
           /* REGISTRATION & PAYMENT FORM */
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* 1. Member Personal Information */}
-            <div className="p-4 rounded-2xl bg-charcoal-900 border border-charcoal-800 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-primary block">
+            <div className="p-4 rounded-2xl bg-[#131722] border border-slate-800 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#B4F82C] block">
                 1. Member Personal Information
               </span>
 
@@ -283,7 +283,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="e.g. Abebe"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
 
@@ -295,7 +295,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="e.g. Bikila"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
               </div>
@@ -312,7 +312,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="abebe.bikila@gmail.com"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
               </div>
@@ -329,7 +329,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+251 9... or 09... (Ethio / Safaricom)"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={emergencyContact}
                     onChange={(e) => setEmergencyContact(e.target.value)}
                     placeholder="Name & Phone"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
 
@@ -353,15 +353,15 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={fitnessGoals}
                     onChange={(e) => setFitnessGoals(e.target.value)}
                     placeholder="e.g. Muscle gain, endurance"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
               </div>
             </div>
 
             {/* 2. Membership Plan & Offline Payment */}
-            <div className="p-4 rounded-2xl bg-charcoal-900 border border-charcoal-800 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-primary block">
+            <div className="p-4 rounded-2xl bg-[#131722] border border-slate-800 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#B4F82C] block">
                 2. Plan Selection & Payment Collection
               </span>
 
@@ -370,7 +370,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                 <select
                   value={planId}
                   onChange={(e) => handlePlanChange(e.target.value)}
-                  className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                  className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                 >
                   {plans
                     .filter((p) => p.isActive)
@@ -423,7 +423,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     required
                     value={amount}
                     onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
 
@@ -434,7 +434,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
                     value={referenceNote}
                     onChange={(e) => setReferenceNote(e.target.value)}
                     placeholder="e.g. CBE Slip #49102"
-                    className="w-full bg-charcoal-950 border border-charcoal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
+                    className="w-full bg-[#131722] border border-slate-800 focus:border-[#B4F82C] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-primary"
                   />
                 </div>
               </div>
@@ -452,7 +452,7 @@ export const WalkinRegistrationModal: React.FC<WalkinRegistrationModalProps> = (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-xl bg-orange-primary hover:bg-orange-hover text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-orange-primary/20 disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-[#B4F82C]/20 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

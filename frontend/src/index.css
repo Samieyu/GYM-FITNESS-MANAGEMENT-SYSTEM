@@ -4,8 +4,31 @@
 
 @layer base {
   body {
-    background-color: #121212;
-    color: #f3f4f6;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #090C10;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom slim sleek dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #090C10;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E2638;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B4F82C;
+  }
+
+  ::selection {
+    background-color: #B4F82C;
+    color: #090C10;
   }
 }

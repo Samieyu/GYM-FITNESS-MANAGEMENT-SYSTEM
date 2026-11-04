@@ -100,27 +100,27 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pr-10">
             <div className="flex items-start gap-3">
-              <div className="p-3 bg-orange-primary/10 border border-orange-primary/30 rounded-2xl text-orange-primary shrink-0">
+              <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C] shrink-0">
                 <Users className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold text-white">{fitnessClass.title}</h3>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-charcoal-800 text-orange-primary border border-charcoal-700">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-charcoal-800 text-[#B4F82C] border border-charcoal-700">
                     Roster & Check-In
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-400">
                   <span className="flex items-center gap-1 text-gray-300">
-                    <Calendar className="w-3.5 h-3.5 text-orange-primary" /> {ethDate} E.C.
+                    <Calendar className="w-3.5 h-3.5 text-[#B4F82C]" /> {ethDate} E.C.
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1 text-gray-300">
-                    <Clock className="w-3.5 h-3.5 text-orange-primary" /> {timeFormatted}
+                    <Clock className="w-3.5 h-3.5 text-[#B4F82C]" /> {timeFormatted}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1 text-gray-300">
-                    <MapPin className="w-3.5 h-3.5 text-orange-primary" /> {fitnessClass.location}
+                    <MapPin className="w-3.5 h-3.5 text-[#B4F82C]" /> {fitnessClass.location}
                   </span>
                 </div>
               </div>
@@ -136,7 +136,7 @@ export const ClassRosterModal: React.FC<ClassRosterModalProps> = ({
                     const targetCls = classList.find((c) => c.id === e.target.value);
                     if (targetCls) onSelectClass(targetCls);
                   }}
-                  className="bg-charcoal-900 border border-charcoal-700 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-orange-primary"
+                  className="bg-charcoal-900 border border-charcoal-700 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
                 >
                   {classList.map((c) => (
                     <option key={c.id} value={c.id}>
