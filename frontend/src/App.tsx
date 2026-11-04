@@ -32,7 +32,8 @@ import {
   Wrench,
   BarChart3,
   TrendingUp,
-  Download
+  Download,
+  Shield,
 } from 'lucide-react';
 import { 
   User, 
@@ -41,7 +42,6 @@ import {
   loginApi, 
   registerMemberApi, 
   verifyEmailApi, 
-  resendVerificationApi,
   requestPasswordResetApi,
   resetPasswordApi,
   logoutApi 
@@ -88,7 +88,7 @@ import { SidebarNavigation } from './components/SidebarNavigation';
 
 
 import { triggerManualExpiryCheckApi } from './api/reception';
-import { formatEthiopianDateTime } from './utils/ethiopianCalendar';
+import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianCalendar';
 
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
@@ -132,7 +132,7 @@ export const App: React.FC = () => {
   const [regPassword, setRegPassword] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regGoals, setRegGoals] = useState('Muscle building and stamina');
-  const [registeredEmail, setRegisteredEmail] = useState('');
+  // const [registeredEmail, setRegisteredEmail] = useState('');
 
   // Membership Plans state
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -810,19 +810,8 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleResendVerification = async () => {
-    if (!registeredEmail) return;
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    try {
-      const res = await resendVerificationApi(registeredEmail);
-      setSuccessMessage(res.data?.message || 'A fresh verification link has been sent to your email.');
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to resend verification link.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  /* Unused legacy verification handler */
+  // const handleResendVerification = async () => {};
 
   const handleLogout = async () => {
     await logoutApi();
@@ -1794,8 +1783,8 @@ export const App: React.FC = () => {
                     classesList.map((cls) => {
                       const isFull = cls.booked_count >= cls.capacity;
                       const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
-                      const isBookedByMe = myBookings.some((b) => b.class_id === cls.id && b.status === 'booked');
-                      const isWaitlistedByMe = myBookings.some((b) => b.class_id === cls.id && b.status === 'waitlisted');
+                      const isBookedByMe = myBookings.some((b) => b.class_id === cls.id && b.booking_status === 'booked');
+                      const isWaitlistedByMe = myBookings.some((b) => b.class_id === cls.id && b.booking_status === 'waitlisted');
 
                       return (
                         <div

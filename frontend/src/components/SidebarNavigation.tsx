@@ -11,6 +11,7 @@ import {
   BarChart3,
   Wrench,
   LogOut,
+  Shield,
 } from 'lucide-react';
 import { User } from '../api/auth';
 
