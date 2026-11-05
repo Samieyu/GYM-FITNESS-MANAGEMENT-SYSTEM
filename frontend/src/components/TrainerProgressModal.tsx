@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Users, 
-
   Calendar, 
   MessageSquare, 
   TrendingDown, 
@@ -11,7 +10,10 @@ import {
   RefreshCw, 
   Sparkles,
   Send,
-
+  User,
+  Scale,
+  Activity,
+  ArrowLeft,
 } from 'lucide-react';
 import { 
   AssignedMemberSummary, 
@@ -42,6 +44,9 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
   const [metricsLoading, setMetricsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Mobile view toggle: 'roster' | 'details'
+  const [mobileView, setMobileView] = useState<'roster' | 'details'>('roster');
 
   // Active commenting state
   const [activeCommentMetricId, setActiveCommentMetricId] = useState<string | null>(null);
@@ -83,6 +88,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
       loadMembers();
       setActiveCommentMetricId(null);
       setSuccessMessage(null);
+      setMobileView('roster');
     }
   }, [isOpen]);
 
@@ -90,6 +96,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
     setSelectedMember(member);
     setActiveCommentMetricId(null);
     setSuccessMessage(null);
+    setMobileView('details');
     loadMemberMetrics(member.user_id);
   };
 
@@ -115,68 +122,125 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-5xl rounded-3xl p-6 shadow-2xl relative max-h-[92vh] flex flex-col justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-surface border border-border w-full max-w-5xl rounded-3xl p-5 sm:p-7 shadow-2xl relative max-h-[92vh] flex flex-col justify-between animate-in zoom-in-95 duration-200 text-text">
         {/* Header */}
         <div>
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-5 right-5 text-gray-400 hover:text-white transition p-1 rounded-full hover:bg-charcoal-800"
+            className="absolute top-4 sm:top-5 right-4 sm:right-5 text-text-muted hover:text-text transition p-2 rounded-xl hover:bg-surface-elevated min-w-[36px] min-h-[36px] flex items-center justify-center"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex items-start gap-3.5 mb-4">
-            <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C] shrink-0">
+          <div className="flex items-start gap-3.5 mb-4 pr-8">
+            <div className="p-3 bg-primary/10 border border-primary/20 rounded-2xl text-primary shrink-0">
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold text-white">Athlete Transformation & Weight Reviews</h3>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-charcoal-800 text-[#B4F82C] border border-charcoal-700">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-xl font-bold text-text">
+                  Athlete Transformation & Weigh-in Reviews
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20 tracking-wider">
                   Coach Portal
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Coach: {trainerName} • Inspect member transformation metrics, track weight deltas, and submit coaching feedback.
+              <p className="text-xs text-text-muted mt-0.5">
+                Coach: <strong className="text-text font-semibold">{trainerName}</strong> • Inspect member body transformation metrics, track weight deltas, and dispatch feedback.
               </p>
             </div>
           </div>
 
           {errorMessage && (
-            <div className="mb-3 p-3 rounded-xl bg-red-950/80 border border-red-800 text-xs text-red-200 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-              <span>{errorMessage}</span>
+            <div className="mb-3.5 p-3 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-center justify-between gap-2 shadow-sm animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+                <span>{errorMessage}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                className="text-danger hover:opacity-80 p-0.5"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-3 p-3 rounded-xl bg-green-950/80 border border-green-800 text-xs text-green-200 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-green-400 shrink-0" />
-              <span>{successMessage}</span>
+            <div className="mb-3.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-600 dark:text-emerald-400 flex items-center justify-between gap-2 shadow-sm animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 shrink-0 text-emerald-500" />
+                <span>{successMessage}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSuccessMessage(null)}
+                className="text-emerald-500 hover:opacity-80 p-0.5"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
 
+        {/* Mobile View Switcher Pill (only on mobile) */}
+        <div className="flex md:hidden items-center justify-between mb-3 bg-surface-elevated p-1 rounded-xl border border-border">
+          <button
+            type="button"
+            onClick={() => setMobileView('roster')}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+              mobileView === 'roster'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-text-muted'
+            }`}
+          >
+            Athletes ({members.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('details')}
+            disabled={!selectedMember}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition disabled:opacity-40 ${
+              mobileView === 'details'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-text-muted'
+            }`}
+          >
+            Progress Details
+          </button>
+        </div>
+
         {/* Main Split Layout: Left Members List, Right Metric Details */}
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3 gap-4 my-2">
-          {/* Column 1: Member selector */}
-          <div className="p-3.5 rounded-2xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between overflow-hidden">
+          {/* Column 1: Member selector (TRN-PAGE-02) */}
+          <div className={`p-4 rounded-2xl bg-surface-elevated/50 border border-border flex flex-col justify-between overflow-hidden ${
+            mobileView === 'details' ? 'hidden md:flex' : 'flex'
+          }`}>
             <div>
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-charcoal-800">
-                <span className="text-xs font-bold uppercase text-gray-300">Athletes ({members.length})</span>
+              <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-border">
+                <span className="text-xs font-bold uppercase tracking-wider text-text flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-primary" />
+                  Assigned Athletes ({members.length})
+                </span>
                 <button
                   type="button"
                   onClick={loadMembers}
-                  className="text-[11px] text-gray-400 hover:text-white flex items-center gap-1"
+                  className="text-[11px] text-text-muted hover:text-text flex items-center gap-1 p-1 rounded-lg hover:bg-surface transition"
+                  title="Refresh athletes roster"
                 >
-                  <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
                 </button>
               </div>
 
-              <div className="space-y-2 overflow-y-auto max-h-[60vh] pr-1">
+              <div className="space-y-2.5 overflow-y-auto max-h-[58vh] pr-1">
                 {members.length === 0 ? (
-                  <p className="text-xs text-gray-500 py-4 text-center">No assigned athletes found.</p>
+                  <div className="text-center py-8 text-text-muted text-xs">
+                    No assigned athletes found in your coaching roster.
+                  </div>
                 ) : (
                   members.map((m) => {
                     const isSelected = selectedMember?.user_id === m.user_id;
@@ -184,26 +248,27 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                       <div
                         key={m.user_id}
                         onClick={() => handleSelectMember(m)}
-                        className={`p-3 rounded-xl cursor-pointer transition border ${
+                        className={`p-3.5 rounded-xl cursor-pointer transition border ${
                           isSelected
-                            ? 'bg-[#B4F82C]/10 border-orange-primary/50 text-white'
-                            : 'bg-charcoal-850 border-charcoal-800 hover:border-charcoal-700 text-gray-300'
+                            ? 'bg-primary/10 border-primary text-text shadow-sm'
+                            : 'bg-surface border-border hover:border-border-strong text-text-muted hover:text-text'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <p className="font-bold text-xs truncate">
+                          <p className="font-bold text-xs truncate text-text">
                             {m.first_name} {m.last_name}
                           </p>
-                          <span className="text-[10px] font-mono text-gray-400">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-elevated text-text-muted border border-border">
                             {m.member_code || 'MEM'}
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between mt-1 text-[11px] text-gray-400">
-                          <span>
-                            Latest: <strong className="text-white">{m.latest_weight_kg ? `${m.latest_weight_kg} kg` : 'None'}</strong>
+                        <div className="flex items-center justify-between mt-2 text-[11px]">
+                          <span className="text-text-muted">
+                            Latest: <strong className="text-text font-bold">{m.latest_weight_kg ? `${m.latest_weight_kg} kg` : 'None'}</strong>
                           </span>
-                          <span className="px-1.5 py-0.2 rounded bg-charcoal-800 text-[10px]">
+                          <span className="px-2 py-0.5 rounded-full bg-surface-elevated text-text-muted text-[10px] border border-border flex items-center gap-1">
+                            <Activity className="w-2.5 h-2.5" />
                             {m.total_logs_count} {m.total_logs_count === 1 ? 'log' : 'logs'}
                           </span>
                         </div>
@@ -215,38 +280,50 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
             </div>
           </div>
 
-          {/* Column 2 & 3: Selected Member Metrics & Timeline */}
-          <div className="md:col-span-2 p-4 rounded-2xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between overflow-hidden">
+          {/* Column 2 & 3: Selected Member Metrics & Timeline (TRN-PAGE-03) */}
+          <div className={`md:col-span-2 p-4 sm:p-5 rounded-2xl bg-surface-elevated/50 border border-border flex flex-col justify-between overflow-hidden ${
+            mobileView === 'roster' ? 'hidden md:flex' : 'flex'
+          }`}>
             {selectedMember ? (
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Member Highlights header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-charcoal-800">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-border">
                   <div>
-                    <h4 className="text-base font-bold text-white">
-                      {selectedMember.first_name} {selectedMember.last_name}
-                    </h4>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {selectedMember.email} • Goal: <span className="text-[#B4F82C]">{selectedMember.fitness_goals || 'General Fitness'}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setMobileView('roster')}
+                        className="md:hidden p-1 rounded-lg text-text-muted hover:text-text"
+                        aria-label="Back to roster"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                      <h4 className="text-base font-bold text-text">
+                        {selectedMember.first_name} {selectedMember.last_name}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      {selectedMember.email} • Goal: <span className="text-primary font-semibold">{selectedMember.fitness_goals || 'General Fitness'}</span>
                     </p>
                   </div>
 
                   {summary && (
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="text-[10px] uppercase font-bold text-gray-400 block">Current Weight</span>
-                        <span className="text-sm font-black text-white">{summary.current_weight || '—'} kg</span>
+                    <div className="flex items-center gap-4 bg-surface p-2.5 rounded-xl border border-border">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-text-muted block">Current Weight</span>
+                        <span className="text-sm font-black text-text">{summary.current_weight || '—'} kg</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] uppercase font-bold text-gray-400 block">Net Change</span>
+                        <span className="text-[10px] uppercase font-bold text-text-muted block">Net Change</span>
                         <span
-                          className={`text-sm font-black flex items-center justify-end gap-0.5 ${
+                          className={`text-sm font-black flex items-center justify-end gap-1 ${
                             summary.total_change_kg === null
-                              ? 'text-gray-400'
+                              ? 'text-text-muted'
                               : summary.total_change_kg < 0
-                              ? 'text-green-400'
+                              ? 'text-emerald-500'
                               : summary.total_change_kg > 0
-                              ? 'text-amber-400'
-                              : 'text-white'
+                              ? 'text-amber-500'
+                              : 'text-text'
                           }`}
                         >
                           {summary.total_change_kg !== null ? (
@@ -264,77 +341,82 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                 </div>
 
                 {/* Timeline of Logs */}
-                <div className="flex-1 overflow-y-auto space-y-3 pr-1 my-3">
+                <div className="flex-1 overflow-y-auto space-y-3.5 pr-1 my-3">
                   {metricsLoading ? (
-                    <div className="text-center py-10 text-gray-400 text-xs">Loading logs...</div>
+                    <div className="text-center py-12 text-text-muted text-xs flex flex-col items-center justify-center gap-2">
+                      <RefreshCw className="w-5 h-5 animate-spin text-primary" />
+                      <span>Loading athlete logs...</span>
+                    </div>
                   ) : metrics.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500 text-xs">
-                      This athlete has not logged any measurements yet.
+                    <div className="text-center py-16 text-text-muted text-xs bg-surface rounded-xl border border-border p-6">
+                      <Scale className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-50" />
+                      <p className="font-semibold text-text">No weigh-in logs recorded yet</p>
+                      <p className="mt-1 text-[11px]">This athlete has not submitted body transformation metrics yet.</p>
                     </div>
                   ) : (
                     metrics.map((m) => (
                       <div
                         key={m.id}
-                        className="p-3.5 rounded-xl bg-charcoal-850 border border-charcoal-800 space-y-2 hover:border-charcoal-750 transition"
+                        className="p-4 rounded-xl bg-surface border border-border space-y-2.5 hover:border-border-strong transition"
                       >
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-mono text-[#B4F82C] flex items-center gap-1 font-semibold">
+                          <span className="font-mono text-primary flex items-center gap-1.5 font-bold">
                             <Calendar className="w-3.5 h-3.5" />
                             {formatEthiopianDate(m.recorded_date)} E.C.
                           </span>
 
                           <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-white text-sm">{m.weight_kg} kg</span>
+                            <span className="font-black text-text text-sm">{m.weight_kg} kg</span>
                             {m.delta_kg !== null && m.delta_kg !== undefined && (
                               <span
-                                className={`text-[11px] font-bold px-1.5 py-0.2 rounded ${
+                                className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                                   m.delta_kg < 0
-                                    ? 'bg-green-950 text-green-400'
+                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                                     : m.delta_kg > 0
-                                    ? 'bg-amber-950 text-amber-400'
-                                    : 'text-gray-400'
+                                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                                    : 'text-text-muted'
                                 }`}
                               >
                                 {m.delta_kg > 0 ? `+${m.delta_kg}` : m.delta_kg} kg
                               </span>
                             )}
                             {m.bmi && (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-charcoal-800 text-gray-300">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-elevated text-text border border-border">
                                 BMI {m.bmi}
                               </span>
                             )}
                           </div>
                         </div>
 
-                        {/* Dimensions */}
+                        {/* Body Dimensions */}
                         {(m.waist_cm || m.chest_cm || m.hips_cm || m.arms_cm || m.thighs_cm || m.body_fat_percentage) && (
-                          <div className="flex flex-wrap gap-2 text-[10px] text-gray-400">
-                            {m.body_fat_percentage && <span>Fat: <strong className="text-white">{m.body_fat_percentage}%</strong></span>}
-                            {m.waist_cm && <span>Waist: <strong className="text-white">{m.waist_cm}cm</strong></span>}
-                            {m.chest_cm && <span>Chest: <strong className="text-white">{m.chest_cm}cm</strong></span>}
-                            {m.hips_cm && <span>Hips: <strong className="text-white">{m.hips_cm}cm</strong></span>}
-                            {m.arms_cm && <span>Arms: <strong className="text-white">{m.arms_cm}cm</strong></span>}
-                            {m.thighs_cm && <span>Thighs: <strong className="text-white">{m.thighs_cm}cm</strong></span>}
+                          <div className="flex flex-wrap gap-2 text-[11px] text-text-muted pt-1">
+                            {m.body_fat_percentage && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Fat: <strong className="text-text">{m.body_fat_percentage}%</strong></span>}
+                            {m.waist_cm && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Waist: <strong className="text-text">{m.waist_cm}cm</strong></span>}
+                            {m.chest_cm && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Chest: <strong className="text-text">{m.chest_cm}cm</strong></span>}
+                            {m.hips_cm && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Hips: <strong className="text-text">{m.hips_cm}cm</strong></span>}
+                            {m.arms_cm && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Arms: <strong className="text-text">{m.arms_cm}cm</strong></span>}
+                            {m.thighs_cm && <span className="bg-surface-elevated px-2 py-0.5 rounded-md border border-border">Thighs: <strong className="text-text">{m.thighs_cm}cm</strong></span>}
                           </div>
                         )}
 
                         {/* Coach feedback or inline comment trigger */}
                         {m.trainer_comment ? (
-                          <div className="p-2.5 rounded-lg bg-orange-950/20 border border-[#B4F82C]/30 text-xs">
-                            <div className="flex items-center justify-between text-[10px] text-[#B4F82C] font-semibold mb-0.5">
-                              <span>Coach Feedback:</span>
+                          <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs">
+                            <div className="flex items-center justify-between text-[11px] text-primary font-bold mb-1">
+                              <span>Coach Feedback Note:</span>
                               <button
                                 type="button"
                                 onClick={() => {
                                   setActiveCommentMetricId(m.id);
                                   setCommentText(m.trainer_comment || '');
                                 }}
-                                className="text-gray-400 hover:text-white underline text-[10px]"
+                                className="text-text-muted hover:text-text underline text-[10px]"
                               >
                                 Edit Note
                               </button>
                             </div>
-                            <p className="text-gray-200 italic">"{m.trainer_comment}"</p>
+                            <p className="text-text italic">"{m.trainer_comment}"</p>
                           </div>
                         ) : (
                           <div>
@@ -345,9 +427,10 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                                   setActiveCommentMetricId(m.id);
                                   setCommentText('');
                                 }}
-                                className="text-[11px] text-[#B4F82C] hover:underline flex items-center gap-1 font-semibold"
+                                className="text-xs text-primary hover:underline flex items-center gap-1.5 font-bold pt-1"
                               >
-                                <MessageSquare className="w-3 h-3" /> Add Coaching Guidance Note
+                                <MessageSquare className="w-3.5 h-3.5" />
+                                Add Coaching Guidance Note
                               </button>
                             )}
                           </div>
@@ -355,22 +438,22 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
 
                         {/* Active inline feedback form */}
                         {activeCommentMetricId === m.id && (
-                          <div className="p-3 rounded-xl bg-charcoal-900 border border-[#B4F82C]/40 space-y-2 mt-2">
-                            <label className="block text-[11px] text-white font-semibold">
-                              Provide Feedback to Athlete (dispatches email alert):
+                          <div className="p-3.5 rounded-xl bg-surface-elevated border border-primary/30 space-y-2.5 mt-2 animate-in fade-in duration-150">
+                            <label className="block text-xs text-text font-bold">
+                              Provide Feedback to Athlete (triggers email alert):
                             </label>
                             <textarea
                               rows={2}
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
-                              placeholder="e.g. Excellent reduction in waist circumference! Keep your hydration up and stay consistent."
-                              className="w-full bg-charcoal-850 border border-charcoal-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 resize-none"
+                              placeholder="e.g. Excellent waist reduction! Increase your hydration and maintain current tempo."
+                              className="w-full bg-surface border border-border rounded-xl p-2.5 text-xs text-text placeholder:text-text-muted/50 focus:outline-none focus:border-primary resize-none transition"
                             />
                             <div className="flex justify-end gap-2">
                               <button
                                 type="button"
                                 onClick={() => setActiveCommentMetricId(null)}
-                                className="px-2.5 py-1 rounded bg-charcoal-800 text-gray-400 text-xs"
+                                className="px-3 py-1.5 rounded-xl bg-surface border border-border text-text text-xs font-semibold hover:bg-surface-elevated transition"
                               >
                                 Cancel
                               </button>
@@ -378,7 +461,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                                 type="button"
                                 disabled={submittingComment || !commentText.trim()}
                                 onClick={() => handlePostComment(m.id)}
-                                className="px-3 py-1 rounded bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs flex items-center gap-1 disabled:opacity-50"
+                                className="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-sm transition disabled:opacity-50"
                               >
                                 <Send className="w-3 h-3" />
                                 {submittingComment ? 'Sending...' : 'Send Note'}
@@ -392,7 +475,7 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="text-center py-20 text-gray-500 text-xs">
+              <div className="text-center py-24 text-text-muted text-xs">
                 Select an athlete on the left to review their progress metrics.
               </div>
             )}
@@ -400,11 +483,11 @@ export const TrainerProgressModal: React.FC<TrainerProgressModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="mt-3 pt-3 border-t border-charcoal-800 flex justify-end">
+        <div className="mt-3 pt-3.5 border-t border-border flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-white text-xs font-semibold transition"
+            className="min-h-[44px] px-5 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text text-xs font-bold transition active:scale-95"
           >
             Close Portal
           </button>

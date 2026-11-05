@@ -1332,237 +1332,298 @@ export const App: React.FC = () => {
 
             {currentUser.role === 'trainer' && activeTab === 'home' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <Users className="w-5 h-5" />
+                {/* TRAINER COMMAND & COACHING ROSTER HEADER (TRN-PAGE-01) */}
+                <div className="bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                          <Dumbbell className="w-3.5 h-3.5" />
+                          Certified Trainer Hub • የሰውነት ማጎልበቻ አሰልጣኝ
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surface-elevated text-text-muted border border-border">
+                          {formatEthiopianDate(new Date())}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          Floor Coaching Session Active
+                        </span>
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl font-black text-text tracking-tight">
+                        Trainer Command & Athlete Coaching
+                      </h2>
+                      <p className="text-sm text-text-muted mt-1 max-w-2xl">
+                        Monitor assigned athlete body transformation metrics, approve AI-generated workout routines, schedule group classes, and manage live session rosters.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-bold text-white">Assigned Athletes & Logs</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Review athlete weight metrics, body measurements, and leave coaching notes.
-                    </p>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsTrainerProgressModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
-                  >
-                    <Scale className="w-4 h-4" /> Review Athlete Transformation
-                  </button>
-                </div>
 
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <Dumbbell className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">Workout Plan Builder</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Review AI-generated draft plans or build custom athlete routines.
-                    </p>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsTrainerWorkoutModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs text-white transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
-                  >
-                    <Sparkles className="w-4 h-4" /> Review Queue & Plan Builder
-                  </button>
-                </div>
-
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <Calendar className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">Group Classes & Roster</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Schedule group workouts, monitor waitlists, and take live attendance.
-                    </p>
-                    <div className="mt-4 space-y-2">
-                      {classesList.slice(0, 2).map((cls) => (
-                        <div key={cls.id} className="p-2.5 rounded-lg bg-charcoal-900 border border-charcoal-800 flex justify-between items-center text-xs">
-                          <div className="truncate mr-2">
-                            <p className="font-semibold text-white truncate">{cls.title}</p>
-                            <p className="text-[11px] text-gray-400">
-                              {cls.booked_count}/{cls.capacity} Booked {cls.waitlist_count > 0 ? `(${cls.waitlist_count} waitlisted)` : ''}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedRosterClass(cls);
-                              setIsRosterModalOpen(true);
-                            }}
-                            className="px-2.5 py-1 rounded-md bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] border border-[#B4F82C]/40 font-bold text-[11px] whitespace-nowrap transition"
-                          >
-                            Roster
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-5 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsCreateClassModalOpen(true)}
-                      className="flex-1 py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-[#B4F82C]/20"
-                    >
-                      <Plus className="w-4 h-4" /> Schedule Class
-                    </button>
-                    {classesList.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelectedRosterClass(classesList[0]);
-                          setIsRosterModalOpen(true);
-                        }}
-                        className="py-2.5 px-3 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-200 font-semibold text-xs transition border border-charcoal-700"
-                        title="View roster for upcoming class"
+                        onClick={() => setIsTrainerWorkoutModalOpen(true)}
+                        className="min-h-[44px] px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-sm shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
                       >
-                        All Rosters
+                        <Sparkles className="w-4 h-4" />
+                        Review Routines
                       </button>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateClassModalOpen(true)}
+                        className="min-h-[44px] px-4 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text font-bold text-xs transition flex items-center justify-center gap-2 active:scale-95"
+                      >
+                        <Plus className="w-4 h-4 text-primary" />
+                        Schedule Class
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* QUICK STATS RAIL */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6 pt-6 border-t border-border">
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Assigned Athletes</div>
+                        <div className="text-sm font-bold text-text">Active Client Roster</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Dumbbell className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Routine Approval Gate</div>
+                        <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Rule 11 Enforced</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Scheduled Classes</div>
+                        <div className="text-sm font-bold text-text">{classesList.length} Sessions on Calendar</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <Wrench className="w-5 h-5" />
+
+                {/* 4 OPERATIONAL WORKSPACE CARDS */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Card 1: Assigned Athletes & Logs */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-primary/50 transition group">
+                    <div>
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                        <Scale className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                        Athlete Progress & Logs
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Review athlete weigh-in deltas, circumference measurements, and dispatch feedback with email notifications.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-bold text-white">Equipment & Defects</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Report floor machine issues, check operational status, and inspect maintenance history.
-                    </p>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsEquipmentModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs transition flex items-center justify-center gap-1.5 active:scale-98"
-                  >
-                    <Wrench className="w-4 h-4 text-[#B4F82C]" /> View & Report Defect
-                  </button>
-                </div>
-
-              </div>
-
-              {/* Dedicated Trainer Group Classes & Roster Oversight Panel (Rule 12) */}
-              <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 space-y-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-[#B4F82C]" />
-                      <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight</h3>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance check-in.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
+                    <button 
                       type="button"
-                      onClick={() => loadClasses()}
-                      className="px-3 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                      onClick={() => setIsTrainerProgressModalOpen(true)}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
+                      <Scale className="w-4 h-4" /> Review Athletes
                     </button>
-                    <button
+                  </div>
+
+                  {/* Card 2: Workout Routine Builder */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-border-strong transition group">
+                    <div>
+                      <div className="w-12 h-12 rounded-xl bg-surface-elevated border border-border text-text flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                        <Dumbbell className="w-6 h-6 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                        Workout Plan Builder
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Inspect AI draft routines in the review queue and publish custom multi-day resistance splits for athletes.
+                      </p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsTrainerWorkoutModalOpen(true)}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border font-bold text-xs text-text transition flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <Sparkles className="w-4 h-4 text-primary" /> Review Queue & Builder
+                    </button>
+                  </div>
+
+                  {/* Card 3: Group Classes & Scheduling */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-border-strong transition group">
+                    <div>
+                      <div className="w-12 h-12 rounded-xl bg-surface-elevated border border-border text-text flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                        <Calendar className="w-6 h-6 text-blue-500" />
+                      </div>
+                      <h3 className="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                        Group Classes
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Schedule studio fitness sessions, configure capacities, and take live attendance with auto-promoted waitlists.
+                      </p>
+                    </div>
+                    <button 
                       type="button"
                       onClick={() => setIsCreateClassModalOpen(true)}
-                      className="px-4 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border font-bold text-xs text-text transition flex items-center justify-center gap-2 active:scale-95"
                     >
-                      <Plus className="w-4 h-4" /> Schedule New Class
+                      <Plus className="w-4 h-4 text-blue-500" /> Schedule Class
+                    </button>
+                  </div>
+
+                  {/* Card 4: Equipment & Defects */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-border-strong transition group">
+                    <div>
+                      <div className="w-12 h-12 rounded-xl bg-surface-elevated border border-border text-text flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                        <Wrench className="w-6 h-6 text-amber-500" />
+                      </div>
+                      <h3 className="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                        Floor Equipment
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Report defective machines or broken resistance equipment on the floor to notify gym technicians and management.
+                      </p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsEquipmentModalOpen(true)}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border font-bold text-xs text-text transition flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <Wrench className="w-4 h-4 text-amber-500" /> View & Report Defect
                     </button>
                   </div>
                 </div>
 
-                {classesList.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {classesList.map((cls) => {
-                      const isFull = cls.booked_count >= cls.capacity;
-                      const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
+                {/* DEDICATED TRAINER GROUP CLASSES & ROSTER OVERSIGHT PANEL (TRN-PAGE-05) */}
+                <div className="p-6 sm:p-7 rounded-2xl bg-surface border border-border space-y-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-primary" />
+                        <h3 className="text-xl font-bold text-text">Group Classes & Roster Oversight</h3>
+                      </div>
+                      <p className="text-xs text-text-muted mt-1">
+                        Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance check-in.
+                      </p>
+                    </div>
 
-                      return (
-                        <div
-                          key={cls.id}
-                          className="p-5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-charcoal-750 transition"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-[11px] font-mono text-[#B4F82C] flex items-center gap-1">
-                                <Calendar className="w-3.5 h-3.5" />
-                                {formatEthiopianDateTime(cls.start_time)}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                  isFull
-                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                    : 'bg-green-950 text-green-400 border border-green-800'
-                                }`}
-                              >
-                                {isFull ? `Full (${cls.waitlist_count} waitlist)` : `${cls.booked_count} / ${cls.capacity} spots`}
-                              </span>
-                            </div>
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => loadClasses()}
+                        className="min-h-[40px] px-3.5 py-2 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text text-xs font-semibold flex items-center gap-2 transition"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-primary' : ''}`} />
+                        <span>Refresh</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateClassModalOpen(true)}
+                        className="min-h-[40px] px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-2 shadow-md shadow-primary/20 transition active:scale-95"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Schedule New Class</span>
+                      </button>
+                    </div>
+                  </div>
 
-                            <h4 className="font-bold text-white text-base">{cls.title}</h4>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                              {cls.description || 'Instructor-led workout.'}
-                            </p>
+                  {classesList.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {classesList.map((cls) => {
+                        const isFull = cls.booked_count >= cls.capacity;
+                        const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
 
-                            <div className="mt-3 space-y-1 text-xs text-gray-300">
-                              <div className="flex items-center gap-1.5 text-gray-400">
-                                <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
-                              </div>
-                              <div className="text-gray-400">
-                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Gym Trainer'}</span>
-                                {cls.trainer_specialization && (
-                                  <span className="text-[11px] text-gray-500"> ({cls.trainer_specialization})</span>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="mt-4">
-                              <div className="flex justify-between text-[11px] mb-1 font-medium">
-                                <span className="text-gray-400">Capacity</span>
-                                <span className={isFull ? 'text-amber-400 font-bold' : 'text-green-400 font-bold'}>
-                                  {cls.booked_count} / {cls.capacity} spots
+                        return (
+                          <div
+                            key={cls.id}
+                            className="p-5 rounded-2xl bg-surface-elevated/60 border border-border flex flex-col justify-between hover:border-border-strong transition group"
+                          >
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-mono text-primary flex items-center gap-1 font-bold">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {formatEthiopianDateTime(cls.start_time)}
+                                </span>
+                                <span
+                                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                    isFull
+                                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                                      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                                  }`}
+                                >
+                                  {isFull ? `Full (${cls.waitlist_count} waitlist)` : `${cls.booked_count} / ${cls.capacity} spots`}
                                 </span>
                               </div>
-                              <div className="w-full bg-charcoal-800 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className={`h-full rounded-full transition-all ${
-                                    isFull ? 'bg-amber-500' : 'bg-green-500'
-                                  }`}
-                                  style={{ width: `${pct}%` }}
-                                />
+
+                              <h4 className="font-bold text-text text-base group-hover:text-primary transition-colors">
+                                {cls.title}
+                              </h4>
+                              <p className="text-xs text-text-muted mt-1 line-clamp-2 leading-relaxed">
+                                {cls.description || 'Instructor-led session.'}
+                              </p>
+
+                              <div className="mt-3.5 space-y-1.5 text-xs text-text-muted">
+                                <div className="flex items-center gap-1.5">
+                                  <MapPin className="w-3.5 h-3.5 text-text-muted" /> {cls.location}
+                                </div>
+                                <div>
+                                  Instructor: <span className="text-text font-semibold">{cls.trainer_name || 'Gym Trainer'}</span>
+                                  {cls.trainer_specialization && (
+                                    <span className="text-[11px] text-text-muted"> ({cls.trainer_specialization})</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="mt-4 pt-3 border-t border-border/80">
+                                <div className="flex justify-between text-[11px] mb-1.5 font-medium">
+                                  <span className="text-text-muted">Capacity</span>
+                                  <span className={isFull ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-emerald-600 dark:text-emerald-400 font-bold'}>
+                                    {cls.booked_count} / {cls.capacity} booked
+                                  </span>
+                                </div>
+                                <div className="w-full bg-surface rounded-full h-2 overflow-hidden border border-border">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-300 ${
+                                      isFull ? 'bg-amber-500' : 'bg-primary'
+                                    }`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <div className="mt-5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedRosterClass(cls);
-                                setIsRosterModalOpen(true);
-                              }}
-                              className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] hover:text-white border border-[#B4F82C]/40 font-bold text-xs flex items-center justify-center gap-2 transition"
-                            >
-                              <Users className="w-4 h-4" /> View Class Roster & Attendance
-                            </button>
+                            <div className="mt-5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedRosterClass(cls);
+                                  setIsRosterModalOpen(true);
+                                }}
+                                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface hover:bg-surface-elevated text-text border border-border hover:border-primary/50 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+                              >
+                                <Users className="w-4 h-4 text-primary" /> View Class Roster & Attendance
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500 text-xs">
-                    No group classes scheduled yet. Click "Schedule New Class" to create one.
-                  </div>
-                )}
-              </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-text-muted text-xs bg-surface-elevated/40 rounded-2xl border border-border p-6">
+                      <Calendar className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-50" />
+                      <p className="font-semibold text-text">No group classes scheduled yet</p>
+                      <p className="mt-1 text-[11px]">Click "Schedule New Class" to create your first session.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
