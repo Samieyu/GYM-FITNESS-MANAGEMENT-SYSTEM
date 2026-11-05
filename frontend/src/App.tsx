@@ -1144,58 +1144,188 @@ export const App: React.FC = () => {
             )}
 
             {currentUser.role === 'reception' && activeTab === 'home' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-12 h-12 rounded-xl bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <QrCode className="w-6 h-6" />
+              <div className="space-y-6">
+                {/* RECEPTION OPERATIONAL COMMAND HEADER */}
+                <div className="bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                          <Shield className="w-3.5 h-3.5" />
+                          Front Desk Terminal • የመስተንግዶ ማዕከል
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surface-elevated text-text-muted border border-border">
+                          {formatEthiopianDate(new Date())}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          Entrance Turnstiles Online
+                        </span>
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl font-black text-text tracking-tight">
+                        Concierge Operations & Access Control
+                      </h2>
+                      <p className="text-sm text-text-muted mt-1 max-w-2xl">
+                        Verify dynamic member QR passes with anti-passback protection, onboard walk-in athletes, and record in-person cash & bank transfer subscriptions.
+                      </p>
                     </div>
-                    <h3 className="text-xl font-bold text-white">Live QR Scanner</h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Optical scanner for member dynamic QR passes with instant anti-passback and expiration check.
-                    </p>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setIsReceptionScannerOpen(true)}
+                        className="min-h-[44px] px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-sm shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
+                      >
+                        <QrCode className="w-4 h-4" />
+                        Launch Scanner
+                      </button>
+                    </div>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsReceptionScannerOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] font-bold text-xs text-slate-950 transition flex items-center justify-center gap-2 shadow-lg shadow-[#B4F82C]/20 active:scale-98"
-                  >
-                    <QrCode className="w-4 h-4" /> Open Front Desk Scanner
-                  </button>
+
+                  {/* QUICK STATS RAIL */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6 pt-6 border-t border-border">
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <QrCode className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Pass Verification</div>
+                        <div className="text-sm font-bold text-text">60s Dynamic Pass</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                        <Shield className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Anti-Passback Rule</div>
+                        <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Strict 5-Min Cooldown</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-surface-elevated/60 border border-border/80 rounded-xl p-3.5 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                        <CreditCard className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-text-muted">Payment Channels</div>
+                        <div className="text-sm font-bold text-text">Cash, CBE & Telebirr</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-12 h-12 rounded-xl bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <UserPlus className="w-6 h-6" />
+                {/* 3 OPERATIONAL WORKSPACE CARDS */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Card 1: Scanner */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-primary/50 transition group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <QrCode className="w-6 h-6" />
+                        </div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Optical & Token
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-text group-hover:text-primary transition-colors">
+                        Live Entrance Scanner
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        High-speed optical camera scan for rotating 60s member passes. Verifies active tier, anti-passback cooldown, and logs attendance immediately.
+                      </p>
                     </div>
-                    <h3 className="text-xl font-bold text-white">Walk-in Member Registration</h3>
-                    <p className="text-xs text-gray-400 mt-1">Register walk-in client, assign membership tier, record cash payment, and send activation link.</p>
+                    <button 
+                      type="button"
+                      onClick={() => setIsReceptionScannerOpen(true)}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <QrCode className="w-4 h-4" /> Open Scanner Terminal
+                    </button>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsWalkinModalOpen(true)}
-                    className="mt-6 w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-2 active:scale-98"
-                  >
-                    <UserPlus className="w-4 h-4 text-[#B4F82C]" /> Register Walk-in Member
-                  </button>
+
+                  {/* Card 2: Walk-In Registration */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-border-strong transition group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-surface-elevated border border-border text-text flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <UserPlus className="w-6 h-6 text-primary" />
+                        </div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/20">
+                          2-Step Wizard
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-text group-hover:text-primary transition-colors">
+                        Walk-in Registration
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Fast counter onboarding: enter phone (+251) and Gmail, select membership duration, collect cash/transfer, and send password invitation.
+                      </p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setIsWalkinModalOpen(true)}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border font-bold text-xs text-text transition flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <UserPlus className="w-4 h-4 text-primary" /> Register Walk-in Member
+                    </button>
+                  </div>
+
+                  {/* Card 3: Offline Payment */}
+                  <div className="bg-surface border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:border-border-strong transition group">
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-surface-elevated border border-border text-text flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <DollarSign className="w-6 h-6 text-emerald-500" />
+                        </div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-surface-elevated text-text-muted border border-border">
+                          Audited Receipts
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-text group-hover:text-primary transition-colors">
+                        Record Offline Payment
+                      </h3>
+                      <p className="text-xs text-text-muted mt-2 leading-relaxed">
+                        Record Cash or Bank Transfer transactions with member ID matching, automatic plan pricing, reference slip logging, and immediate activation.
+                      </p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => openManualPaymentModal()}
+                      className="mt-6 w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border font-bold text-xs text-text transition flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <DollarSign className="w-4 h-4 text-emerald-500" /> Record Cash / Transfer
+                    </button>
+                  </div>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
-                  <div>
-                    <div className="w-12 h-12 rounded-xl bg-charcoal-800 flex items-center justify-center text-[#B4F82C] mb-4">
-                      <DollarSign className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white">Record Offline Payment</h3>
-                    <p className="text-xs text-gray-400 mt-1">Record Cash or Direct Bank Transfer transactions with immediate receipt generation.</p>
+                {/* PROTOCOL GUIDANCE ACCORDION / BOX */}
+                <div className="bg-surface-elevated/40 border border-border rounded-2xl p-5 sm:p-6 text-xs text-text-muted space-y-3">
+                  <div className="flex items-center gap-2 text-text font-bold text-sm">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span>Front Desk Protocol & Shift Security Guide</span>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => openManualPaymentModal()}
-                    className="mt-6 w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-2"
-                  >
-                    <DollarSign className="w-4 h-4 text-[#B4F82C]" /> Record Cash / Transfer
-                  </button>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div className="space-y-1">
+                      <div className="font-semibold text-text">1. Anti-Passback Enforcement</div>
+                      <p className="text-[11px] leading-relaxed">
+                        Members cannot share passes. Consecutive scans within 5 minutes trigger a yellow cooldown warning. Use Reception Override only if authorized.
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-text">2. Cash Handling & Reconciliation</div>
+                      <p className="text-[11px] leading-relaxed">
+                        Issue a physical gym receipt slip for all cash transactions and enter the slip number in the Reference Note field for end-of-shift reconciliation.
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-text">3. Expired Membership Handling</div>
+                      <p className="text-[11px] leading-relaxed">
+                        If the scanner displays Red (Access Denied / Expired), directly tap "Record Payment" to renew the member’s tier on the spot.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -2364,40 +2494,41 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* RECEPTION & ADMIN OFFLINE PAYMENT MODAL (Business Rule 4) */}
+      {/* RECEPTION & ADMIN OFFLINE PAYMENT MODAL (POP-REC-03 / REC-PAGE-07) */}
       {isManualModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-charcoal-850 border border-charcoal-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-surface border border-border w-full max-w-lg rounded-2xl p-6 sm:p-7 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               type="button"
               onClick={() => { setIsManualModalOpen(false); setManualPaymentError(null); }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+              className="absolute top-4 right-4 p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition min-w-[36px] min-h-[36px] flex items-center justify-center"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
-                <DollarSign className="w-5 h-5" />
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0">
+                <DollarSign className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Record Offline Payment</h3>
-                <p className="text-xs text-gray-400">
-                  Reception & Admin record Cash & Bank Transfer with audit logs.
+                <h3 className="text-xl font-bold text-text">Record Offline Payment</h3>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Collect Cash or Direct Bank Transfer with instant membership activation.
                 </p>
               </div>
             </div>
 
             {manualPaymentError && (
-              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs text-red-200 flex items-start justify-between gap-2 shadow-lg">
+              <div className="mb-5 p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-start justify-between gap-2 shadow-sm animate-in fade-in">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
                   <span>{manualPaymentError}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setManualPaymentError(null)}
-                  className="text-red-400 hover:text-white"
+                  className="text-danger hover:opacity-80 p-0.5"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2406,7 +2537,7 @@ export const App: React.FC = () => {
 
             <form onSubmit={handleSaveManualPayment} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-text mb-1.5">
                   Member ID (UUID) *
                 </label>
                 <input
@@ -2415,13 +2546,16 @@ export const App: React.FC = () => {
                   onChange={(e) => setManualMemberId(e.target.value)}
                   required
                   placeholder="e.g. c0000000-0000-0000-0000-000000000003"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] font-mono text-xs"
+                  className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-xs text-text placeholder:text-text-muted/50 focus:outline-none focus:border-primary font-mono transition"
                 />
+                <p className="text-[11px] text-text-muted mt-1">
+                  Copy from the Scanner terminal or Member Roster.
+                </p>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
-                  Membership Plan *
+                <label className="block text-xs font-semibold text-text mb-1.5">
+                  Membership Plan Tier *
                 </label>
                 <select
                   value={manualPlanId}
@@ -2432,35 +2566,53 @@ export const App: React.FC = () => {
                     if (selPlan) setManualAmount(selPlan.price);
                   }}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                  className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition"
                 >
                   {plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} — {p.price.toLocaleString()} ETB ({p.durationMonths} mo)
+                    <option key={p.id} value={p.id} className="bg-surface text-text">
+                      {p.name} — {p.price.toLocaleString()} ETB ({p.durationMonths} {p.durationMonths === 1 ? 'month' : 'months'})
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">
-                    Payment Method *
-                  </label>
-                  <select
-                    value={manualPaymentMethod}
-                    onChange={(e) => setManualPaymentMethod(e.target.value as 'cash' | 'bank_transfer')}
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] capitalize"
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-text">
+                  Payment Method *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setManualPaymentMethod('cash')}
+                    className={`min-h-[44px] py-2.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition ${
+                      manualPaymentMethod === 'cash'
+                        ? 'bg-primary/10 border-primary text-primary font-bold shadow-sm'
+                        : 'bg-surface-elevated border-border text-text-muted hover:text-text hover:border-border-strong'
+                    }`}
                   >
-                    <option value="cash">Cash (Front Desk)</option>
-                    <option value="bank_transfer">Bank Transfer (CBE / Telebirr)</option>
-                  </select>
+                    <DollarSign className="w-4 h-4" />
+                    Cash at Front Desk
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setManualPaymentMethod('bank_transfer')}
+                    className={`min-h-[44px] py-2.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition ${
+                      manualPaymentMethod === 'bank_transfer'
+                        ? 'bg-primary/10 border-primary text-primary font-bold shadow-sm'
+                        : 'bg-surface-elevated border-border text-text-muted hover:text-text hover:border-border-strong'
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    CBE / Telebirr Transfer
+                  </button>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">
-                    Amount Paid (ETB) *
-                  </label>
+              <div>
+                <label className="block text-xs font-semibold text-text mb-1.5">
+                  Amount Received (ETB) *
+                </label>
+                <div className="relative">
                   <input
                     type="number"
                     min={0}
@@ -2468,37 +2620,41 @@ export const App: React.FC = () => {
                     value={manualAmount}
                     onChange={(e) => setManualAmount(parseFloat(e.target.value) || 0)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                    className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm font-bold text-text focus:outline-none focus:border-primary transition"
                   />
+                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-text-muted">
+                    ETB
+                  </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-semibold text-text mb-1.5">
                   Transaction Notes / Receipt Slip #
                 </label>
                 <input
                   type="text"
                   value={manualReferenceNote}
                   onChange={(e) => setManualReferenceNote(e.target.value)}
-                  placeholder="e.g. Receipt #4421, CBE Ref #987654321"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C] text-xs"
+                  placeholder="e.g. Paper Slip #4421, CBE Ref #FT26..."
+                  className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-xs text-text placeholder:text-text-muted/50 focus:outline-none focus:border-primary transition"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-charcoal-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-6">
                 <button
                   type="button"
                   onClick={() => { setIsManualModalOpen(false); setManualPaymentError(null); }}
-                  className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold transition"
+                  className="min-h-[44px] px-4 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text text-xs font-semibold transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingManualPayment}
-                  className="px-5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
+                  className="min-h-[44px] px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition disabled:opacity-50 flex items-center gap-2"
                 >
+                  <DollarSign className="w-4 h-4" />
                   {isSavingManualPayment ? 'Recording...' : 'Record Payment & Activate'}
                 </button>
               </div>
