@@ -48,13 +48,13 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **REC-PAGE-07**: Manual Payment Terminal — Step form for recording In-Person Cash, Telebirr, CBE Birr, or POS card payments with instant membership activation.
 
 ### 1.4 Certified Trainer Pages (Role: `trainer`)
-- [ ] **TRN-PAGE-01**: Trainer Roster & Command Dashboard — Assigned athletes summary, today's schedule, pending workout plan approvals badge.
-- [ ] **TRN-PAGE-02**: Assigned Members Roster — Filterable cards/table showing athlete goals, membership status, last gym check-in, and active routine.
-- [ ] **TRN-PAGE-03**: Athlete Profile Detail View — Tabs for Overview, Workout Routine, Transformation Metric History, and Class Attendance.
-- [ ] **TRN-PAGE-04**: Workout Routine Formulation & Review Editor — Interactive routine builder with drag handles, exercise selector, sets/reps configurator, and one-click Approval Gate.
-- [ ] **TRN-PAGE-05**: Trainer Group Classes Management — View scheduled sessions, roster capacity, waitlist overflow, and class cancellation controls.
-- [ ] **TRN-PAGE-06**: Class Attendance Marking Terminal — Fast touch-friendly roster to mark "Attended", "No-Show", or "Late Cancellation".
-- [ ] **TRN-PAGE-07**: SWEATBOX Trainer AI Assistant — Technical AI formulation tool for biomechanical cues, progression overload calculations, and injury accommodations.
+- [x] **TRN-PAGE-01**: Trainer Roster & Command Dashboard — Assigned athletes summary, today's schedule, pending workout plan approvals badge.
+- [x] **TRN-PAGE-02**: Assigned Members Roster — Filterable cards/table showing athlete goals, membership status, last gym check-in, and active routine.
+- [x] **TRN-PAGE-03**: Athlete Profile Detail View — Tabs for Overview, Workout Routine, Transformation Metric History, and Class Attendance.
+- [x] **TRN-PAGE-04**: Workout Routine Formulation & Review Editor — Interactive routine builder with drag handles, exercise selector, sets/reps configurator, and one-click Approval Gate.
+- [x] **TRN-PAGE-05**: Trainer Group Classes Management — View scheduled sessions, roster capacity, waitlist overflow, and class cancellation controls.
+- [x] **TRN-PAGE-06**: Class Attendance Marking Terminal — Fast touch-friendly roster to mark "Attended", "No-Show", or "Late Cancellation".
+- [x] **TRN-PAGE-07**: SWEATBOX Trainer AI Assistant — Technical AI formulation tool for biomechanical cues, progression overload calculations, and injury accommodations.
 
 ### 1.5 System Administrator Pages (Role: `admin`)
 - [ ] **ADM-PAGE-01**: Admin Executive Dashboard — Metric cards (Total Revenue ETB, Active Members, Daily Scans, Equipment Health), charts for revenue trends and attendance heatmaps.
@@ -93,9 +93,9 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **POP-REC-04**: Override Anti-Passback Confirmation Dialog — Receptionist override authorization prompt for repeat check-in.
 
 ### 2.4 Trainer & Admin Popups
-- [ ] **POP-TRN-01**: Trainer Workout Routine Editor Modal — Drag-and-drop exercise sequence modal with sets, reps, and target weights.
-- [ ] **POP-TRN-02**: Approve Routine Confirmation Modal — Trainer approval gate confirmation with notification trigger to athlete.
-- [ ] **POP-TRN-03**: Class Attendee Roster Sheet — Roster management modal with one-tap status toggles (Present, Absent, Excused).
+- [x] **POP-TRN-01**: Trainer Workout Routine Editor Modal — Drag-and-drop exercise sequence modal with sets, reps, and target weights.
+- [x] **POP-TRN-02**: Approve Routine Confirmation Modal — Trainer approval gate confirmation with notification trigger to athlete.
+- [x] **POP-TRN-03**: Class Attendee Roster Sheet — Roster management modal with one-tap status toggles (Present, Absent, Excused).
 - [ ] **POP-ADM-01**: Staff Registration Modal — Admin form for creating Trainers and Reception staff with email invitation trigger.
 - [ ] **POP-ADM-02**: Plan Editor Modal — Plan title, description, price (ETB), duration (months), feature bullet points, and image uploader.
 - [ ] **POP-ADM-03**: Create / Edit Class Modal — Class title, category selector, trainer picker, date & time pickers, and capacity ceiling.

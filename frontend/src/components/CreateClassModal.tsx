@@ -106,70 +106,81 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-surface border border-border w-full max-w-lg rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200 text-text">
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-white transition p-1 rounded-full hover:bg-charcoal-800"
+          className="absolute top-4 sm:top-5 right-4 sm:right-5 text-text-muted hover:text-text transition p-2 rounded-xl hover:bg-surface-elevated min-w-[36px] min-h-[36px] flex items-center justify-center"
+          aria-label="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 mb-5">
-          <div className="p-3 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-2xl text-[#B4F82C]">
+        <div className="flex items-start gap-3.5 mb-5 pr-8">
+          <div className="p-3 bg-primary/10 border border-primary/20 rounded-2xl text-primary shrink-0">
             <Dumbbell className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">Schedule Group Fitness Class</h3>
-            <p className="text-xs text-gray-400">Capacity limit and automated waitlist queue</p>
+            <h3 className="text-xl font-bold text-text">Schedule Group Fitness Class</h3>
+            <p className="text-xs text-text-muted mt-0.5">Capacity limit and automated waitlist queue</p>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-red-950/80 border border-red-800 text-xs text-red-200 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="mb-4 p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-center justify-between gap-2 shadow-sm animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+              <span>{errorMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage(null)}
+              className="text-danger hover:opacity-80 p-0.5"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Class Title *</label>
+            <label className="block text-text font-bold mb-1.5">Class Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. HIIT Strength & Core conditioning"
+              placeholder="e.g. HIIT Strength & Core Conditioning"
               required
-              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+              className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-text text-xs placeholder:text-text-muted/50 focus:outline-none focus:border-primary transition"
             />
           </div>
 
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Description</label>
+            <label className="block text-text font-bold mb-1.5">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               placeholder="High energy workout details, target muscle groups, prerequisites..."
-              className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 resize-none"
+              className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2 text-text text-xs placeholder:text-text-muted/50 focus:outline-none focus:border-primary resize-none transition"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Lead Instructor / Trainer *</label>
+              <label className="block text-text font-bold mb-1.5">Lead Instructor / Trainer *</label>
               <select
                 value={trainerId}
                 onChange={(e) => setTrainerId(e.target.value)}
                 required
-                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+                className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-text text-xs focus:outline-none focus:border-primary transition"
               >
                 {trainers.length === 0 ? (
-                  <option value="">Loading trainers...</option>
+                  <option value="" className="bg-surface text-text">Loading trainers...</option>
                 ) : (
                   trainers.map((t) => (
-                    <option key={t.id} value={t.id}>
+                    <option key={t.id} value={t.id} className="bg-surface text-text">
                       {t.first_name} {t.last_name} ({t.specialization})
                     </option>
                   ))
@@ -178,9 +189,9 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Max Capacity *</label>
+              <label className="block text-text font-bold mb-1.5">Max Capacity *</label>
               <div className="relative">
-                <Users className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+                <Users className="w-4 h-4 text-text-muted absolute left-3 top-2.5" />
                 <input
                   type="number"
                   min={1}
@@ -188,92 +199,92 @@ export const CreateClassModal: React.FC<CreateClassModalProps> = ({
                   value={capacity}
                   onChange={(e) => setCapacity(parseInt(e.target.value) || 1)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50 font-mono"
+                  className="w-full bg-surface-elevated border border-border rounded-xl pl-9 pr-3.5 py-2.5 text-text text-xs focus:outline-none focus:border-primary font-mono transition"
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Date *</label>
+              <label className="block text-text font-bold mb-1.5">Date *</label>
               <div className="relative">
-                <Calendar className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+                <Calendar className="w-3.5 h-3.5 text-text-muted absolute left-3 top-2.5" />
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+                  className="w-full bg-surface-elevated border border-border rounded-xl pl-8 pr-2 py-2 text-text text-[11px] focus:outline-none focus:border-primary transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">Start Time *</label>
+              <label className="block text-text font-bold mb-1.5">Start Time *</label>
               <div className="relative">
-                <Clock className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+                <Clock className="w-3.5 h-3.5 text-text-muted absolute left-3 top-2.5" />
                 <input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+                  className="w-full bg-surface-elevated border border-border rounded-xl pl-8 pr-2 py-2 text-text text-[11px] focus:outline-none focus:border-primary transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 font-semibold mb-1">End Time *</label>
+              <label className="block text-text font-bold mb-1.5">End Time *</label>
               <div className="relative">
-                <Clock className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+                <Clock className="w-3.5 h-3.5 text-text-muted absolute left-3 top-2.5" />
                 <input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   required
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-8 pr-2 py-2 text-white text-[11px] focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+                  className="w-full bg-surface-elevated border border-border rounded-xl pl-8 pr-2 py-2 text-text text-[11px] focus:outline-none focus:border-primary transition"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-gray-300 font-semibold mb-1">Studio / Location</label>
+            <label className="block text-text font-bold mb-1.5">Studio / Location</label>
             <div className="relative">
-              <MapPin className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+              <MapPin className="w-4 h-4 text-text-muted absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Studio A - Cardio Deck or Heavy Iron Zone"
                 required
-                className="w-full bg-charcoal-900 border border-charcoal-700 rounded-xl pl-9 pr-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-[#B4F82C] focus:ring-1 focus:ring-[#B4F82C]/50"
+                className="w-full bg-surface-elevated border border-border rounded-xl pl-9 pr-3.5 py-2.5 text-text text-xs placeholder:text-text-muted/50 focus:outline-none focus:border-primary transition"
               />
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-charcoal-900 border border-charcoal-800 text-[11px] text-gray-400 space-y-1">
-            <p className="font-semibold text-gray-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#B4F82C]" /> Automated Waitlist Engine Active
+          <div className="p-3.5 rounded-xl bg-surface-elevated/70 border border-border text-[11px] text-text-muted space-y-1">
+            <p className="font-bold text-text flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-primary" /> Automated Waitlist Engine Active
             </p>
-            <p>
+            <p className="leading-relaxed">
               Once {capacity} spots are booked, additional registrations enter the waitlist queue and are auto-promoted when any member cancels.
             </p>
           </div>
 
-          <div className="pt-2 flex justify-end gap-3">
+          <div className="pt-3 flex justify-end gap-3 border-t border-border mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 font-semibold text-xs transition"
+              className="min-h-[44px] px-4 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text font-bold text-xs transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-[#B4F82C]/20 disabled:opacity-50 active:scale-98"
+              className="min-h-[44px] px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs transition flex items-center gap-2 shadow-md shadow-primary/20 disabled:opacity-50 active:scale-95"
             >
               <Calendar className="w-4 h-4" />
               {isSubmitting ? 'Scheduling...' : 'Confirm Schedule'}
