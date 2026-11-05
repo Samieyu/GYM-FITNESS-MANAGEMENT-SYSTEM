@@ -39,13 +39,13 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **MEM-PAGE-12**: Unpaid Member Subscription Gate Screen — Focused Plan Selection view shown exclusively to newly signed-up or expired members before full feature unlock.
 
 ### 1.3 Front Desk & Reception Pages (Role: `reception`)
-- [ ] **REC-PAGE-01**: Front Desk Operational Dashboard — Shift summary stat cards (Active Check-Ins Today, Peak Hour Volume, Pending Registrations).
-- [ ] **REC-PAGE-02**: Live QR Entrance Scanner — Full-screen mobile/tablet camera viewfinder with target framing guides, torch toggle, and manual input fallback.
-- [ ] **REC-PAGE-03**: Scan Decision Display (Allowed) — High-visibility emerald verification banner, member photo, active plan, days remaining, trainer assigned.
-- [ ] **REC-PAGE-04**: Scan Decision Display (Denied) — High-visibility crimson rejection banner, specific denial reason (Expired, Anti-Passback Violation, Inactive), instant "Renew" and "Record Payment" shortcuts.
-- [ ] **REC-PAGE-05**: Walk-In Registration Flow — Fast, stepwise counter registration form with real-time camera snapshot capture, plan selection, and cash recording.
-- [ ] **REC-PAGE-06**: Front Desk Member Lookup — Instant search table with filters (Active, Expired, Suspended) and phone/email matching.
-- [ ] **REC-PAGE-07**: Manual Payment Terminal — Step form for recording In-Person Cash, Telebirr, CBE Birr, or POS card payments with instant membership activation.
+- [x] **REC-PAGE-01**: Front Desk Operational Dashboard — Shift summary stat cards (Active Check-Ins Today, Peak Hour Volume, Pending Registrations).
+- [x] **REC-PAGE-02**: Live QR Entrance Scanner — Full-screen mobile/tablet camera viewfinder with target framing guides, torch toggle, and manual input fallback.
+- [x] **REC-PAGE-03**: Scan Decision Display (Allowed) — High-visibility emerald verification banner, member photo, active plan, days remaining, trainer assigned.
+- [x] **REC-PAGE-04**: Scan Decision Display (Denied) — High-visibility crimson rejection banner, specific denial reason (Expired, Anti-Passback Violation, Inactive), instant "Renew" and "Record Payment" shortcuts.
+- [x] **REC-PAGE-05**: Walk-In Registration Flow — Fast, stepwise counter registration form with real-time camera snapshot capture, plan selection, and cash recording.
+- [x] **REC-PAGE-06**: Front Desk Member Lookup — Instant search table with filters (Active, Expired, Suspended) and phone/email matching.
+- [x] **REC-PAGE-07**: Manual Payment Terminal — Step form for recording In-Person Cash, Telebirr, CBE Birr, or POS card payments with instant membership activation.
 
 ### 1.4 Certified Trainer Pages (Role: `trainer`)
 - [ ] **TRN-PAGE-01**: Trainer Roster & Command Dashboard — Assigned athletes summary, today's schedule, pending workout plan approvals badge.
@@ -87,10 +87,10 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **POP-MEM-08**: Renew Membership Plan Modal — Tier review, duration summary, and instant checkout redirect to Chapa.
 
 ### 2.3 Reception Popups & Sheets
-- [ ] **POP-REC-01**: Camera QR Scanner Modal — Viewfinder overlay with animated scanning beam, camera flip toggle, and manual token lookup bar.
-- [ ] **POP-REC-02**: Walk-In Registration Step Sheet — Stepwise counter onboarding modal with integrated camera preview and photo crop.
-- [ ] **POP-REC-03**: Record Manual Cash Payment Modal — Member selector, plan picker, amount received input, notes, and receipt trigger.
-- [ ] **POP-REC-04**: Override Anti-Passback Confirmation Dialog — Receptionist override authorization prompt for repeat check-in.
+- [x] **POP-REC-01**: Camera QR Scanner Modal — Viewfinder overlay with animated scanning beam, camera flip toggle, and manual token lookup bar.
+- [x] **POP-REC-02**: Walk-In Registration Step Sheet — Stepwise counter onboarding modal with integrated camera preview and photo crop.
+- [x] **POP-REC-03**: Record Manual Cash Payment Modal — Member selector, plan picker, amount received input, notes, and receipt trigger.
+- [x] **POP-REC-04**: Override Anti-Passback Confirmation Dialog — Receptionist override authorization prompt for repeat check-in.
 
 ### 2.4 Trainer & Admin Popups
 - [ ] **POP-TRN-01**: Trainer Workout Routine Editor Modal — Drag-and-drop exercise sequence modal with sets, reps, and target weights.
@@ -140,7 +140,7 @@ This inventory tracks the comprehensive redesign of every user interface surface
 
 ### 3.4 Success & Confirmation States
 - [x] **STATE-SUCC-01**: Payment Completed Screen — Celebration card with receipt breakdown, Ethiopian calendar dates, and "Open QR Pass" button.
-- [ ] **STATE-SUCC-02**: Walk-In Registration Complete — Clear counter confirmation displaying member name and password activation notice.
+- [x] **STATE-SUCC-02**: Walk-In Registration Complete — Clear counter confirmation displaying member name and password activation notice.
 - [ ] **STATE-SUCC-03**: Class Booking Success Modal — Immediate calendar addition option and class reminder confirmation.
 
 ---
