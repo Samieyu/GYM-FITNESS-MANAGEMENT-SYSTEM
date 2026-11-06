@@ -586,7 +586,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
               <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text leading-tight">
                 Your Gym Pass in Your Pocket. Zero Friction.
               </h2>
-              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
+              <p className="text-sm sm:text-base text-[#0F172A] dark:text-[#F1F5F9] font-semibold leading-relaxed">
                 Experience SWEATBOX on any mobile browser or smartphone. Instant 60-second dynamic QR check-ins, workout routine tracking with set logging, class reservation reminders, and direct Telebirr membership renewal.
               </p>
 

@@ -80,13 +80,8 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => handleNav('plans')}
-            className={clsx(
-              'px-3.5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors min-h-[44px]',
-              activeTab === 'plans'
-                ? 'bg-surface-elevated text-[#FF6B00]'
-                : 'text-content-secondary hover:text-content-primary hover:bg-surface-elevated/50'
-            )}
+            onClick={onOpenRegister}
+            className="px-3.5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-content-secondary hover:text-content-primary hover:bg-surface-elevated/50 transition-colors min-h-[44px]"
           >
             Plans & Pricing
           </button>
@@ -175,16 +170,13 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
 
             <button
               type="button"
-              onClick={() => handleNav('plans')}
-              className={clsx(
-                'flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold min-h-[44px] transition text-left',
-                activeTab === 'plans'
-                  ? 'bg-surface-elevated text-[#FF6B00]'
-                  : 'text-content-primary hover:bg-surface-elevated/50'
-              )}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenRegister();
+              }}
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold min-h-[44px] transition text-left text-content-primary hover:bg-surface-elevated/50"
             >
               <span>Membership Plans & Pricing</span>
-              {activeTab === 'plans' && <span className="w-2 h-2 rounded-full bg-[#FF6B00]" />}
             </button>
 
             <button

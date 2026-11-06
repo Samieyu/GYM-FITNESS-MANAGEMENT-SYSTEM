@@ -205,7 +205,7 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
       {/* 1. DESKTOP COLLAPSIBLE SIDEBAR (>=1024px) */}
       <aside
         className={clsx(
-          'hidden lg:flex flex-col justify-between border-r border-border bg-surface/95 backdrop-blur-md py-5 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left h-screen max-h-screen overflow-hidden',
+          'hidden lg:flex flex-col justify-between border-r border-border bg-surface/95 backdrop-blur-md py-5 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left h-screen max-h-screen overflow-visible',
           isExpanded ? 'w-60 px-4' : 'w-20 px-2'
         )}
       >
@@ -214,13 +214,13 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
           className={clsx(
-            'absolute top-8 z-50 w-6 h-6 rounded-full bg-surface border border-border shadow-md flex items-center justify-center text-text-muted hover:text-primary hover:border-primary/50 transition cursor-pointer',
-            isExpanded ? '-right-3' : '-right-3'
+            'absolute top-8 z-50 w-7 h-7 rounded-full bg-surface-elevated border-2 border-border shadow-lg flex items-center justify-center text-text hover:text-primary hover:border-primary transition cursor-pointer',
+            isExpanded ? '-right-3.5' : '-right-3.5'
           )}
           aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
           title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          {isExpanded ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+          {isExpanded ? <ChevronLeft className="w-4 h-4 stroke-[2.5]" /> : <ChevronRight className="w-4 h-4 stroke-[2.5]" />}
         </button>
 
         <div className="flex flex-col min-h-0 flex-1 overflow-hidden space-y-4">

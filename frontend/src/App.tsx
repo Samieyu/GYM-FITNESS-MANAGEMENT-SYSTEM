@@ -492,12 +492,13 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [errorMessage]);
 
-  const handleInitiatePayment = async (plan: Plan) => {
-    if (!currentUser) {
+  const handleInitiatePayment = async (plan: Plan, overrideUser?: User) => {
+    const userToUse = overrideUser || currentUser || getStoredUser();
+    if (!userToUse) {
       setAuthModalMode('login');
       return;
     }
-    if (currentUser.role !== 'member') {
+    if (userToUse.role !== 'member') {
       setErrorMessage('Only accounts with the "member" role can purchase memberships.');
       return;
     }
@@ -522,9 +523,9 @@ export const App: React.FC = () => {
       }
       setCheckoutModalData(res);
       setPaymentMethodTab('telebirr');
-      setTelebirrPhone(currentUser.phone || '+251 9');
-      setCbePhone(currentUser.phone || '+251 9');
-      setCardHolder(`${currentUser.firstName} ${currentUser.lastName}`.trim());
+      setTelebirrPhone(userToUse.phone || '+251 9');
+      setCbePhone(userToUse.phone || '+251 9');
+      setCardHolder(`${userToUse.firstName} ${userToUse.lastName}`.trim());
       setCardNumber('');
       setCardExpiry('');
       setCardCvv('');
@@ -585,6 +586,8 @@ export const App: React.FC = () => {
       });
 
       setPaymentStep('success');
+      setAuthModalMode(null);
+      setErrorMessage(null);
       await loadMemberMembershipAndPayments();
     } catch (err: any) {
       setPaymentError(err.message || 'Failed to complete payment transaction. Please try again.');
@@ -812,9 +815,7 @@ export const App: React.FC = () => {
         if (selectedPlanId) {
           const chosenPlan = plans.find((p) => p.id === selectedPlanId);
           if (chosenPlan) {
-            setTimeout(() => {
-              handleInitiatePayment(chosenPlan);
-            }, 300);
+            handleInitiatePayment(chosenPlan, user);
           }
         }
       } else {
@@ -838,9 +839,7 @@ export const App: React.FC = () => {
           if (selectedPlanId) {
             const chosenPlan = plans.find((p) => p.id === selectedPlanId);
             if (chosenPlan) {
-              setTimeout(() => {
-                handleInitiatePayment(chosenPlan);
-              }, 300);
+              handleInitiatePayment(chosenPlan, loginRes.data.user);
             }
           }
         }
@@ -2338,11 +2337,16 @@ export const App: React.FC = () => {
                   setAuthModalMode('register');
                   setErrorMessage(null);
                 }}
-                onViewPlans={() => setActiveTab('plans')}
+                onViewPlans={() => {
+                  setAuthModalMode('register');
+                  setRegisterStep(3);
+                  setErrorMessage(null);
+                }}
                 onViewClasses={() => setActiveTab('classes')}
                 onSelectPlan={(plan) => {
                   setSelectedPlanId(plan.id);
                   setAuthModalMode('register');
+                  setRegisterStep(3);
                   setErrorMessage(null);
                 }}
                 onBookClass={() => {
@@ -2353,13 +2357,29 @@ export const App: React.FC = () => {
             )}
 
             {activeTab === 'plans' && (
-              <PublicPlansCatalog
+              <PublicHomePage
                 plans={plans}
-                isLoading={plans.length === 0}
+                classesList={classesList}
+                onJoinNow={() => {
+                  setAuthModalMode('register');
+                  setRegisterStep(3);
+                  setErrorMessage(null);
+                }}
+                onViewPlans={() => {
+                  setAuthModalMode('register');
+                  setRegisterStep(3);
+                  setErrorMessage(null);
+                }}
+                onViewClasses={() => setActiveTab('classes')}
                 onSelectPlan={(plan) => {
                   setSelectedPlanId(plan.id);
                   setAuthModalMode('register');
+                  setRegisterStep(3);
                   setErrorMessage(null);
+                }}
+                onBookClass={() => {
+                  setAuthModalMode('login');
+                  setErrorMessage('Please sign in or create an account to reserve group fitness classes.');
                 }}
               />
             )}
@@ -2653,8 +2673,18 @@ export const App: React.FC = () => {
             setPaymentStep('form');
             setPaymentError(null);
             setPaymentSuccessDetails(null);
+            setAuthModalMode(null);
             setActiveTab('home');
+            setSuccessMessage('Payment confirmed! Welcome to SWEATBOX with full member access.');
             await loadMemberMembershipAndPayments();
+          }}
+          onRetreatToBranchPlans={() => {
+            setCheckoutModalData(null);
+            setPaymentStep('form');
+            setPaymentError(null);
+            setPaymentSuccessDetails(null);
+            setAuthModalMode('register');
+            setRegisterStep(3);
           }}
         />
       )}

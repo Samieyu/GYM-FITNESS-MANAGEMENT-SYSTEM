@@ -59,6 +59,7 @@ interface ChapaCheckoutModalProps {
 
   onCompletePayment: (e: React.FormEvent) => Promise<void>;
   onFinishAndAccessPass: () => Promise<void>;
+  onRetreatToBranchPlans?: () => void;
 }
 
 export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
@@ -83,6 +84,7 @@ export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
   setCardCvv,
   onCompletePayment,
   onFinishAndAccessPass,
+  onRetreatToBranchPlans,
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
@@ -142,9 +144,33 @@ export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
 
             {/* Error Banner */}
             {paymentError && (
-              <div className="mb-4 p-3.5 rounded-xl bg-rose-950/80 border border-rose-800 text-xs text-rose-200 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-                <span>{paymentError}</span>
+              <div className="mb-4 p-4 rounded-2xl bg-rose-950/80 border border-rose-800 text-xs text-rose-200 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span className="font-semibold">{paymentError}</span>
+                </div>
+                {onRetreatToBranchPlans && (
+                  <button
+                    type="button"
+                    onClick={onRetreatToBranchPlans}
+                    className="w-full mt-2 py-2 px-3 rounded-xl bg-rose-900/60 hover:bg-rose-900 text-white font-bold text-xs transition border border-rose-700/60 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>← Retreat to Branch & Plan Selection</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Change Branch or Plan Link */}
+            {onRetreatToBranchPlans && (
+              <div className="flex justify-end mb-3">
+                <button
+                  type="button"
+                  onClick={onRetreatToBranchPlans}
+                  className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>← Change Branch or Tier</span>
+                </button>
               </div>
             )}
 

@@ -51,23 +51,27 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = 'gym-reception-qr-reader';
 
-  const loadRecentLogs = async () => {
-    setIsLoadingLogs(true);
+  const loadRecentLogs = async (silent = false) => {
+    if (!silent && recentLogs.length === 0) {
+      setIsLoadingLogs(true);
+    }
     try {
       const records = await fetchRecentCheckinsApi(25);
       setRecentLogs(records);
     } catch (err: any) {
       console.error('Failed to load recent checkins:', err);
     } finally {
-      setIsLoadingLogs(false);
+      if (!silent) {
+        setIsLoadingLogs(false);
+      }
     }
   };
 
   useEffect(() => {
     if (isOpen) {
-      loadRecentLogs();
+      loadRecentLogs(false);
       const interval = setInterval(() => {
-        loadRecentLogs();
+        loadRecentLogs(true); // Silent background sync without interrupting view
       }, 5000); // 5-second live real-time sync across all front desk terminals
       return () => clearInterval(interval);
     } else {
@@ -445,7 +449,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
           </div>
 
           <div className="rounded-2xl border border-border overflow-hidden bg-background">
-            {isLoadingLogs ? (
+            {isLoadingLogs && recentLogs.length === 0 ? (
               <div className="py-8 text-center text-text-muted text-xs flex flex-col items-center justify-center gap-2">
                 <RefreshCw className="w-5 h-5 animate-spin text-primary" />
                 Loading attendance feed...
