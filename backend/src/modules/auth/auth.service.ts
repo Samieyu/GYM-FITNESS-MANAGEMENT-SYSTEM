@@ -17,6 +17,7 @@ import {
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendStaffInvitationEmail,
 } from '../../shared/services/emailService';
 
 export interface RegisterMemberInput {
@@ -28,6 +29,17 @@ export interface RegisterMemberInput {
   photoUrl?: string;
   fitnessGoals?: string;
   emergencyContact?: string;
+}
+
+export interface RegisterStaffInput {
+  email: string;
+  password: string;
+  role: 'trainer' | 'reception';
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  specialization?: string;
+  bio?: string;
 }
 
 export interface AuthResponse {

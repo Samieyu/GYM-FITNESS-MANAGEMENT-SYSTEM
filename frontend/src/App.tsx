@@ -206,6 +206,7 @@ export const App: React.FC = () => {
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
   const [classesLoading, setClassesLoading] = useState(false);
@@ -475,6 +476,22 @@ export const App: React.FC = () => {
       loadMemberMembershipAndPayments();
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => {
+      setSuccessMessage(null);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+    const timer = setTimeout(() => {
+      setErrorMessage(null);
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
 
   const handleInitiatePayment = async (plan: Plan) => {
     if (!currentUser) {
@@ -868,7 +885,7 @@ export const App: React.FC = () => {
             onOpenEquipment={() => setIsEquipmentModalOpen(true)}
             onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
             onOpenStaff={() => setIsStaffModalOpen(true)}
-            onLogout={handleLogout}
+            onLogout={() => setIsLogoutConfirmOpen(true)}
           />
 
           {currentUser.role === 'member' && (
@@ -892,7 +909,7 @@ export const App: React.FC = () => {
                   setIsAiModalOpen(true);
                 }
               }}
-              onLogout={handleLogout}
+              onLogout={() => setIsLogoutConfirmOpen(true)}
             />
           )}
         </>
@@ -981,8 +998,8 @@ export const App: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={handleLogout}
-                className="px-3 py-2 text-xs font-semibold rounded-lg bg-surface-elevated hover:bg-red-500/10 hover:text-red-400 border border-border-subtle text-content-secondary flex items-center gap-1.5 transition min-h-[38px]"
+                onClick={() => setIsLogoutConfirmOpen(true)}
+                className="px-3.5 py-2 text-xs font-bold rounded-xl bg-surface-elevated hover:bg-rose-500/10 hover:text-rose-500 border border-border text-text-muted flex items-center gap-1.5 transition min-h-[44px]"
               >
                 <LogOut className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Sign Out</span>
               </button>
@@ -991,19 +1008,49 @@ export const App: React.FC = () => {
         </header>
       )}
 
-      {/* Global Toast Alert (When modal is closed) */}
+      {/* Global Floating Toast Alert Stack */}
       {!authModalMode && (successMessage || errorMessage) && (
-        <div className="max-w-6xl mx-auto w-full px-6 pt-4">
+        <div 
+          aria-live="polite"
+          aria-atomic="true"
+          className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 pointer-events-none flex flex-col gap-2.5 animate-slideUp"
+        >
           {successMessage && (
-            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 flex items-center justify-between shadow-lg">
-              <span>{successMessage}</span>
-              <button onClick={() => setSuccessMessage(null)}><X className="w-4 h-4" /></button>
+            <div className="p-4 rounded-2xl bg-surface/95 backdrop-blur-md border border-emerald-500/30 text-text shadow-2xl flex items-start gap-3 pointer-events-auto transition-all">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                <Check className="w-4 h-4" />
+              </div>
+              <div className="flex-1 pr-1">
+                <p className="text-xs font-bold text-text">Success</p>
+                <p className="text-xs text-text-muted mt-0.5 leading-relaxed">{successMessage}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSuccessMessage(null)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition"
+                aria-label="Close notification"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           )}
           {errorMessage && (
-            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs sm:text-sm text-rose-600 dark:text-rose-400 flex items-center justify-between shadow-lg">
-              <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4 text-red-400" /> {errorMessage}</span>
-              <button onClick={() => setErrorMessage(null)}><X className="w-4 h-4" /></button>
+            <div className="p-4 rounded-2xl bg-surface/95 backdrop-blur-md border border-rose-500/30 text-text shadow-2xl flex items-start gap-3 pointer-events-auto transition-all">
+              <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertCircle className="w-4 h-4" />
+              </div>
+              <div className="flex-1 pr-1">
+                <p className="text-xs font-bold text-rose-500">Notice</p>
+                <p className="text-xs text-text-muted mt-0.5 leading-relaxed">{errorMessage}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-text-muted hover:text-text hover:bg-surface-elevated transition"
+                aria-label="Close alert"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
@@ -2902,6 +2949,47 @@ export const App: React.FC = () => {
       />
 
 
+
+      {/* LOGOUT CONFIRMATION DIALOG (POP-AUTH-05) */}
+      {isLogoutConfirmOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn"
+        >
+          <div className="bg-surface border border-border w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl text-text relative animate-scaleUp">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center mb-4">
+              <LogOut className="w-6 h-6" />
+            </div>
+            <h3 id="logout-dialog-title" className="text-lg font-black text-text tracking-tight">
+              Sign Out of SWEATBOX?
+            </h3>
+            <p className="text-xs text-text-muted mt-2 leading-relaxed">
+              Are you sure you want to end your current session? You will need to sign in again to access your passes, workouts, and portal features.
+            </p>
+            <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setIsLogoutConfirmOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-text font-bold text-xs transition min-h-[44px]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsLogoutConfirmOpen(false);
+                  await handleLogout();
+                }}
+                className="px-6 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-rose-500/20 transition min-h-[44px]"
+              >
+                <LogOut className="w-4 h-4" /> Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border-subtle py-6 px-6 text-center text-xs text-content-secondary flex flex-wrap items-center justify-center gap-4">
