@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -105,6 +105,20 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
   onOpenDevGallery,
 }) => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const fullHeadline = 'PUSH YOUR LIMITS FORWARD';
+  const [displayedHeadline, setDisplayedHeadline] = useState('');
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index++;
+      setDisplayedHeadline(fullHeadline.slice(0, index));
+      if (index >= fullHeadline.length) {
+        clearInterval(interval);
+      }
+    }, 70);
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleFaq = (idx: number) => {
     setOpenFaqIndex(openFaqIndex === idx ? null : idx);
@@ -132,9 +146,20 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
             <Sparkles className="w-4 h-4" /> Addis Ababa's Premier Athletic Club
           </div>
 
-          {/* Value proposition headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-text uppercase tracking-tight leading-[1.05] max-w-5xl">
-            FORGE <span className="text-primary">UNRIVALED</span> ATHLETIC PERFORMANCE
+          {/* Value proposition headline with typewriter animation */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-text uppercase tracking-tight leading-[1.05] max-w-5xl min-h-[1.1em]">
+            {displayedHeadline.length <= 17 ? (
+              <span>{displayedHeadline}</span>
+            ) : (
+              <>
+                <span>{displayedHeadline.slice(0, 17)}</span>
+                <span className="text-primary">{displayedHeadline.slice(17)}</span>
+              </>
+            )}
+            <span
+              className="inline-block w-1 sm:w-1.5 h-[0.85em] bg-primary ml-1.5 align-middle animate-pulse"
+              aria-hidden="true"
+            />
           </h1>
 
           <p className="mt-6 text-base sm:text-xl text-text-muted max-w-3xl leading-relaxed font-sans">
@@ -489,7 +514,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
       </section>
 
       {/* 5. CERTIFIED ETHIOPIAN TRAINERS SHOWCASE */}
-      <section className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section id="trainers-section" data-section="trainers" className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 w-full scroll-mt-24">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <Badge variant="primary" className="mb-3">
             Elite Coaching Staff
@@ -561,7 +586,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
               <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text leading-tight">
                 Your Gym Pass in Your Pocket. Zero Friction.
               </h2>
-              <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
                 Experience SWEATBOX on any mobile browser or smartphone. Instant 60-second dynamic QR check-ins, workout routine tracking with set logging, class reservation reminders, and direct Telebirr membership renewal.
               </p>
 

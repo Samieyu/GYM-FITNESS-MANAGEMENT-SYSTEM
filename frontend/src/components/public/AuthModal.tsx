@@ -14,6 +14,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  MapPin,
 } from 'lucide-react';
 import { Plan } from '../../api/plans';
 import { Button } from '../ui/Button';
@@ -21,6 +22,12 @@ import { PhotoUploader } from '../ui/PhotoUploader';
 import { Badge } from '../ui/Badge';
 
 export type AuthModalMode = 'login' | 'register' | 'set-password' | 'forgot-password';
+
+export const BRANCH_OPTIONS = [
+  { id: 'bole', name: 'Bole Branch', subtext: 'Cameroon St, Edna Mall Area' },
+  { id: 'gebriel', name: 'Gebriel Branch', subtext: '22 Mazoria, Near St. Gabriel' },
+  { id: 'semit', name: 'Semit Branch', subtext: 'Summit 72 Main Boulevard' },
+];
 
 interface AuthModalProps {
   mode: AuthModalMode;
@@ -66,6 +73,8 @@ interface AuthModalProps {
   setRegPhone: (val: string) => void;
   regGoals: string;
   setRegGoals: (val: string) => void;
+  regBranch?: string;
+  setRegBranch?: (val: string) => void;
   regPhotoUrl?: string | null;
   setRegPhotoUrl?: (url: string | null) => void;
   onRegisterSubmit: (e: React.FormEvent) => Promise<void>;
@@ -112,6 +121,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   setRegPhone,
   regGoals,
   setRegGoals,
+  regBranch = 'Bole Branch',
+  setRegBranch,
   regPhotoUrl,
   setRegPhotoUrl,
   onRegisterSubmit,
@@ -128,6 +139,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   // Sign-Up Stepwise Wizard state (Step 1 -> Step 2 -> Step 3)
   const [registerStep, setRegisterStep] = useState<1 | 2 | 3>(1);
   const [stepError, setStepError] = useState<string | null>(null);
+  const [selectedBranchLocal, setSelectedBranchLocal] = useState<string>(regBranch || 'Bole Branch');
+
+  const handleChooseBranch = (branchName: string) => {
+    setSelectedBranchLocal(branchName);
+    setRegBranch?.(branchName);
+    try {
+      localStorage.setItem('sweatbox_member_branch', branchName);
+    } catch {
+      // ignore
+    }
+  };
 
   // Password strength calculation
   const getPasswordStrength = (pwd: string): { label: string; percent: number; color: string } => {
@@ -292,7 +314,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {mode === 'set-password' && (
           <form onSubmit={onSetPasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-text mb-1.5">
+              <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5">
                 New Password (minimum 6 characters)
               </label>
               <div className="relative">
@@ -304,7 +326,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   required
                   minLength={6}
                   placeholder="••••••••"
-                  className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-text focus:outline-none focus:border-primary"
+                  className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                 />
                 <button
                   type="button"
@@ -318,7 +340,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Password strength meter */}
               {newPassword && (
                 <div className="mt-2 space-y-1">
-                  <div className="w-full bg-charcoal-900 h-1.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-200 dark:bg-charcoal-900 h-1.5 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-300 ${newPwdStrength.color}`}
                       style={{ width: `${newPwdStrength.percent}%` }}
@@ -333,7 +355,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-text mb-1.5">
+              <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5">
                 Confirm New Password
               </label>
               <div className="relative">
@@ -345,7 +367,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   required
                   minLength={6}
                   placeholder="••••••••"
-                  className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-text focus:outline-none focus:border-primary"
+                  className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                 />
                 <button
                   type="button"
@@ -388,8 +410,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div>
             <form onSubmit={onLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-text mb-1.5">
-                  Email Address
+                <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5">
+                  Personal Gmail Address
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-3.5" />
@@ -399,14 +421,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
                     placeholder="you@gmail.com"
-                    className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-text focus:outline-none focus:border-primary"
+                    className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-text">Password</label>
+                  <label className="block text-xs font-semibold text-slate-900 dark:text-text">Password</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -428,7 +450,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setLoginPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-text focus:outline-none focus:border-primary"
+                    className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                   />
                   <button
                     type="button"
@@ -495,7 +517,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             ) : (
               <form onSubmit={onForgotPasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-text mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5">
                     Registered Gmail Address
                   </label>
                   <div className="relative">
@@ -506,7 +528,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       onChange={(e) => setForgotEmail(e.target.value)}
                       required
                       placeholder="athlete@gmail.com"
-                      className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-text focus:outline-none focus:border-primary"
+                      className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                     />
                   </div>
                 </div>
@@ -547,9 +569,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="flex items-center justify-between text-xs font-bold text-text-muted mb-2">
                 <span className={registerStep >= 1 ? 'text-primary' : ''}>1. Account</span>
                 <span className={registerStep >= 2 ? 'text-primary' : ''}>2. Profile & Photo</span>
-                <span className={registerStep >= 3 ? 'text-primary' : ''}>3. Membership Tier</span>
+                <span className={registerStep >= 3 ? 'text-primary' : ''}>3. Branch & Plan</span>
               </div>
-              <div className="w-full bg-charcoal-900 h-2 rounded-full overflow-hidden flex">
+              <div className="w-full bg-slate-200 dark:bg-charcoal-900 h-2 rounded-full overflow-hidden flex">
                 <div
                   className="h-full bg-primary transition-all duration-300"
                   style={{ width: `${(registerStep / 3) * 100}%` }}
@@ -563,31 +585,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <div className="space-y-3.5 animate-fadeIn">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-text mb-1">First Name *</label>
+                      <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">First Name *</label>
                       <input
                         type="text"
                         value={regFirstName}
                         onChange={(e) => setRegFirstName(e.target.value)}
                         required
                         placeholder="Jane"
-                        className="w-full bg-charcoal-900 border border-border rounded-xl px-3.5 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-text mb-1">Last Name *</label>
+                      <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">Last Name *</label>
                       <input
                         type="text"
                         value={regLastName}
                         onChange={(e) => setRegLastName(e.target.value)}
                         required
                         placeholder="Doe"
-                        className="w-full bg-charcoal-900 border border-border rounded-xl px-3.5 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-1">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">
                       Personal Gmail (@gmail.com) *
                     </label>
                     <div className="relative">
@@ -598,13 +620,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         onChange={(e) => setRegEmail(e.target.value)}
                         required
                         placeholder="yourname@gmail.com"
-                        className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-1">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">
                       Password (Min 6 Characters) *
                     </label>
                     <div className="relative">
@@ -616,7 +638,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         required
                         minLength={6}
                         placeholder="••••••••"
-                        className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-10 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-10 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                       <button
                         type="button"
@@ -630,7 +652,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     {/* Live Strength meter */}
                     {regPassword && (
                       <div className="mt-2 space-y-1">
-                        <div className="w-full bg-charcoal-900 h-1.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-200 dark:bg-charcoal-900 h-1.5 rounded-full overflow-hidden">
                           <div
                             className={`h-full transition-all duration-300 ${regPwdStrength.color}`}
                             style={{ width: `${regPwdStrength.percent}%` }}
@@ -661,7 +683,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {registerStep === 2 && (
                 <div className="space-y-4 animate-fadeIn">
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-1">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">
                       Ethiopian Mobile Phone Number *
                     </label>
                     <div className="relative">
@@ -672,13 +694,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         onChange={(e) => setRegPhone(e.target.value)}
                         required
                         placeholder="+251 911 234 567 or 09..."
-                        className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-1">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1">
                       Primary Fitness Goal
                     </label>
                     <div className="relative">
@@ -688,14 +710,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         value={regGoals}
                         onChange={(e) => setRegGoals(e.target.value)}
                         placeholder="e.g. Muscle hypertrophy, fat loss, stamina"
-                        className="w-full bg-charcoal-900 border border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-text focus:outline-none focus:border-primary"
+                        className="w-full bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border rounded-xl pl-10 pr-3.5 py-2 text-sm text-slate-900 dark:text-text placeholder:text-slate-400 dark:placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
                       />
                     </div>
                   </div>
 
                   {/* Photo Uploader with Camera Capture */}
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-1.5">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5">
                       Athlete Profile Photo (Optional)
                     </label>
                     <PhotoUploader
@@ -721,18 +743,54 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       onClick={handleNextToStep3}
                       className="w-2/3 justify-center font-bold"
                     >
-                      <span>Choose Membership Tier</span>
+                      <span>Choose Branch & Membership</span>
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Button>
                   </div>
                 </div>
               )}
 
-              {/* STEP 3: PLAN SELECTION & COMPLETE */}
+              {/* STEP 3: BRANCH SELECTION & PLAN SELECTION */}
               {registerStep === 3 && (
                 <div className="space-y-4 animate-fadeIn">
+                  {/* Branch Selection */}
                   <div>
-                    <label className="block text-xs font-semibold text-text mb-2">
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-1.5 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-primary" />
+                      Select Home Gym Branch *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {BRANCH_OPTIONS.map((b) => {
+                        const isBranchSelected = (regBranch || selectedBranchLocal) === b.name;
+                        return (
+                          <div
+                            key={b.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleChooseBranch(b.name)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') handleChooseBranch(b.name);
+                            }}
+                            className={`p-2.5 rounded-xl border text-left cursor-pointer transition flex flex-col justify-between ${
+                              isBranchSelected
+                                ? 'border-primary bg-primary/10 shadow-sm ring-2 ring-primary'
+                                : 'border-slate-300 dark:border-border bg-white dark:bg-charcoal-900 hover:border-primary/50'
+                            }`}
+                          >
+                            <span className="text-xs font-bold text-slate-900 dark:text-text leading-tight">
+                              {b.name}
+                            </span>
+                            <span className="text-[10px] text-slate-500 dark:text-text-muted mt-1 leading-snug line-clamp-1">
+                              {b.subtext}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-900 dark:text-text mb-2">
                       Select Your Desired Membership Plan
                     </label>
 
@@ -746,18 +804,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                               onClick={() => onSelectPlanId?.(p.id)}
                               className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition ${
                                 isSelected
-                                  ? 'border-primary bg-primary/10 shadow-sm'
-                                  : 'border-border bg-charcoal-900 hover:border-border/80'
+                                  ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary'
+                                  : 'border-slate-300 dark:border-border bg-white dark:bg-charcoal-900 hover:border-primary/50 shadow-sm'
                               }`}
                             >
                               <div>
-                                <h4 className="text-sm font-bold text-text uppercase">{p.name}</h4>
-                                <span className="text-xs text-text-muted">
+                                <h4 className="text-sm font-bold text-slate-900 dark:text-text uppercase">{p.name}</h4>
+                                <span className="text-xs text-slate-600 dark:text-text-muted">
                                   {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'} duration
                                 </span>
                               </div>
                               <div className="text-right">
-                                <span className="text-base font-black text-text">
+                                <span className="text-base font-black text-slate-900 dark:text-text">
                                   {p.price.toLocaleString()} ETB
                                 </span>
                                 {isSelected && (
@@ -771,7 +829,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         })}
                       </div>
                     ) : (
-                      <div className="p-3.5 rounded-xl bg-charcoal-900 border border-border text-xs text-text-muted text-center">
+                      <div className="p-3.5 rounded-xl bg-white dark:bg-charcoal-900 border border-slate-300 dark:border-border text-xs text-slate-700 dark:text-text-muted text-center">
                         Standard facility tiers will be available immediately upon registration.
                       </div>
                     )}

@@ -205,7 +205,7 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
       {/* 1. DESKTOP COLLAPSIBLE SIDEBAR (>=1024px) */}
       <aside
         className={clsx(
-          'hidden lg:flex flex-col justify-between border-r border-border bg-surface/95 backdrop-blur-md py-6 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left',
+          'hidden lg:flex flex-col justify-between border-r border-border bg-surface/95 backdrop-blur-md py-5 fixed left-0 top-0 bottom-0 z-40 transition-all duration-200 select-none text-left h-screen max-h-screen overflow-hidden',
           isExpanded ? 'w-60 px-4' : 'w-20 px-2'
         )}
       >
@@ -223,9 +223,9 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
           {isExpanded ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
         </button>
 
-        <div className="space-y-6">
+        <div className="flex flex-col min-h-0 flex-1 overflow-hidden space-y-4">
           {/* Logo Brand Header */}
-          <div className={clsx('flex items-center', isExpanded ? 'gap-3 px-1' : 'justify-center')}>
+          <div className={clsx('flex items-center shrink-0', isExpanded ? 'gap-3 px-1' : 'justify-center')}>
             <button
               type="button"
               onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
@@ -248,8 +248,8 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
             </button>
           </div>
           
-{/* Navigation Items */}
-          <nav className="flex flex-col gap-1.5" aria-label="Staff Desktop Navigation">
+          {/* Navigation Items (Scrollable when expanded without clipping footer) */}
+          <nav className="flex flex-col gap-1.5 overflow-y-auto min-h-0 flex-1 pr-0.5" aria-label="Staff Desktop Navigation">
             {visibleItems.map((item) => {
               const content = (
                 <button
@@ -290,8 +290,8 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
           </nav>
         </div>
 
-        {/* Footer Actions (Theme Toggle & Sign Out) */}
-        <div className="pt-4 border-t border-border-subtle flex flex-col gap-2">
+        {/* Footer Actions (Theme Toggle & Sign Out - Always visible at bottom) */}
+        <div className="shrink-0 pt-3 border-t border-border-subtle flex flex-col gap-2 mt-auto">
           {isExpanded ? (
             <div className="flex items-center justify-between px-2">
               <span className="text-xs font-semibold text-content-secondary">Theme</span>

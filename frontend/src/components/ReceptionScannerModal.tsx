@@ -66,6 +66,10 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       loadRecentLogs();
+      const interval = setInterval(() => {
+        loadRecentLogs();
+      }, 5000); // 5-second live real-time sync across all front desk terminals
+      return () => clearInterval(interval);
     } else {
       stopCameraScanner();
       setLastScanResult(null);
@@ -85,7 +89,14 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
         { facingMode: 'environment' },
         {
           fps: 10,
-          qrbox: { width: 250, height: 250 },
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            return {
+              width: Math.max(180, Math.floor(minEdge * 0.72)),
+              height: Math.max(180, Math.floor(minEdge * 0.72)),
+            };
+          },
+          aspectRatio: 1.0,
         },
         async (decodedText) => {
           stopCameraScanner();
@@ -215,7 +226,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
               {/* Camera Scanner Viewport */}
               <div 
                 id={scannerContainerId} 
-                className={`w-full h-48 bg-surface rounded-xl overflow-hidden border border-border flex items-center justify-center text-center text-xs text-text-muted relative ${
+                className={`w-full min-h-[220px] bg-surface rounded-xl overflow-hidden border border-border flex items-center justify-center text-center text-xs text-text-muted relative [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_video]:rounded-xl ${
                   !isCameraActive ? 'p-4' : ''
                 }`}
               >

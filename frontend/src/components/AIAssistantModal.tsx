@@ -21,6 +21,30 @@ import {
 } from '../api/ai';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
+/**
+ * Strips unusable markdown characters (###, *, **) from AI generated text,
+ * transforming them into clean headings, bullet points, and high-readability text.
+ */
+export const cleanMarkdownText = (raw: string): string => {
+  if (!raw) return '';
+  return raw
+    // Strip header hashes (### Heading -> Heading)
+    .replace(/^#{1,6}\s*(.+)$/gm, '$1')
+    // Convert markdown bullets (* Item or - Item) into clean round bullets (• Item)
+    .replace(/^[\*\-]\s+/gm, '• ')
+    // Strip bold/italic markdown asterisks (**text** -> text)
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    // Strip single asterisks (*text* -> text)
+    .replace(/\*([^\*]+)\*/g, '$1')
+    // Strip leftover asterisks
+    .replace(/\*/g, '')
+    // Strip code backticks (`code` -> code)
+    .replace(/`{1,3}/g, '')
+    // Normalize excessive newlines
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 interface AIAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -144,7 +168,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
       const answer = await askFitnessCoachApi(`${contextPrefix}${text.trim()}`);
       const aiMsg: MessageItem = {
         sender: 'ai',
-        text: answer,
+        text: cleanMarkdownText(answer),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, aiMsg]);
@@ -300,7 +324,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                           : 'bg-background border border-border text-text'
                       }`}
                     >
-                      {m.text}
+                      {cleanMarkdownText(m.text)}
                       <span
                         className={`block text-[10px] mt-1.5 ${
                           m.sender === 'user' ? 'text-primary-foreground/75' : 'text-text-muted'
@@ -428,7 +452,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   </div>
 
                   <div className="prose max-w-none text-sm text-text whitespace-pre-wrap leading-relaxed">
-                    {exerciseGuide.aiGuide}
+                    {cleanMarkdownText(exerciseGuide.aiGuide)}
                   </div>
                 </div>
               ) : null}
@@ -461,7 +485,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   </div>
                 ) : (
                   <p className="text-sm text-text leading-relaxed whitespace-pre-wrap">
-                    {progressSummary}
+                    {cleanMarkdownText(progressSummary || '')}
                   </p>
                 )}
               </div>

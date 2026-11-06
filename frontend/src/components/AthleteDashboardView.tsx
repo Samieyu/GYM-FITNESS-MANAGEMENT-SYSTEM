@@ -15,6 +15,8 @@ import {
   RefreshCw,
   ArrowUpRight,
   Calendar,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { User } from '../api/auth';
 import { Membership, Payment } from '../api/payments';
@@ -63,6 +65,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
 }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'Weekly' | 'Monthly'>('Weekly');
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedUuid, setCopiedUuid] = useState(false);
 
   // Determine greeting based on local time
   const currentHour = new Date().getHours();
@@ -545,7 +548,32 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
                   {currentUser.firstName} {currentUser.lastName}
                 </h2>
                 <p className="text-xs text-text-muted mt-0.5 truncate">{currentUser.email}</p>
-                <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-background border border-border text-text-muted">
+
+                {/* Member UUID with 1-click Copy for Front Desk Reception Manual Check-in */}
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="font-mono text-[10px] text-primary bg-primary/10 border border-primary/25 px-2 py-0.5 rounded-md truncate max-w-[190px]" title={currentUser.id}>
+                    UUID: {currentUser.id}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(currentUser.id);
+                      setCopiedUuid(true);
+                      setTimeout(() => setCopiedUuid(false), 2000);
+                    }}
+                    className="p-1 hover:bg-background rounded-md text-text-muted hover:text-primary transition shrink-0 border border-border"
+                    title="Copy Member UUID for Reception Check-in"
+                    aria-label="Copy Member UUID"
+                  >
+                    {copiedUuid ? (
+                      <Check className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </button>
+                </div>
+
+                <span className="inline-block mt-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-background border border-border text-text-muted">
                   {currentUser.role} • Verified
                 </span>
               </div>

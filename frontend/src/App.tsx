@@ -78,7 +78,6 @@ import { AIAssistantModal } from './components/AIAssistantModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
 import { AthleteDashboardView } from './components/AthleteDashboardView';
 import { PublicHeader, MemberBottomBar, StaffNavigation } from './components/navigation';
-import { DevComponentGallery } from './components/DevComponentGallery';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 import {
   PublicHomePage,
@@ -95,7 +94,6 @@ import { formatEthiopianDate, formatEthiopianDateTime } from './utils/ethiopianC
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 
 export const App: React.FC = () => {
-  const [isDevGalleryOpen, setIsDevGalleryOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<'home' | 'plans' | 'classes'>('home');
   const [authModalMode, setAuthModalMode] = useState<
@@ -135,6 +133,7 @@ export const App: React.FC = () => {
   const [regPassword, setRegPassword] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regGoals, setRegGoals] = useState('Muscle building and stamina');
+  const [regBranch, setRegBranch] = useState('Bole Branch');
   const [regPhotoUrl, setRegPhotoUrl] = useState<string | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(undefined);
   // const [registeredEmail, setRegisteredEmail] = useState('');
@@ -782,13 +781,14 @@ export const App: React.FC = () => {
     setSuccessMessage(null);
 
     try {
+      const branchGoal = regBranch ? `${regGoals ? regGoals + ' | ' : ''}Home Branch: ${regBranch}` : regGoals;
       const res = await registerMemberApi({
         firstName: regFirstName,
         lastName: regLastName,
         email: cleanEmail,
         password: regPassword,
         phone: cleanPhone,
-        fitnessGoals: regGoals,
+        fitnessGoals: branchGoal,
       });
 
       // Immediately log in new user without any email verification screen
@@ -807,6 +807,16 @@ export const App: React.FC = () => {
         setRegPassword('');
         setRegPhone('');
         await loadMemberMembershipAndPayments();
+
+        // Seamlessly open checkout for selected tier without breaking payment logic
+        if (selectedPlanId) {
+          const chosenPlan = plans.find((p) => p.id === selectedPlanId);
+          if (chosenPlan) {
+            setTimeout(() => {
+              handleInitiatePayment(chosenPlan);
+            }, 300);
+          }
+        }
       } else {
         const loginRes = await loginApi(cleanEmail, regPassword);
         if (loginRes.data?.accessToken && loginRes.data?.user) {
@@ -823,6 +833,16 @@ export const App: React.FC = () => {
           setRegPassword('');
           setRegPhone('');
           await loadMemberMembershipAndPayments();
+
+          // Seamlessly open checkout for selected tier without breaking payment logic
+          if (selectedPlanId) {
+            const chosenPlan = plans.find((p) => p.id === selectedPlanId);
+            if (chosenPlan) {
+              setTimeout(() => {
+                handleInitiatePayment(chosenPlan);
+              }, 300);
+            }
+          }
         }
       }
     } catch (err: any) {
@@ -2025,29 +2045,29 @@ export const App: React.FC = () => {
             {/* LOGGED-IN VIEW: CLASSES TAB */}
             {activeTab === 'classes' && (
               <div className="w-full space-y-6 animate-fadeIn">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-3xl bg-surface border border-border shadow-sm">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                      <Calendar className="w-7 h-7 text-[#B4F82C]" />
-                      Scheduled <span className="text-[#B4F82C]">Group Classes</span>
+                    <h2 className="text-2xl sm:text-3xl font-black text-text tracking-tight flex items-center gap-2.5">
+                      <Calendar className="w-7 h-7 text-primary" />
+                      Scheduled <span className="text-primary">Group Classes</span>
                     </h2>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-text-muted">
                       Live schedule with instructor assignments, capacity limits, and Ethiopian Calendar times.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <button
                       type="button"
                       onClick={() => loadClasses()}
-                      className="px-3.5 py-2 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 text-white font-semibold text-xs border border-charcoal-700 transition flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-text font-bold text-xs border border-border transition flex items-center gap-1.5 shadow-sm active:scale-95 min-h-[44px]"
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
+                      <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-primary' : 'text-primary'}`} /> Refresh
                     </button>
                     {(currentUser.role === 'admin' || currentUser.role === 'trainer') && (
                       <button
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
-                        className="px-4 py-2 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center gap-1.5 active:scale-95"
+                        className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-extrabold text-xs shadow-md transition flex items-center gap-1.5 active:scale-95 min-h-[44px]"
                       >
                         <Plus className="w-4 h-4" /> Schedule New Class
                       </button>
@@ -2055,7 +2075,7 @@ export const App: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {classesList.length > 0 ? (
                     classesList.map((cls) => {
                       const isFull = cls.booked_count >= cls.capacity;
@@ -2066,50 +2086,50 @@ export const App: React.FC = () => {
                       return (
                         <div
                           key={cls.id}
-                          className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
+                          className="p-6 rounded-3xl bg-surface border border-border flex flex-col justify-between hover:border-primary/50 transition group shadow-sm"
                         >
                           <div>
                             <div className="flex items-center justify-between text-xs mb-3">
-                              <span className="flex items-center gap-1 font-mono text-[#B4F82C]">
+                              <span className="flex items-center gap-1.5 font-mono text-primary text-xs font-bold">
                                 <Calendar className="w-3.5 h-3.5" />
                                 {formatEthiopianDateTime(cls.start_time)}
                               </span>
                               <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                   isFull
-                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                    : 'bg-green-950 text-green-400 border border-green-800'
+                                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/25'
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/25'
                                 }`}
                               >
                                 {isFull ? `Full (${cls.waitlist_count} Waitlist)` : `${cls.booked_count} / ${cls.capacity} Booked`}
                               </span>
                             </div>
 
-                            <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
+                            <h3 className="text-lg font-black text-text group-hover:text-primary transition uppercase">
                               {cls.title}
                             </h3>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                            <p className="text-xs text-text-muted mt-1.5 line-clamp-2 leading-relaxed">
                               {cls.description || 'Full coaching, mobility guidance, and conditioning.'}
                             </p>
 
-                            <div className="mt-4 space-y-1.5 text-xs text-gray-300">
-                              <p className="text-gray-400 flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
+                            <div className="mt-4 space-y-1.5 text-xs text-text-muted">
+                              <p className="flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-primary" /> {cls.location}
                               </p>
-                              <p className="text-gray-400">
-                                Instructor: <span className="text-white font-medium">{cls.trainer_name || 'SWEATBOX Coach'}</span>
+                              <p>
+                                Instructor: <span className="text-text font-bold">{cls.trainer_name || 'SWEATBOX Coach'}</span>
                                 {cls.trainer_specialization && (
-                                  <span className="text-gray-500"> ({cls.trainer_specialization})</span>
+                                  <span className="text-text-muted"> ({cls.trainer_specialization})</span>
                                 )}
                               </p>
                             </div>
 
                             {/* Capacity bar */}
                             <div className="mt-4">
-                              <div className="w-full bg-charcoal-900 rounded-full h-1.5 overflow-hidden">
+                              <div className="w-full bg-surface-elevated rounded-full h-2 overflow-hidden border border-border/50">
                                 <div
-                                  className={`h-full rounded-full transition-all ${
-                                    isFull ? 'bg-amber-500' : 'bg-green-500'
+                                  className={`h-full rounded-full transition-all duration-300 ${
+                                    isFull ? 'bg-amber-500' : 'bg-emerald-500'
                                   }`}
                                   style={{ width: `${pct}%` }}
                                 />
@@ -2117,7 +2137,7 @@ export const App: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="mt-6 flex flex-col gap-2">
+                          <div className="mt-6 flex flex-col gap-2.5">
                             {(currentUser.role === 'admin' || currentUser.role === 'trainer') && (
                               <button
                                 type="button"
@@ -2125,9 +2145,9 @@ export const App: React.FC = () => {
                                   setSelectedRosterClass(cls);
                                   setIsRosterModalOpen(true);
                                 }}
-                                className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                                className="w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-background border border-border text-text font-bold text-xs transition flex items-center justify-center gap-1.5 min-h-[44px]"
                               >
-                                <Users className="w-4 h-4 text-[#B4F82C]" /> View Class Roster & Attendance
+                                <Users className="w-4 h-4 text-primary" /> View Class Roster & Attendance
                               </button>
                             )}
 
@@ -2137,7 +2157,7 @@ export const App: React.FC = () => {
                                   type="button"
                                   onClick={() => handleCancelBooking(cls.id)}
                                   disabled={bookingLoadingId === cls.id}
-                                  className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-rose-950/80 hover:text-rose-300 border border-charcoal-700 text-gray-300 font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                                  className="w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-rose-500/10 text-rose-500 border border-rose-500/20 font-bold text-xs transition flex items-center justify-center gap-1.5 min-h-[44px]"
                                 >
                                   {bookingLoadingId === cls.id ? 'Updating...' : 'Cancel Reservation'}
                                 </button>
@@ -2146,7 +2166,7 @@ export const App: React.FC = () => {
                                   type="button"
                                   onClick={() => handleCancelBooking(cls.id)}
                                   disabled={bookingLoadingId === cls.id}
-                                  className="w-full py-2.5 rounded-xl bg-amber-950/40 text-amber-300 border border-amber-800 font-semibold text-xs transition flex items-center justify-center gap-1.5"
+                                  className="w-full py-2.5 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/25 font-bold text-xs transition flex items-center justify-center gap-1.5 min-h-[44px]"
                                 >
                                   Waitlisted (Click to Leave)
                                 </button>
@@ -2155,10 +2175,10 @@ export const App: React.FC = () => {
                                   type="button"
                                   onClick={() => handleBookClass(cls)}
                                   disabled={bookingLoadingId === cls.id}
-                                  className={`w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-lg ${
+                                  className={`w-full py-2.5 rounded-xl font-black text-xs transition flex items-center justify-center gap-1.5 shadow-md min-h-[44px] ${
                                     isFull
-                                      ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
-                                      : 'bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 shadow-[#B4F82C]/20'
+                                      ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                                      : 'bg-primary hover:bg-primary-hover text-primary-foreground'
                                   }`}
                                 >
                                   {bookingLoadingId === cls.id ? (
@@ -2176,7 +2196,7 @@ export const App: React.FC = () => {
                       );
                     })
                   ) : (
-                    <div className="col-span-3 text-center py-12 text-gray-400">
+                    <div className="col-span-3 text-center py-12 text-text-muted text-sm">
                       No group classes scheduled yet.
                     </div>
                   )}
@@ -2187,13 +2207,13 @@ export const App: React.FC = () => {
             {/* LOGGED-IN VIEW: PLANS TAB */}
             {activeTab === 'plans' && (
               <div className="w-full space-y-6 animate-fadeIn">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-3xl bg-surface border border-border shadow-sm">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                      <CreditCard className="w-7 h-7 text-[#B4F82C]" />
-                      Membership <span className="text-[#B4F82C]">Plans & Billing</span>
+                    <h2 className="text-2xl sm:text-3xl font-black text-text tracking-tight flex items-center gap-2.5">
+                      <CreditCard className="w-7 h-7 text-primary" />
+                      Membership <span className="text-primary">Plans & Billing</span>
                     </h2>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-400">
+                    <p className="mt-1 text-xs sm:text-sm text-text-muted">
                       Official gym tiers, pricing in Ethiopian Birr (ETB), and instant Chapa payment gateway.
                     </p>
                   </div>
@@ -2201,7 +2221,7 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={openCreatePlanModal}
-                      className="px-4 py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center gap-1.5 active:scale-95"
+                      className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-extrabold text-xs shadow-md transition flex items-center gap-1.5 active:scale-95 min-h-[44px]"
                     >
                       <Plus className="w-4 h-4" /> Create New Plan
                     </button>
@@ -2329,7 +2349,6 @@ export const App: React.FC = () => {
                   setAuthModalMode('login');
                   setErrorMessage('Please sign in or create an account to reserve group fitness classes.');
                 }}
-                onOpenDevGallery={() => setIsDevGalleryOpen(true)}
               />
             )}
 
@@ -2400,6 +2419,8 @@ export const App: React.FC = () => {
           setRegPhone={setRegPhone}
           regGoals={regGoals}
           setRegGoals={setRegGoals}
+          regBranch={regBranch}
+          setRegBranch={setRegBranch}
           regPhotoUrl={regPhotoUrl}
           setRegPhotoUrl={setRegPhotoUrl}
           onRegisterSubmit={handleRegisterSubmit}
@@ -2994,18 +3015,7 @@ export const App: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-border-subtle py-6 px-6 text-center text-xs text-content-secondary flex flex-wrap items-center justify-center gap-4">
         <span>&copy; {new Date().getFullYear()} SWEATBOX Fitness Systems. All rights reserved.</span>
-        <button
-          type="button"
-          onClick={() => setIsDevGalleryOpen(true)}
-          className="px-2.5 py-1 rounded-md bg-surface-elevated hover:bg-[#FF6B00] hover:text-[#0E1116] border border-border-subtle text-[#FF6B00] font-bold text-[11px] transition select-none"
-        >
-          Dev Component Gallery
-        </button>
       </footer>
-
-      {isDevGalleryOpen && (
-        <DevComponentGallery onClose={() => setIsDevGalleryOpen(false)} />
-      )}
     </div>
   );
 };
