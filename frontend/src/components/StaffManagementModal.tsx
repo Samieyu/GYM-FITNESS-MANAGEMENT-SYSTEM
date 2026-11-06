@@ -14,6 +14,7 @@ import {
   AlertCircle,
   RefreshCw,
   Sparkles,
+  Calendar,
 } from 'lucide-react';
 import {
   fetchStaffMembersApi,
@@ -152,68 +153,83 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-2xl rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200 text-text">
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-white transition p-1.5 rounded-full hover:bg-charcoal-800"
+          className="absolute top-4 sm:top-5 right-4 sm:right-5 text-text-muted hover:text-text transition p-2 rounded-xl hover:bg-surface-elevated min-w-[36px] min-h-[36px] flex items-center justify-center"
+          aria-label="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/15 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C]">
-            <Shield className="w-5 h-5" />
+        <div className="flex items-start gap-3.5 mb-6 pr-8">
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Shield className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              Staff & Role Management
-              <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold border border-red-500/30">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-xl font-bold text-text">
+                Staff & Role Management Center
+              </h3>
+              <span className="text-[10px] bg-danger/10 text-danger px-2.5 py-0.5 rounded-full uppercase tracking-wider font-bold border border-danger/20">
                 Admin Exclusive
               </span>
-            </h3>
-            <p className="text-xs text-gray-400">
-              Administrator: <strong className="text-gray-200">{adminName}</strong> • Register Trainers & Front Desk Receptionists
+            </div>
+            <p className="text-xs text-text-muted mt-0.5">
+              Administrator: <strong className="text-text font-semibold">{adminName}</strong> • Provision Certified Trainers & Front Desk Receptionists
             </p>
           </div>
         </div>
 
         {/* Tab Toggle */}
-        <div className="flex p-1 bg-charcoal-900 rounded-xl mb-6 border border-charcoal-800">
+        <div className="flex rounded-2xl bg-surface-elevated p-1.5 border border-border mb-6">
           <button
+            type="button"
             onClick={() => setActiveTab('register')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 min-h-[44px] ${
               activeTab === 'register'
-                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-text-muted hover:text-text'
             }`}
           >
             <UserPlus className="w-4 h-4" />
-            Register New Staff
+            <span>Register New Staff</span>
           </button>
           <button
+            type="button"
             onClick={() => {
               setActiveTab('directory');
               loadStaff();
             }}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 min-h-[44px] ${
               activeTab === 'directory'
-                ? 'bg-[#B4F82C] text-slate-950 shadow-md'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-text-muted hover:text-text'
             }`}
           >
             <Users className="w-4 h-4" />
-            Active Staff Directory ({staffList.length})
+            <span>Active Staff Directory ({staffList.length})</span>
           </button>
         </div>
 
         {/* ERROR NOTIFICATION */}
         {errorMessage && (
-          <div className="mb-5 p-3.5 rounded-xl bg-red-950/80 border border-red-800 text-xs text-red-200 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="mb-5 p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-center justify-between gap-2 shadow-sm animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+              <span>{errorMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage(null)}
+              className="text-danger hover:opacity-80 p-0.5"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         )}
 
@@ -222,45 +238,45 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
           <div>
             {successResult ? (
               /* REGISTRATION SUCCESS CARD */
-              <div className="py-2 space-y-4 animate-fadeIn">
-                <div className="p-4 rounded-2xl bg-green-950/60 border border-green-700/80 text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto border border-green-500/30">
+              <div className="py-2 space-y-4 animate-in fade-in duration-200">
+                <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-base font-bold text-white">
-                    {successResult.staff.role === 'trainer' ? 'Trainer' : 'Receptionist'} Successfully Provisioned!
+                  <h4 className="text-base font-bold text-text">
+                    {successResult.staff.role === 'trainer' ? 'Fitness Trainer' : 'Receptionist'} Successfully Provisioned!
                   </h4>
-                  <p className="text-xs text-green-300">
-                    The staff account has been verified and granted direct access to their assigned dashboard.
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                    The staff account has been verified and granted direct access to their assigned operational dashboard.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-2.5">
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Full Name</span>
-                    <span className="font-bold text-white">
+                <div className="p-4 rounded-xl bg-surface-elevated border border-border text-xs text-text space-y-2.5">
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Full Name</span>
+                    <span className="font-bold text-text">
                       {successResult.staff.first_name} {successResult.staff.last_name}
                     </span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Assigned Role</span>
-                    <span className="font-bold uppercase tracking-wider text-[#B4F82C]">
-                      {successResult.staff.role === 'trainer' ? 'Certified Trainer' : 'Reception Desk'}
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Assigned Role</span>
+                    <span className="font-bold uppercase tracking-wider text-primary">
+                      {successResult.staff.role === 'trainer' ? 'Certified Trainer' : 'Front Desk Reception'}
                     </span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Login Gmail</span>
-                    <span className="font-mono text-white">{successResult.staff.email}</span>
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Login Gmail</span>
+                    <span className="font-mono text-text">{successResult.staff.email}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-charcoal-800">
-                    <span className="text-gray-400">Initial Password</span>
-                    <span className="font-mono text-amber-400 font-bold">
+                  <div className="flex justify-between py-1.5 border-b border-border">
+                    <span className="text-text-muted">Initial Password</span>
+                    <span className="font-mono text-amber-500 font-bold">
                       {successResult.temporaryPassword || 'Configured'}
                     </span>
                   </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-gray-400">Target Dashboard</span>
-                    <span className="text-emerald-400 font-medium">
+                  <div className="flex justify-between py-1.5">
+                    <span className="text-text-muted">Target Dashboard</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                       {successResult.staff.role === 'trainer'
                         ? 'Trainer Dashboard (Clients & Workouts)'
                         : 'Reception Dashboard (Check-ins & Cash Overrides)'}
@@ -269,24 +285,24 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 </div>
 
                 {successResult.inviteSent && (
-                  <div className="p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800 text-xs text-gray-300 space-y-1">
-                    <div className="flex items-center gap-1.5 text-[#B4F82C] font-semibold text-[11px]">
+                  <div className="p-3.5 rounded-xl bg-surface-elevated border border-border text-xs text-text-muted space-y-1">
+                    <div className="flex items-center gap-1.5 text-primary font-bold text-[11px]">
                       <Mail className="w-3.5 h-3.5" /> Set Password Invitation Dispatched
                     </div>
-                    <p className="text-[11px] text-gray-400 leading-relaxed">
+                    <p className="text-[11px] leading-relaxed">
                       An official invitation email with the secure "Set Your Password" link has been sent to{' '}
-                      <strong className="text-white">{successResult.staff.email}</strong> (captured in Mailpit at http://localhost:8025). The staff member can also immediately log in with their assigned password.
+                      <strong className="text-text">{successResult.staff.email}</strong> (captured in Mailpit at http://localhost:8025). The staff member can also immediately log in with their assigned password.
                     </p>
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-3">
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="flex-1 py-3 rounded-xl bg-charcoal-700 hover:bg-charcoal-600 text-white font-bold text-xs transition flex items-center justify-center gap-1.5"
+                    className="flex-1 min-h-[44px] py-3 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text font-bold text-xs transition flex items-center justify-center gap-2 active:scale-95"
                   >
-                    <UserPlus className="w-4 h-4 text-[#B4F82C]" />
+                    <UserPlus className="w-4 h-4 text-primary" />
                     Register Another Staff
                   </button>
                   <button
@@ -295,7 +311,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                       resetForm();
                       setActiveTab('directory');
                     }}
-                    className="flex-1 py-3 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center justify-center gap-1.5"
+                    className="flex-1 min-h-[44px] py-3 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
                   >
                     <Users className="w-4 h-4" />
                     View Staff Directory
@@ -307,26 +323,26 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
               <form onSubmit={handleRegister} className="space-y-4">
                 {/* Role Selection */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-2">
-                    Select Staff Role & Access Level
+                  <label className="block text-xs font-bold text-text mb-2">
+                    Select Staff Role & Access Level *
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setRole('trainer')}
-                      className={`p-3.5 rounded-xl border text-left transition flex items-start gap-3 ${
+                      className={`min-h-[64px] p-3.5 rounded-2xl border text-left transition flex items-start gap-3 ${
                         role === 'trainer'
-                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white'
-                          : 'border-charcoal-700 bg-charcoal-900/50 text-gray-400 hover:border-charcoal-600'
+                          ? 'border-primary bg-primary/10 text-text shadow-sm'
+                          : 'border-border bg-surface-elevated text-text-muted hover:border-border-strong hover:text-text'
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${role === 'trainer' ? 'bg-[#B4F82C] text-slate-950' : 'bg-charcoal-800 text-gray-400'}`}>
-                        <Dumbbell className="w-4 h-4" />
+                      <div className={`p-2.5 rounded-xl shrink-0 ${role === 'trainer' ? 'bg-primary text-primary-foreground' : 'bg-surface text-text-muted border border-border'}`}>
+                        <Dumbbell className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-white">Fitness Trainer</div>
-                        <div className="text-[11px] text-gray-400 mt-0.5">
-                          Assigned to workouts, client logs & classes. Opens Trainer Dashboard.
+                        <div className="text-xs font-bold text-text">Fitness Trainer</div>
+                        <div className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                          Assigned to workouts, client progress logs & classes.
                         </div>
                       </div>
                     </button>
@@ -334,19 +350,19 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setRole('reception')}
-                      className={`p-3.5 rounded-xl border text-left transition flex items-start gap-3 ${
+                      className={`min-h-[64px] p-3.5 rounded-2xl border text-left transition flex items-start gap-3 ${
                         role === 'reception'
-                          ? 'border-[#B4F82C] bg-[#B4F82C]/10 text-white'
-                          : 'border-charcoal-700 bg-charcoal-900/50 text-gray-400 hover:border-charcoal-600'
+                          ? 'border-primary bg-primary/10 text-text shadow-sm'
+                          : 'border-border bg-surface-elevated text-text-muted hover:border-border-strong hover:text-text'
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${role === 'reception' ? 'bg-[#B4F82C] text-slate-950' : 'bg-charcoal-800 text-gray-400'}`}>
-                        <Shield className="w-4 h-4" />
+                      <div className={`p-2.5 rounded-xl shrink-0 ${role === 'reception' ? 'bg-primary text-primary-foreground' : 'bg-surface text-text-muted border border-border'}`}>
+                        <Shield className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-white">Front Desk Reception</div>
-                        <div className="text-[11px] text-gray-400 mt-0.5">
-                          Scans passes, registers walk-in cash payments. Opens Reception Dashboard.
+                        <div className="text-xs font-bold text-text">Front Desk Reception</div>
+                        <div className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                          Scans passes, registers walk-in cash payments & overrides.
                         </div>
                       </div>
                     </button>
@@ -354,98 +370,99 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 </div>
 
                 {/* Name Fields */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">First Name</label>
+                    <label className="block text-xs font-bold text-text mb-1.5">First Name *</label>
                     <input
                       type="text"
                       required
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="e.g. Abebe"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1">Last Name</label>
+                    <label className="block text-xs font-bold text-text mb-1.5">Last Name *</label>
                     <input
                       type="text"
                       required
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="e.g. Bikila"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                     />
                   </div>
                 </div>
 
                 {/* Email (Gmail Strict) */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Staff Gmail Address <span className="text-[#B4F82C] text-[11px] font-normal">(@gmail.com required)</span>
+                  <label className="block text-xs font-bold text-text mb-1.5">
+                    Staff Gmail Address <span className="text-primary text-[11px] font-normal">(@gmail.com required) *</span>
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-text-muted absolute left-3.5 top-3" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="staffmember@gmail.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                     />
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-1">
+                  <p className="text-[11px] text-text-muted mt-1">
                     Credentials & "Set Your Password" notification link will be delivered to this Gmail.
                   </p>
                 </div>
 
                 {/* Ethiopian Phone */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Ethiopian Mobile Phone
+                  <label className="block text-xs font-bold text-text mb-1.5">
+                    Ethiopian Mobile Phone *
                   </label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
+                    <Phone className="w-4 h-4 text-text-muted absolute left-3.5 top-3" />
                     <input
                       type="tel"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+251 911 234 567 or 0911234567"
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                     />
                   </div>
                 </div>
 
                 {/* Initial Password with Generator */}
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold text-gray-300">
-                      Initial Password
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-text">
+                      Initial Temporary Password *
                     </label>
                     <button
                       type="button"
                       onClick={generateRandomPassword}
-                      className="text-[11px] text-[#B4F82C] hover:text-orange-hover flex items-center gap-1 font-semibold"
+                      className="text-[11px] text-primary hover:underline flex items-center gap-1 font-bold"
                     >
-                      <Sparkles className="w-3 h-3" /> Auto-Generate
+                      <Sparkles className="w-3.5 h-3.5" /> Auto-Generate
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-text-muted absolute left-3.5 top-3" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Minimum 6 characters"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-[#131722] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-surface-elevated border border-border focus:border-primary text-text text-xs focus:outline-none font-mono transition"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3 text-gray-500 hover:text-gray-300"
+                      className="absolute right-3.5 top-2.5 p-1 text-text-muted hover:text-text transition"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -454,9 +471,9 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
                 {/* Trainer Specific Options */}
                 {role === 'trainer' && (
-                  <div className="p-3.5 rounded-xl bg-charcoal-900/80 border border-charcoal-800 space-y-3">
+                  <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                      <label className="block text-[11px] font-bold text-text mb-1">
                         Trainer Specialization
                       </label>
                       <input
@@ -464,11 +481,11 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                         value={specialization}
                         onChange={(e) => setSpecialization(e.target.value)}
                         placeholder="e.g. Bodybuilding, Powerlifting, HIIT Cardio"
-                        className="w-full px-3 py-2 rounded-lg bg-[#161B28] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-surface border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                      <label className="block text-[11px] font-bold text-text mb-1">
                         Professional Bio / Credentials
                       </label>
                       <input
@@ -476,7 +493,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         placeholder="e.g. Certified NASM Personal Trainer • 5+ years experience"
-                        className="w-full px-3 py-2 rounded-lg bg-[#161B28] border border-slate-800 focus:border-[#B4F82C] text-white text-xs focus:border-[#B4F82C] focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-surface border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                       />
                     </div>
                   </div>
@@ -486,7 +503,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl bg-[#B4F82C] hover:bg-[#A3E524] disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-[#B4F82C]/20 transition flex items-center justify-center gap-2"
+                  className="w-full min-h-[44px] py-3.5 rounded-xl bg-primary hover:bg-primary-hover disabled:opacity-50 text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition flex items-center justify-center gap-2 active:scale-95"
                 >
                   {isSubmitting ? (
                     <>
@@ -507,69 +524,75 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
         {activeTab === 'directory' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-text-muted">
                 Registered Trainers & Front Desk Staff ({staffList.length})
               </span>
               <button
                 type="button"
                 onClick={loadStaff}
                 disabled={isLoadingList}
-                className="text-[11px] text-[#B4F82C] hover:text-orange-hover flex items-center gap-1 font-semibold"
+                className="text-[11px] text-primary hover:underline flex items-center gap-1 font-bold"
               >
                 <RefreshCw className={`w-3 h-3 ${isLoadingList ? 'animate-spin' : ''}`} /> Refresh
               </button>
             </div>
 
             {isLoadingList ? (
-              <div className="py-8 text-center text-gray-500 text-xs">Loading staff directory...</div>
+              <div className="py-12 text-center text-text-muted text-xs flex flex-col items-center justify-center gap-2">
+                <RefreshCw className="w-5 h-5 animate-spin text-primary" />
+                <span>Loading staff directory...</span>
+              </div>
             ) : staffList.length === 0 ? (
-              <div className="py-8 text-center text-gray-500 text-xs">
-                No staff members registered yet. Use the registration form to add trainers or receptionists.
+              <div className="py-12 text-center text-text-muted text-xs bg-surface-elevated/40 rounded-2xl border border-border p-6">
+                <Users className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-50" />
+                <p className="font-semibold text-text">No staff members registered yet</p>
+                <p className="mt-1 text-[11px]">Use the registration form to add trainers or receptionists.</p>
               </div>
             ) : (
               <div className="space-y-2.5">
                 {staffList.map((staff) => (
                   <div
                     key={staff.id}
-                    className="p-3.5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex items-center justify-between hover:border-charcoal-700 transition"
+                    className="p-3.5 rounded-xl bg-surface-elevated border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-border-strong transition"
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs uppercase shrink-0 ${
                           staff.role === 'trainer'
-                            ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                            : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                         }`}
                       >
                         {staff.first_name[0]}
                         {staff.last_name[0]}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-white flex items-center gap-2">
-                          {staff.first_name} {staff.last_name}
+                        <div className="text-xs font-bold text-text flex items-center gap-2">
+                          <span>{staff.first_name} {staff.last_name}</span>
                           <span
                             className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                               staff.role === 'trainer'
-                                ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                                : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                             }`}
                           >
                             {staff.role}
                           </span>
                         </div>
-                        <div className="text-[11px] text-gray-400 flex items-center gap-3 mt-0.5">
+                        <div className="text-[11px] text-text-muted flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                           <span>{staff.email}</span>
                           {staff.phone && <span>• {staff.phone}</span>}
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-semibold border border-emerald-500/20">
+                    <div className="text-left sm:text-right">
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/20">
                         Active & Verified
                       </span>
-                      <div className="text-[10px] text-gray-500 mt-1">
-                        Added: {formatEthiopianDate(staff.created_at)}
+                      <div className="text-[10px] text-text-muted mt-1 flex items-center gap-1 sm:justify-end">
+                        <Calendar className="w-3 h-3" />
+                        <span>Added: {formatEthiopianDate(staff.created_at)} E.C.</span>
                       </div>
                     </div>
                   </div>

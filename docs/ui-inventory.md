@@ -57,13 +57,13 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **TRN-PAGE-07**: SWEATBOX Trainer AI Assistant — Technical AI formulation tool for biomechanical cues, progression overload calculations, and injury accommodations.
 
 ### 1.5 System Administrator Pages (Role: `admin`)
-- [ ] **ADM-PAGE-01**: Admin Executive Dashboard — Metric cards (Total Revenue ETB, Active Members, Daily Scans, Equipment Health), charts for revenue trends and attendance heatmaps.
-- [ ] **ADM-PAGE-02**: Staff Management Center — Grid of certified trainers and reception staff, status chips, and "Register New Staff" modal trigger.
-- [ ] **ADM-PAGE-03**: Membership Plans & Pricing Manager — Management table of public and private tiers, price editors, duration settings, and promotional toggles.
-- [ ] **ADM-PAGE-04**: Equipment Inventory & Facility Health — Equipment list grouped by zone (Cardio, Free Weights, Resistance Machines, Studio), operational status tags.
-- [ ] **ADM-PAGE-05**: Equipment Defect & Repair Tracker — Fault report tickets, priority chips (Critical, Moderate, Low), and maintenance logging form.
-- [ ] **ADM-PAGE-06**: Financial & Attendance Reports Terminal — Date range selector with certified Ethiopian Calendar conversion, export configuration, and CSV generators.
-- [ ] **ADM-PAGE-07**: SWEATBOX Management Consultant AI — Strategic executive AI assistant for churn analysis, peak load optimization, and pricing modeling.
+- [x] **ADM-PAGE-01**: Admin Executive Dashboard — Metric cards (Total Revenue ETB, Active Members, Daily Scans, Equipment Health), charts for revenue trends and attendance heatmaps.
+- [x] **ADM-PAGE-02**: Staff Management Center — Grid of certified trainers and reception staff, status chips, and "Register New Staff" modal trigger.
+- [x] **ADM-PAGE-03**: Membership Plans & Pricing Manager — Management table of public and private tiers, price editors, duration settings, and promotional toggles.
+- [x] **ADM-PAGE-04**: Equipment Inventory & Facility Health — Equipment list grouped by zone (Cardio, Free Weights, Resistance Machines, Studio), operational status tags.
+- [x] **ADM-PAGE-05**: Equipment Defect & Repair Tracker — Fault report tickets, priority chips (Critical, Moderate, Low), and maintenance logging form.
+- [x] **ADM-PAGE-06**: Financial & Attendance Reports Terminal — Date range selector with certified Ethiopian Calendar conversion, export configuration, and CSV generators.
+- [x] **ADM-PAGE-07**: SWEATBOX Management Consultant AI — Strategic executive AI assistant for churn analysis, peak load optimization, and pricing modeling.
 
 ---
 
@@ -96,13 +96,13 @@ This inventory tracks the comprehensive redesign of every user interface surface
 - [x] **POP-TRN-01**: Trainer Workout Routine Editor Modal — Drag-and-drop exercise sequence modal with sets, reps, and target weights.
 - [x] **POP-TRN-02**: Approve Routine Confirmation Modal — Trainer approval gate confirmation with notification trigger to athlete.
 - [x] **POP-TRN-03**: Class Attendee Roster Sheet — Roster management modal with one-tap status toggles (Present, Absent, Excused).
-- [ ] **POP-ADM-01**: Staff Registration Modal — Admin form for creating Trainers and Reception staff with email invitation trigger.
-- [ ] **POP-ADM-02**: Plan Editor Modal — Plan title, description, price (ETB), duration (months), feature bullet points, and image uploader.
-- [ ] **POP-ADM-03**: Create / Edit Class Modal — Class title, category selector, trainer picker, date & time pickers, and capacity ceiling.
-- [ ] **POP-ADM-04**: Equipment Defect Report Modal — Equipment picker, issue description, severity tag, and photo attachment.
-- [ ] **POP-ADM-05**: Equipment Maintenance Log Sheet — Technician name, service notes, replacement parts, and status resolution.
-- [ ] **POP-ADM-06**: Financial & Attendance Export Dialog — Date range picker (E.C. & G.C.), report type selector, and instant CSV generation.
-- [ ] **POP-ADM-07**: Delete / Deactivate Item Confirmation Dialogs — Universal reusable destructive dialog with item title emphasis.
+- [x] **POP-ADM-01**: Staff Registration Modal — Admin form for creating Trainers and Reception staff with email invitation trigger.
+- [x] **POP-ADM-02**: Plan Editor Modal — Plan title, description, price (ETB), duration (months), feature bullet points, and image uploader.
+- [x] **POP-ADM-03**: Create / Edit Class Modal — Class title, category selector, trainer picker, date & time pickers, and capacity ceiling.
+- [x] **POP-ADM-04**: Equipment Defect Report Modal — Equipment picker, issue description, severity tag, and photo attachment.
+- [x] **POP-ADM-05**: Equipment Maintenance Log Sheet — Technician name, service notes, replacement parts, and status resolution.
+- [x] **POP-ADM-06**: Financial & Attendance Export Dialog — Date range picker (E.C. & G.C.), report type selector, and instant CSV generation.
+- [x] **POP-ADM-07**: Delete / Deactivate Item Confirmation Dialogs — Universal reusable destructive dialog with item title emphasis.
 
 ### 2.5 Feedback Elements (Toasts, Tooltips, Alerts, Banners)
 - [ ] **FEED-TOAST-01**: Success Toast — Non-blocking notification with checkmark, auto-dismiss (4000ms), manual close, and pause-on-hover.
@@ -148,10 +148,10 @@ This inventory tracks the comprehensive redesign of every user interface surface
 ## 4. Printable, Downloadable & Email Views
 
 ### 4.1 Printable & Downloadable Views
-- [ ] **PRINT-01**: Payment Receipt & Tax Invoice View — Clean black-and-white printable layout with gym TIN, member details, payment reference, and ETB total.
-- [ ] **PRINT-02**: Attendance Logs CSV Export — Formatted CSV download containing Ethiopian Calendar dates, timestamps, member IDs, and scan result statuses.
-- [ ] **PRINT-03**: Member Roster CSV Export — Formatted CSV download with active plan tiers, contact numbers, and expiration dates.
-- [ ] **PRINT-04**: Financial Reconciliation CSV Export — Formatted CSV with transaction IDs, payment methods (Chapa/Cash/POS), and revenue sums.
+- [x] **PRINT-01**: Payment Receipt & Tax Invoice View — Clean black-and-white printable layout with gym TIN, member details, payment reference, and ETB total.
+- [x] **PRINT-02**: Attendance Logs CSV Export — Formatted CSV download containing Ethiopian Calendar dates, timestamps, member IDs, and scan result statuses.
+- [x] **PRINT-03**: Member Roster CSV Export — Formatted CSV download with active plan tiers, contact numbers, and expiration dates.
+- [x] **PRINT-04**: Financial Reconciliation CSV Export — Formatted CSV with transaction IDs, payment methods (Chapa/Cash/POS), and revenue sums.
 
 ### 4.2 Brand Email Templates (HTML & Plain Text)
 - [ ] **EMAIL-01**: Email Verification Notice — Responsive single-column layout with dark charcoal container, bold orange CTA button, and clear verification link.

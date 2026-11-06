@@ -1630,44 +1630,46 @@ export const App: React.FC = () => {
             {currentUser.role === 'admin' && activeTab === 'home' && (
               <div className="space-y-6">
                 {/* Admin Plans & Pricing Management Panel */}
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div className="p-5 sm:p-7 rounded-3xl bg-surface border border-border shadow-sm">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <Layers className="w-5 h-5 text-[#B4F82C]" />
-                        <h3 className="text-xl font-bold text-white">Plans & Pricing Engine</h3>
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-primary/15 text-primary border border-primary/25">
+                          <Layers className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-xl font-black text-text tracking-tight">Plans & Pricing Engine</h3>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Only Admin creates tiers, modifies pricing, and uploads plan imagery from local storage.
+                      <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                        Create membership tiers, adjust Ethiopian Birr pricing, and upload plan imagery from local storage.
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                       <button
                         type="button"
                         onClick={() => setIsTrainerWorkoutModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                       >
-                        <Dumbbell className="w-4 h-4 text-[#B4F82C]" /> Workout Review Gate
+                        <Dumbbell className="w-4 h-4 text-primary" /> Workout Review Gate
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsReceptionScannerOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                       >
-                        <QrCode className="w-4 h-4 text-[#B4F82C]" /> Front Desk Scanner
+                        <QrCode className="w-4 h-4 text-primary" /> Front Desk Scanner
                       </button>
                       <button
                         type="button"
                         onClick={() => openManualPaymentModal()}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                       >
-                        <DollarSign className="w-4 h-4 text-[#B4F82C]" /> Record Offline Payment
+                        <DollarSign className="w-4 h-4 text-primary" /> Record Offline Payment
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
+                        className="px-3.5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary/20 transition active:scale-95 min-h-[44px]"
                         title="Schedule a new group fitness class with capacity limits"
                       >
                         <Calendar className="w-4 h-4" /> Schedule Class
@@ -1675,135 +1677,148 @@ export const App: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setIsTrainerProgressModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                         title="Review all member transformation metrics and coach feedback"
                       >
-                        <Scale className="w-4 h-4 text-[#B4F82C]" /> Athlete Progress
+                        <Scale className="w-4 h-4 text-primary" /> Athlete Progress
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsEquipmentModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                         title="Manage gym equipment inventory, defect reports, and maintenance logs"
                       >
-                        <Wrench className="w-4 h-4 text-[#B4F82C]" /> Equipment & Repairs
+                        <Wrench className="w-4 h-4 text-primary" /> Equipment & Repairs
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsAnalyticsModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                         title="Financial breakdown, attendance heatmap, and Ethiopian Calendar CSV exports"
                       >
-                        <TrendingUp className="w-4 h-4 text-[#B4F82C]" /> Analytics & CSV Reports
+                        <TrendingUp className="w-4 h-4 text-primary" /> Analytics & CSV Reports
                       </button>
                       <button
                         type="button"
                         onClick={openCreatePlanModal}
-                        className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
+                        className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary/20 transition active:scale-95 min-h-[44px]"
                       >
-                        <Plus className="w-4 h-4 text-[#B4F82C]" /> Create New Plan
+                        <Plus className="w-4 h-4" /> Create New Plan
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsWalkinModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                       >
-                        <UserPlus className="w-4 h-4 text-[#B4F82C]" /> Walk-In Member
+                        <UserPlus className="w-4 h-4 text-primary" /> Walk-In Member
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsStaffModalOpen(true)}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition min-h-[44px]"
                         title="Register Trainers and Front Desk Reception staff"
                       >
-                        <Shield className="w-4 h-4 text-[#B4F82C]" /> Staff Management
+                        <Shield className="w-4 h-4 text-primary" /> Staff Management
                       </button>
                       <button
                         type="button"
                         onClick={handleRunManualExpiryCheck}
                         disabled={isRunningExpiryCheck}
-                        className="px-3.5 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 font-semibold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center gap-1.5 transition disabled:opacity-50 min-h-[44px]"
                         title="Scan all memberships, auto-expire overdue, and dispatch 7d/1d reminder emails in Ethiopian Calendar"
                       >
-                        <RefreshCw className={`w-4 h-4 text-[#B4F82C] ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
+                        <RefreshCw className={`w-4 h-4 text-primary ${isRunningExpiryCheck ? 'animate-spin' : ''}`} /> Run Expiry Check
                       </button>
                     </div>
                   </div>
 
                   {/* Plans Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {(adminPlans.length > 0 ? adminPlans : plans).map((p) => (
-                      <div key={p.id} className="p-4 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-charcoal-700 transition">
+                      <div
+                        key={p.id}
+                        className="p-5 rounded-2xl bg-surface-elevated/60 border border-border flex flex-col justify-between hover:border-primary/50 transition shadow-sm group"
+                      >
                         <div>
                           {p.imageUrl ? (
-                            <div className="w-full h-32 rounded-lg overflow-hidden mb-3 bg-charcoal-950 border border-charcoal-800">
+                            <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-surface border border-border">
                               <img
                                 src={p.imageUrl}
                                 alt={p.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                 onError={(e) => {
                                   (e.currentTarget as HTMLImageElement).src = DEFAULT_PLAN_IMAGE;
                                 }}
                               />
                             </div>
                           ) : (
-                            <div className="w-full h-32 rounded-lg mb-3 bg-charcoal-800/50 border border-dashed border-charcoal-700 flex flex-col items-center justify-center text-gray-500">
-                              <ImageIcon className="w-6 h-6 mb-1 text-gray-400" />
+                            <div className="w-full h-36 rounded-xl mb-4 bg-surface-elevated border border-dashed border-border flex flex-col items-center justify-center text-text-muted">
+                              <ImageIcon className="w-6 h-6 mb-1 text-text-muted opacity-60" />
                               <span className="text-[10px]">No image uploaded</span>
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-bold text-white text-sm">{p.name}</h4>
-                            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${p.isActive ? 'bg-green-950 text-green-400 border border-green-800' : 'bg-charcoal-800 text-gray-400'}`}>
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <h4 className="font-black text-text text-base">{p.name}</h4>
+                            <span
+                              className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full border ${
+                                p.isActive
+                                  ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/25'
+                                  : 'bg-surface-elevated text-text-muted border-border'
+                              }`}
+                            >
                               {p.isActive ? 'Active' : 'Inactive'}
                             </span>
                           </div>
 
-                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{p.description || 'Full gym facility access.'}</p>
-                          <div className="mt-3 text-xs text-gray-300">
-                            <span className="text-lg font-extrabold text-white">{p.price.toLocaleString()}</span>
-                            <span className="text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                          <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
+                            {p.description || 'Full gym facility access, locker, and workout areas.'}
+                          </p>
+                          <div className="mt-3 text-xs text-text-muted">
+                            <span className="text-2xl font-black text-primary">{p.price.toLocaleString()}</span>
+                            <span className="text-text-muted font-medium"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
                           </div>
                         </div>
 
                         <button
                           type="button"
                           onClick={() => openEditPlanModal(p)}
-                          className="mt-4 w-full py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                          className="mt-5 w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-text text-xs font-bold flex items-center justify-center gap-1.5 transition min-h-[44px]"
                         >
-                          <Edit2 className="w-3.5 h-3.5 text-[#B4F82C]" /> Edit Plan & Image
+                          <Edit2 className="w-3.5 h-3.5 text-primary" /> Edit Plan & Image
                         </button>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Admin Group Class Scheduling & Roster Oversight Engine (Rule 12) */}
-                <div className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800">
+                {/* Admin Group Class Scheduling & Roster Oversight Engine */}
+                <div className="p-5 sm:p-7 rounded-3xl bg-surface border border-border shadow-sm">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-5 h-5 text-[#B4F82C]" />
-                        <h3 className="text-xl font-bold text-white">Group Classes & Roster Oversight Engine</h3>
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2 rounded-xl bg-primary/15 text-primary border border-primary/25">
+                          <Users className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-xl font-black text-text tracking-tight">Group Classes & Roster Oversight Engine</h3>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-text-muted mt-1 leading-relaxed">
                         Direct class scheduling, capacity limits, live waitlist queue audit, and front-desk attendance oversight.
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <button
                         type="button"
                         onClick={() => loadClasses()}
-                        className="px-3 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-gray-300 text-xs font-semibold flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text text-xs font-bold flex items-center gap-1.5 transition min-h-[44px]"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-[#B4F82C]' : ''}`} /> Refresh
+                        <RefreshCw className={`w-3.5 h-3.5 ${classesLoading ? 'animate-spin text-primary' : ''}`} /> Refresh
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsCreateClassModalOpen(true)}
-                        className="px-4 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition active:scale-95"
+                        className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary/20 transition active:scale-95 min-h-[44px]"
                       >
                         <Plus className="w-4 h-4" /> Schedule New Class
                       </button>
@@ -1811,7 +1826,7 @@ export const App: React.FC = () => {
                   </div>
 
                   {classesList.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                       {classesList.map((cls) => {
                         const isFull = cls.booked_count >= cls.capacity;
                         const pct = Math.min(100, Math.round((cls.booked_count / cls.capacity) * 100));
@@ -1819,53 +1834,53 @@ export const App: React.FC = () => {
                         return (
                           <div
                             key={cls.id}
-                            className="p-5 rounded-xl bg-charcoal-900 border border-charcoal-800 flex flex-col justify-between hover:border-charcoal-700 transition"
+                            className="p-5 rounded-2xl bg-surface-elevated/60 border border-border flex flex-col justify-between hover:border-primary/50 transition shadow-sm"
                           >
                             <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-[11px] font-mono text-[#B4F82C] flex items-center gap-1">
+                              <div className="flex items-center justify-between mb-2.5">
+                                <span className="text-[11px] font-mono font-bold text-primary flex items-center gap-1">
                                   <Calendar className="w-3.5 h-3.5" />
                                   {formatEthiopianDateTime(cls.start_time)}
                                 </span>
                                 <span
-                                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
                                     isFull
-                                      ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                      : 'bg-green-950 text-green-400 border border-green-800'
+                                      ? 'bg-amber-500/10 text-amber-500 border-amber-500/25'
+                                      : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/25'
                                   }`}
                                 >
                                   {isFull ? `Full (${cls.waitlist_count} waitlist)` : `${cls.booked_count} / ${cls.capacity} spots`}
                                 </span>
                               </div>
 
-                              <h4 className="font-bold text-white text-base">{cls.title}</h4>
-                              <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                              <h4 className="font-black text-text text-base">{cls.title}</h4>
+                              <p className="text-xs text-text-muted mt-1 line-clamp-2 leading-relaxed">
                                 {cls.description || 'Full class details.'}
                               </p>
 
-                              <div className="mt-3 space-y-1 text-xs text-gray-300">
-                                <div className="flex items-center gap-1.5 text-gray-400">
-                                  <MapPin className="w-3.5 h-3.5 text-gray-500" /> {cls.location}
+                              <div className="mt-3.5 space-y-1.5 text-xs text-text-muted">
+                                <div className="flex items-center gap-1.5">
+                                  <MapPin className="w-3.5 h-3.5 text-text-muted opacity-70" /> {cls.location}
                                 </div>
-                                <div className="text-gray-400">
-                                  Instructor: <span className="text-white font-medium">{cls.trainer_name || 'Gym Trainer'}</span>
+                                <div>
+                                  Instructor: <span className="text-text font-bold">{cls.trainer_name || 'Gym Trainer'}</span>
                                   {cls.trainer_specialization && (
-                                    <span className="text-[11px] text-gray-500"> ({cls.trainer_specialization})</span>
+                                    <span className="text-[11px] text-text-muted"> ({cls.trainer_specialization})</span>
                                   )}
                                 </div>
                               </div>
 
                               <div className="mt-4">
-                                <div className="flex justify-between text-[11px] mb-1 font-medium">
-                                  <span className="text-gray-400">Capacity</span>
-                                  <span className={isFull ? 'text-amber-400 font-bold' : 'text-green-400 font-bold'}>
+                                <div className="flex justify-between text-[11px] mb-1 font-bold">
+                                  <span className="text-text-muted">Capacity</span>
+                                  <span className={isFull ? 'text-amber-500' : 'text-emerald-500'}>
                                     {cls.booked_count} / {cls.capacity} spots
                                   </span>
                                 </div>
-                                <div className="w-full bg-charcoal-800 rounded-full h-1.5 overflow-hidden">
+                                <div className="w-full bg-surface-elevated rounded-full h-2 overflow-hidden border border-border">
                                   <div
                                     className={`h-full rounded-full transition-all ${
-                                      isFull ? 'bg-amber-500' : 'bg-green-500'
+                                      isFull ? 'bg-amber-500' : 'bg-emerald-500'
                                     }`}
                                     style={{ width: `${pct}%` }}
                                   />
@@ -1880,9 +1895,9 @@ export const App: React.FC = () => {
                                   setSelectedRosterClass(cls);
                                   setIsRosterModalOpen(true);
                                 }}
-                                className="w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-[#B4F82C]/20 text-[#B4F82C] hover:text-white border border-[#B4F82C]/40 font-bold text-xs flex items-center justify-center gap-2 transition"
+                                className="w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-text font-bold text-xs flex items-center justify-center gap-2 transition min-h-[44px]"
                               >
-                                <Users className="w-4 h-4" /> View Class Roster & Attendance
+                                <Users className="w-4 h-4 text-primary" /> View Class Roster & Attendance
                               </button>
                             </div>
                           </div>
@@ -1890,59 +1905,68 @@ export const App: React.FC = () => {
                       })}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500 text-xs">
-                      No group classes scheduled yet. Click "Schedule New Class" to create one.
+                    <div className="text-center py-10 text-text-muted text-xs bg-surface-elevated/40 rounded-2xl border border-border p-6">
+                      <Calendar className="w-8 h-8 text-text-muted mx-auto mb-2 opacity-50" />
+                      <p className="font-semibold text-text">No group classes scheduled yet</p>
+                      <p className="mt-1 text-[11px]">Click "Schedule New Class" to create your first session.</p>
                     </div>
                   )}
                 </div>
 
                 {/* Other Admin Capabilities */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className="p-6 rounded-3xl bg-surface border border-border flex flex-col justify-between shadow-sm">
                     <div>
-                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mb-4">
                         <BarChart3 className="w-5 h-5" />
                       </div>
-                      <h3 className="text-lg font-bold text-white">Financial & Attendance Reports</h3>
-                      <p className="text-xs text-gray-400 mt-1">View revenue analytics, attendance throughput, and download official CSV exports.</p>
+                      <h3 className="text-lg font-black text-text">Financial & Attendance Reports</h3>
+                      <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                        View revenue analytics, attendance throughput, and download official CSV exports.
+                      </p>
                     </div>
                     <button 
                       type="button"
                       onClick={() => setIsAnalyticsModalOpen(true)}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 font-semibold text-xs text-white transition flex items-center justify-center gap-1.5 active:scale-98"
+                      className="mt-6 w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border font-bold text-xs text-text transition flex items-center justify-center gap-1.5 active:scale-98 min-h-[44px]"
                     >
-                      <Download className="w-4 h-4 text-[#B4F82C]" /> Open Analytics & CSV Reports
+                      <Download className="w-4 h-4 text-primary" /> Open Analytics & CSV Reports
                     </button>
                   </div>
 
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+                  <div className="p-6 rounded-3xl bg-surface border border-border flex flex-col justify-between shadow-sm">
                     <div>
-                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mb-4">
                         <Wrench className="w-5 h-5" />
                       </div>
-                      <h3 className="text-lg font-bold text-white">Equipment & Maintenance</h3>
-                      <p className="text-xs text-gray-400 mt-1">Track machine inventory, review defect reports, and schedule maintenance.</p>
+                      <h3 className="text-lg font-black text-text">Equipment & Maintenance</h3>
+                      <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                        Track machine inventory, review defect reports, and schedule maintenance services.
+                      </p>
                     </div>
                     <button 
                       type="button"
                       onClick={() => setIsEquipmentModalOpen(true)}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-[#B4F82C]/20"
+                      className="mt-6 w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-primary/20 min-h-[44px]"
                     >
                       <Wrench className="w-4 h-4" /> Manage Inventory & Maintenance
                     </button>
                   </div>
-                  <div className="p-6 rounded-xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between">
+
+                  <div className="p-6 rounded-3xl bg-surface border border-border flex flex-col justify-between shadow-sm">
                     <div>
-                      <div className="w-10 h-10 rounded-lg bg-[#B4F82C]/10 border border-[#B4F82C]/30 flex items-center justify-center text-[#B4F82C] mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mb-4">
                         <Shield className="w-5 h-5" />
                       </div>
-                      <h3 className="text-lg font-bold text-white">Staff & Role Management</h3>
-                      <p className="text-xs text-gray-400 mt-1">Register Trainers & Front Desk Receptionists, generate credentials, and dispatch setup emails.</p>
+                      <h3 className="text-lg font-black text-text">Staff & Role Management</h3>
+                      <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                        Register Trainers & Front Desk Receptionists, generate credentials, and dispatch setup emails.
+                      </p>
                     </div>
                     <button 
                       type="button"
                       onClick={() => setIsStaffModalOpen(true)}
-                      className="mt-6 w-full py-2.5 rounded-lg bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-[#B4F82C]/20"
+                      className="mt-6 w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs transition flex items-center justify-center gap-1.5 active:scale-98 shadow-md shadow-primary/20 min-h-[44px]"
                     >
                       <Shield className="w-4 h-4" /> Register & Manage Staff
                     </button>
@@ -2139,34 +2163,34 @@ export const App: React.FC = () => {
 
                 {/* If member: Show active plan badge at top */}
                 {currentUser.role === 'member' && myMembership && (
-                  <div className="p-5 rounded-2xl bg-[#0E1116] border border-[#B4F82C]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="p-5 rounded-2xl bg-surface border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#B4F82C]/10 text-[#B4F82C] flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary border border-primary/25 flex items-center justify-center shrink-0">
                         <Check className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="text-xs text-[#B4F82C] font-bold uppercase tracking-wider">Current Active Plan</span>
-                        <h4 className="text-lg font-bold text-white">{myMembership.plan_name}</h4>
-                        <p className="text-xs text-gray-400">
+                        <span className="text-[11px] text-primary font-mono font-bold uppercase tracking-wider">Current Active Plan</span>
+                        <h4 className="text-lg font-black text-text">{myMembership.plan_name}</h4>
+                        <p className="text-xs text-text-muted">
                           Expires: {formatEthiopianDate(myMembership.end_date)} E.C.
                         </p>
                       </div>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/25 text-xs font-bold">
                       Active
                     </span>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {(currentUser.role === 'admin' && adminPlans.length > 0 ? adminPlans : plans).map((p) => (
                     <div
                       key={p.id}
-                      className="p-6 rounded-2xl bg-charcoal-850 border border-charcoal-800 flex flex-col justify-between hover:border-[#B4F82C]/50 transition group"
+                      className="p-6 rounded-3xl bg-surface border border-border flex flex-col justify-between hover:border-primary/50 transition group shadow-sm"
                     >
                       <div>
                         {p.imageUrl ? (
-                          <div className="w-full h-36 rounded-xl overflow-hidden mb-4 bg-charcoal-900 border border-charcoal-800">
+                          <div className="w-full h-36 rounded-2xl overflow-hidden mb-4 bg-surface-elevated border border-border">
                             <img
                               src={p.imageUrl}
                               alt={p.name}
@@ -2177,28 +2201,34 @@ export const App: React.FC = () => {
                             />
                           </div>
                         ) : (
-                          <div className="w-full h-36 rounded-xl mb-4 bg-charcoal-800/50 border border-dashed border-charcoal-700 flex flex-col items-center justify-center text-gray-500">
-                            <ImageIcon className="w-6 h-6 mb-1 text-gray-400" />
+                          <div className="w-full h-36 rounded-2xl mb-4 bg-surface-elevated border border-dashed border-border flex flex-col items-center justify-center text-text-muted">
+                            <ImageIcon className="w-6 h-6 mb-1 text-text-muted opacity-60" />
                             <span className="text-[10px]">No image uploaded</span>
                           </div>
                         )}
 
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <h3 className="text-lg font-bold text-white group-hover:text-[#B4F82C] transition">
+                          <h3 className="text-lg font-black text-text group-hover:text-primary transition">
                             {p.name}
                           </h3>
-                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${p.isActive ? 'bg-green-950 text-green-400 border border-green-800' : 'bg-charcoal-800 text-gray-400'}`}>
+                          <span
+                            className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full border ${
+                              p.isActive
+                                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/25'
+                                : 'bg-surface-elevated text-text-muted border-border'
+                            }`}
+                          >
                             {p.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
 
-                        <p className="text-xs text-gray-400 line-clamp-2">
+                        <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
                           {p.description || 'Full gym facility access, showers, lockers, and expert coaching.'}
                         </p>
 
                         <div className="mt-4">
-                          <span className="text-3xl font-black text-[#B4F82C]">{p.price.toLocaleString()}</span>
-                          <span className="text-xs text-gray-400"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
+                          <span className="text-3xl font-black text-primary">{p.price.toLocaleString()}</span>
+                          <span className="text-xs text-text-muted font-medium"> ETB / {p.durationMonths} {p.durationMonths === 1 ? 'Month' : 'Months'}</span>
                         </div>
                       </div>
 
@@ -2207,15 +2237,15 @@ export const App: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => openEditPlanModal(p)}
-                            className="w-full py-2.5 rounded-xl bg-charcoal-800 hover:bg-charcoal-700 border border-charcoal-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+                            className="w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-border/60 border border-border text-text font-bold text-xs flex items-center justify-center gap-1.5 transition min-h-[44px]"
                           >
-                            <Edit2 className="w-3.5 h-3.5 text-[#B4F82C]" /> Edit Plan & Image
+                            <Edit2 className="w-3.5 h-3.5 text-primary" /> Edit Plan & Image
                           </button>
                         ) : currentUser.role === 'member' ? (
                           <button
                             type="button"
                             onClick={() => handleInitiatePayment(p)}
-                            className="w-full py-2.5 rounded-xl bg-[#B4F82C] hover:bg-[#a3e524] text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-[#B4F82C]/20 transition"
+                            className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 transition min-h-[44px]"
                           >
                             <CreditCard className="w-4 h-4" /> {myMembership ? 'Switch to Plan' : 'Subscribe with Chapa'}
                           </button>
@@ -2334,40 +2364,46 @@ export const App: React.FC = () => {
 
       {/* ADMIN MEMBERSHIP PLAN EDITOR MODAL */}
       {isPlanModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#0D1017] border border-slate-700/80 w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="plan-editor-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-md animate-fadeIn"
+        >
+          <div className="bg-surface border border-border w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl text-text relative max-h-[92vh] overflow-y-auto animate-scaleUp">
             <button 
               type="button"
               onClick={() => { setIsPlanModalOpen(false); setPlanModalError(null); }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+              className="absolute top-5 right-5 w-9 h-9 flex items-center justify-center text-text-muted hover:text-text rounded-xl hover:bg-surface-elevated border border-border/50 transition"
+              aria-label="Close plan editor modal"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 bg-[#B4F82C]/10 border border-[#B4F82C]/30 rounded-lg text-[#B4F82C]">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 bg-primary/15 border border-primary/25 rounded-2xl text-primary">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 id="plan-editor-title" className="text-lg font-black text-text tracking-tight">
                   {editingPlan ? 'Edit Membership Plan' : 'Create New Membership Plan'}
                 </h3>
-                <p className="text-xs text-gray-400">
-                  Admin defines tiers, pricing (ETB), and plan photo.
+                <p className="text-xs text-text-muted mt-0.5">
+                  Admin defines tiers, pricing in Ethiopian Birr (ETB), and plan imagery.
                 </p>
               </div>
             </div>
 
             {planModalError && (
-              <div className="mb-4 p-3 rounded-xl bg-red-950/90 border border-red-700/80 text-xs text-red-200 flex items-start justify-between gap-2 shadow-lg shadow-red-950/40">
+              <div className="mb-5 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400 font-medium flex items-center justify-between gap-2 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{planModalError}</span>
                 </div>
                 <button 
                   type="button" 
                   onClick={() => setPlanModalError(null)} 
-                  className="text-red-400 hover:text-white"
+                  className="text-text-muted hover:text-text"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2376,31 +2412,31 @@ export const App: React.FC = () => {
 
             <form onSubmit={handleSavePlan} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">Plan Name *</label>
+                <label className="block text-xs font-bold text-text-muted mb-1.5">Plan Name *</label>
                 <input
                   type="text"
                   value={planName}
                   onChange={(e) => setPlanName(e.target.value)}
                   required
                   placeholder="e.g. Monthly Standard, Annual VIP"
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                  className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm text-text placeholder-text-muted/60 focus:outline-none focus:border-primary transition min-h-[44px]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">Description</label>
+                <label className="block text-xs font-bold text-text-muted mb-1.5">Description</label>
                 <textarea
                   rows={2}
                   value={planDescription}
                   onChange={(e) => setPlanDescription(e.target.value)}
                   placeholder="Short description of plan features and access..."
-                  className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                  className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm text-text placeholder-text-muted/60 focus:outline-none focus:border-primary transition"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Duration (Months) *</label>
+                  <label className="block text-xs font-bold text-text-muted mb-1.5">Duration (Months) *</label>
                   <input
                     type="number"
                     min={1}
@@ -2408,12 +2444,12 @@ export const App: React.FC = () => {
                     value={planDuration}
                     onChange={(e) => setPlanDuration(parseInt(e.target.value, 10) || 1)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                    className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm text-text placeholder-text-muted/60 focus:outline-none focus:border-primary transition min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Price (ETB) *</label>
+                  <label className="block text-xs font-bold text-text-muted mb-1.5">Price (ETB) *</label>
                   <input
                     type="number"
                     min={0}
@@ -2421,27 +2457,27 @@ export const App: React.FC = () => {
                     value={planPrice}
                     onChange={(e) => setPlanPrice(parseFloat(e.target.value) || 0)}
                     required
-                    className="w-full bg-charcoal-900 border border-charcoal-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#B4F82C]"
+                    className="w-full bg-surface-elevated border border-border rounded-xl px-3.5 py-2.5 text-sm text-text placeholder-text-muted/60 focus:outline-none focus:border-primary transition min-h-[44px]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2.5 pt-1">
                 <input
                   type="checkbox"
                   id="planIsActive"
                   checked={planIsActive}
                   onChange={(e) => setPlanIsActive(e.target.checked)}
-                  className="rounded border-charcoal-700 bg-charcoal-900 text-[#B4F82C] focus:ring-0 w-4 h-4"
+                  className="rounded-lg border-border bg-surface-elevated text-primary focus:ring-primary w-4 h-4 cursor-pointer"
                 />
-                <label htmlFor="planIsActive" className="text-xs font-medium text-gray-300 cursor-pointer">
+                <label htmlFor="planIsActive" className="text-xs font-bold text-text cursor-pointer select-none">
                   Active (visible to public visitors & members for purchase)
                 </label>
               </div>
 
               {/* Plan Image Upload from Local Storage */}
               <div className="pt-2">
-                <label className="block text-xs font-medium text-gray-300 mb-1">
+                <label className="block text-xs font-bold text-text-muted mb-1.5">
                   Plan Image (Select from Local Storage)
                 </label>
                 
@@ -2454,7 +2490,7 @@ export const App: React.FC = () => {
                 />
 
                 {planImagePreview ? (
-                  <div className="relative rounded-xl overflow-hidden border border-charcoal-700 bg-charcoal-950 group">
+                  <div className="relative rounded-2xl overflow-hidden border border-border bg-surface-elevated group">
                     <img
                       src={planImagePreview}
                       alt="Plan preview"
@@ -2463,7 +2499,7 @@ export const App: React.FC = () => {
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
                       <label
                         htmlFor="plan-image-file-input"
-                        className="px-3 py-1.5 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow"
+                        className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs cursor-pointer flex items-center gap-1.5 shadow min-h-[44px]"
                       >
                         <Upload className="w-3.5 h-3.5" /> Choose Different Image
                       </label>
@@ -2472,32 +2508,32 @@ export const App: React.FC = () => {
                 ) : (
                   <label
                     htmlFor="plan-image-file-input"
-                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-charcoal-700 hover:border-[#B4F82C]/60 rounded-xl cursor-pointer bg-charcoal-900/60 hover:bg-charcoal-900 transition text-center"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border hover:border-primary/60 rounded-2xl cursor-pointer bg-surface-elevated/40 hover:bg-surface-elevated transition text-center min-h-[120px]"
                   >
-                    <Upload className="w-6 h-6 text-[#B4F82C] mb-2" />
-                    <span className="text-xs font-semibold text-white">Click to select photo from device</span>
-                    <span className="text-[10px] text-gray-400 mt-1">PNG, JPG, or WEBP up to 5MB</span>
+                    <Upload className="w-6 h-6 text-primary mb-2" />
+                    <span className="text-xs font-bold text-text">Click to select photo from device</span>
+                    <span className="text-[10px] text-text-muted mt-1">PNG, JPG, or WEBP up to 5MB</span>
                   </label>
                 )}
                 {planImageName && (
-                  <p className="text-[11px] text-[#B4F82C] mt-1.5 truncate">
+                  <p className="text-[11px] font-mono text-primary mt-1.5 truncate">
                     Selected file: {planImageName}
                   </p>
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-charcoal-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                   type="button"
                   onClick={() => { setIsPlanModalOpen(false); setPlanModalError(null); }}
-                  className="px-4 py-2 rounded-lg bg-charcoal-800 hover:bg-charcoal-700 text-gray-300 text-xs font-semibold transition"
+                  className="px-5 py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-text text-xs font-bold transition min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingPlan}
-                  className="px-5 py-2 rounded-lg bg-[#B4F82C] hover:bg-[#A3E524] text-slate-950 font-bold text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-[#B4F82C]/20 transition disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary/20 transition disabled:opacity-50 min-h-[44px]"
                 >
                   {isSavingPlan ? (
                     'Saving...'
