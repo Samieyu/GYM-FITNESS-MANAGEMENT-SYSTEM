@@ -179,3 +179,14 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+.digital-member-access-desc {
+  color: #0F172A !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+[data-theme="dark"] .digital-member-access-desc,
+.dark .digital-member-access-desc {
+  color: #F1F5F9 !important;
+}
+

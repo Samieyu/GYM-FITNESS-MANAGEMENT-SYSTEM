@@ -269,6 +269,11 @@ export class AuthService {
     return safeUser;
   }
 
+  async updateProfilePhoto(userId: string, photoUrl: string | null): Promise<Omit<UserRow, 'password_hash'>> {
+    await authRepository.updateUserPhoto(userId, photoUrl);
+    return this.getCurrentUser(userId);
+  }
+
   async getStaffList(): Promise<Array<Omit<UserRow, 'password_hash'>>> {
     const users = await authRepository.findStaffUsers();
     return users.map(({ password_hash, ...safe }) => safe);

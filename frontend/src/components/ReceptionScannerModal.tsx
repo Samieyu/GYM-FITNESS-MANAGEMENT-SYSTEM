@@ -441,7 +441,7 @@ export const ReceptionScannerModal: React.FC<ReceptionScannerModalProps> = ({
             <button
               type="button"
               disabled={isLoadingLogs}
-              onClick={loadRecentLogs}
+              onClick={() => loadRecentLogs(false)}
               className="text-[11px] text-primary hover:underline flex items-center gap-1 font-semibold"
             >
               <RefreshCw className={`w-3 h-3 ${isLoadingLogs ? 'animate-spin' : ''}`} /> Refresh Feed

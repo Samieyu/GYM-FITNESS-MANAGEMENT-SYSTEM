@@ -25,7 +25,7 @@ export const registerMemberSchema = z.object({
     .refine((val) => ETHIOPIAN_PHONE_REGEX.test(val), {
       message: 'Must be a valid Ethiopian phone number (+251 9..., +251 7..., 09..., or 07...)',
     }),
-  photoUrl: z.string().url('Photo URL must be a valid URL').optional().or(z.literal('')),
+  photoUrl: z.string().optional().or(z.literal('')),
   fitnessGoals: z.string().optional(),
   emergencyContact: z.string().optional(),
 });

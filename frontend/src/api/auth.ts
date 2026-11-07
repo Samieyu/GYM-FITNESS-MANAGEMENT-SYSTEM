@@ -141,6 +141,27 @@ export const logoutApi = async () => {
   clearStoredAuth();
 };
 
+export const updateProfilePhotoApi = async (photoUrl: string | null): Promise<User> => {
+  const token = getStoredAccessToken();
+  const res = await fetch(`${API_BASE}/profile-photo`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ photoUrl }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to update profile photo');
+  const user: User = json.data;
+  const stored = getStoredUser();
+  if (stored) {
+    const updated = { ...stored, photoUrl: user.photoUrl };
+    localStorage.setItem(USER_KEY, JSON.stringify(updated));
+  }
+  return user;
+};
+
 export interface StaffMember {
   id: string;
   email: string;

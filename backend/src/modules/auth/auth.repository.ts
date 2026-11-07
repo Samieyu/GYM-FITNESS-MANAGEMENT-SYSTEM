@@ -230,6 +230,17 @@ export class AuthRepository {
       ]
     );
   }
+
+  async updateUserPhoto(userId: string, photoUrl: string | null): Promise<void> {
+    await query(
+      `
+      UPDATE users
+      SET photo_url = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2;
+    `,
+      [photoUrl, userId]
+    );
+  }
 }
 
 export const authRepository = new AuthRepository();

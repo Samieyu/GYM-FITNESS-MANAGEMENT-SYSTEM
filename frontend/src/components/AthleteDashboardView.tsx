@@ -17,8 +17,9 @@ import {
   Calendar,
   Copy,
   Check,
+  Camera,
 } from 'lucide-react';
-import { User } from '../api/auth';
+import { User, updateProfilePhotoApi } from '../api/auth';
 import { Membership, Payment } from '../api/payments';
 import { FitnessClass, ClassBooking } from '../api/classes';
 import { Plan } from '../api/plans';
@@ -68,6 +69,32 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
   const [selectedTimeRange, setSelectedTimeRange] = useState<'Weekly' | 'Monthly'>('Weekly');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedUuid, setCopiedUuid] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(currentUser.photoUrl || null);
+
+  useEffect(() => {
+    setAvatarUrl(currentUser.photoUrl || null);
+  }, [currentUser.photoUrl]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Photo must be less than 5MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      setAvatarUrl(base64);
+      try {
+        await updateProfilePhotoApi(base64);
+        currentUser.photoUrl = base64;
+      } catch (err) {
+        console.error('Failed to update profile photo:', err);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Determine greeting based on local time
   const currentHour = new Date().getHours();
@@ -90,6 +117,7 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
   const [progressSummary, setProgressSummary] = useState<ProgressSummary | null>(null);
 
   const loadRealData = async (silent = false) => {
+    void silent;
     try {
       const [history, prog] = await Promise.all([
         fetchMyCheckinHistoryApi(100).catch(() => []),
@@ -642,8 +670,34 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
           {/* ATHLETE PROFILE MINI-CARD */}
           <div className="bg-surface rounded-3xl p-6 shadow-soft border border-border transition-colors">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-primary/30 to-primary text-primary-foreground font-black text-2xl flex items-center justify-center border-2 border-primary/40 shadow-sm shrink-0">
-                {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
+              <div className="relative group shrink-0">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-primary shadow-sm"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-primary/30 to-primary text-primary-foreground font-black text-2xl flex items-center justify-center border-2 border-primary/40 shadow-sm">
+                    {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
+                  </div>
+                )}
+                {/* 1-Click Update Photo Hover Overlay */}
+                <label
+                  htmlFor="member-avatar-upload"
+                  className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white shadow-inner"
+                  title="Upload or change profile photo"
+                >
+                  <Camera className="w-5 h-5 text-primary" />
+                  <span className="text-[9px] font-bold mt-0.5 uppercase tracking-tighter">Edit</span>
+                  <input
+                    id="member-avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
+                </label>
               </div>
               <div className="min-w-0">
                 <h2 className="text-lg font-bold text-text leading-tight truncate">

@@ -90,6 +90,27 @@ router.get('/me', authGuard, async (req: Request, res: Response, next: NextFunct
   }
 });
 
+router.put('/profile-photo', authGuard, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { photoUrl } = req.body;
+    const updated = await authService.updateProfilePhoto(req.user!.userId, photoUrl || null);
+    res.status(200).json({
+      success: true,
+      message: 'Profile photo updated successfully',
+      data: {
+        id: updated.id,
+        email: updated.email,
+        role: updated.role,
+        firstName: updated.first_name,
+        lastName: updated.last_name,
+        photoUrl: updated.photo_url,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // RBAC Test Verification Endpoint
 router.get('/admin-check', authGuard, roleGuard('admin'), (_req: Request, res: Response) => {
   res.status(200).json({

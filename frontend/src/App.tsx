@@ -81,7 +81,6 @@ import { PublicHeader, MemberBottomBar, StaffNavigation } from './components/nav
 import { ThemeToggle } from './components/ui/ThemeToggle';
 import {
   PublicHomePage,
-  PublicPlansCatalog,
   PublicClassesSchedule,
   AuthModal,
   ChapaCheckoutModal,
@@ -136,6 +135,7 @@ export const App: React.FC = () => {
   const [regBranch, setRegBranch] = useState('Bole Branch');
   const [regPhotoUrl, setRegPhotoUrl] = useState<string | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(undefined);
+  const [registerStep, setRegisterStep] = useState<1 | 2 | 3>(1);
   // const [registeredEmail, setRegisteredEmail] = useState('');
 
   // Membership Plans state
@@ -792,6 +792,7 @@ export const App: React.FC = () => {
         password: regPassword,
         phone: cleanPhone,
         fitnessGoals: branchGoal,
+        photoUrl: regPhotoUrl || undefined,
       });
 
       // Immediately log in new user without any email verification screen
@@ -809,6 +810,7 @@ export const App: React.FC = () => {
         setRegEmail('');
         setRegPassword('');
         setRegPhone('');
+        setRegPhotoUrl(null);
         await loadMemberMembershipAndPayments();
 
         // Seamlessly open checkout for selected tier without breaking payment logic
@@ -833,6 +835,7 @@ export const App: React.FC = () => {
           setRegEmail('');
           setRegPassword('');
           setRegPhone('');
+          setRegPhotoUrl(null);
           await loadMemberMembershipAndPayments();
 
           // Seamlessly open checkout for selected tier without breaking payment logic
@@ -1009,11 +1012,24 @@ export const App: React.FC = () => {
                 </button>
               )}
 
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-semibold text-content-primary">{currentUser.firstName} {currentUser.lastName}</p>
-                <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] border border-[#FF6B00]/30">
-                  {currentUser.role}
-                </span>
+              <div className="flex items-center gap-2.5 hidden sm:flex">
+                {currentUser.photoUrl ? (
+                  <img
+                    src={currentUser.photoUrl}
+                    alt={`${currentUser.firstName} ${currentUser.lastName}`}
+                    className="w-9 h-9 rounded-full object-cover border border-[#FF6B00] shadow-sm shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] border border-[#FF6B00]/30 font-bold text-xs flex items-center justify-center shrink-0">
+                    {currentUser.firstName.charAt(0)}{currentUser.lastName.charAt(0)}
+                  </div>
+                )}
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-content-primary">{currentUser.firstName} {currentUser.lastName}</p>
+                  <span className="inline-block text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] border border-[#FF6B00]/30">
+                    {currentUser.role}
+                  </span>
+                </div>
               </div>
               <button
                 type="button"
@@ -2447,6 +2463,8 @@ export const App: React.FC = () => {
           plans={plans}
           selectedPlanId={selectedPlanId}
           onSelectPlanId={(id) => setSelectedPlanId(id)}
+          registerStep={registerStep}
+          setRegisterStep={setRegisterStep}
         />
       )}
 

@@ -83,6 +83,8 @@ interface AuthModalProps {
   plans?: Plan[];
   selectedPlanId?: string;
   onSelectPlanId?: (id: string) => void;
+  registerStep?: 1 | 2 | 3;
+  setRegisterStep?: (step: 1 | 2 | 3) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -129,6 +131,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   plans = [],
   selectedPlanId,
   onSelectPlanId,
+  registerStep: controlledRegisterStep,
+  setRegisterStep: controlledSetRegisterStep,
 }) => {
   // Password visibility states
   const [showLoginPassword, setShowLoginPassword] = useState(false);
@@ -137,7 +141,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Sign-Up Stepwise Wizard state (Step 1 -> Step 2 -> Step 3)
-  const [registerStep, setRegisterStep] = useState<1 | 2 | 3>(1);
+  const [internalRegisterStep, setInternalRegisterStep] = useState<1 | 2 | 3>(1);
+  const registerStep = controlledRegisterStep ?? internalRegisterStep;
+  const setRegisterStep = (step: 1 | 2 | 3) => {
+    if (controlledSetRegisterStep) {
+      controlledSetRegisterStep(step);
+    } else {
+      setInternalRegisterStep(step);
+    }
+  };
   const [stepError, setStepError] = useState<string | null>(null);
   const [selectedBranchLocal, setSelectedBranchLocal] = useState<string>(regBranch || 'Bole Branch');
 
