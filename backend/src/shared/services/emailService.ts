@@ -4,7 +4,7 @@ import { config } from '../../config';
 const transporter = nodemailer.createTransport({
   host: config.smtp.host,
   port: config.smtp.port,
-  secure: false, // Mailpit uses unencrypted SMTP port 1025
+  secure: config.smtp.port === 465, // true for 465 (SSL), false for 587 (STARTTLS) or 1025 (Mailpit)
   auth: config.smtp.user
     ? {
         user: config.smtp.user,
