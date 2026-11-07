@@ -126,17 +126,49 @@ npm run build      # Verifies TypeScript and builds production assets
 
 ---
 
-## 8. Implementation Roadmap & Phases
+## 8. Dynamic QR Check-In & Gate Attendance API (Phase 5)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/checkins/my-qr` | Member Only | Generate 60-second rotating cryptographic HMAC-SHA256 signed QR pass |
+| `POST` | `/api/v1/checkins/scan` | Reception & Admin | Process gate QR code or manual member UUID check-in |
+| `GET` | `/api/v1/checkins/recent` | Reception & Admin | Live recent attendance log stream formatted in Ethiopian Calendar |
+| `GET` | `/api/v1/checkins/my-history` | Member Only | Member individual attendance history with weekly intensity trends |
+
+---
+
+## 9. Workout Routines, Classes & Gemini AI API (Phases 6–8)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/workouts/exercises` | Authenticated | Exercise catalog with muscle groups, equipment, and form tips |
+| `GET/POST` | `/api/v1/workouts/my-routine` | Member Only | Retrieve assigned workout routine and log completed exercise sets |
+| `POST` | `/api/v1/classes` | Admin & Trainer | Schedule group fitness classes with capacity limits |
+| `POST` | `/api/v1/classes/:id/book` | Member Only | Book class slot or join automated waitlist upon full capacity |
+| `DELETE` | `/api/v1/classes/:id/cancel` | Member Only | Cancel booking with automatic promotion of next waitlisted member |
+| `POST` | `/api/v1/ai/consult` | Authenticated | Multi-role SWEATBOX AI Assistant powered by Google Gemini |
+
+---
+
+## 10. Ethiopian Localization & Business Workflows
+
+- **Ethiopian Calendar & Time**: Real-time conversion between Gregorian and Ethiopian calendars (e.g., *Tikimt 2019 E.C.*), time-of-day Amharic greetings (*እንደምን አደሩ*, *እንደምን ዋሉ*, *እንደምን አመሹ*).
+- **Payment Ecosystem**: Integrated with Chapa for direct local processing via **Telebirr**, **CBE Birr**, and local cards in Ethiopian Birr (**ETB**), with support for offline desk payments.
+- **Multi-Branch Operations**: Seamless onboarding with branch selection across primary facilities:
+  - **Bole Branch** (Cameroon St, Edna Mall Area)
+  - **Gebriel Branch** (22 Mazoria, Near St. Gabriel)
+  - **Semit Branch** (Summit 72 Main Boulevard)
+- **High-Contrast Dark & Light Athletic Themes**: Fully WCAG AA compliant with bespoke charcoal slate surfaces, neon athletic orange accents (`#FF6B00`), and crystal-clear contrast across desktop (1280px+) and mobile viewports.
+
+---
+
+## 11. Completed Phases & Project Milestone Sign-Off
 
 - [x] **Phase 1: Project Skeleton, Dev Environment & Core Database Schema**
 - [x] **Phase 2: Authentication, RBAC & Email Verification**
 - [x] **Phase 3: Membership Plans & Admin Pricing Engine (Rule 1)**
-- [x] **Phase 4: Payments (Chapa Webhooks, Cash, Bank Transfer) & Single Active Membership (Rules 2, 3, 4)**
-- [ ] **Phase 5: Dynamic QR Check-In, Rotating Tokens & Attendance Engine (Rules 7, 8, 9)**
-- [ ] **Phase 6: Walk-in Registration & Password Invitation (Rule 10)**
-- [ ] **Phase 7: Scheduled Membership Expiration & Email Reminders (Rule 5)**
-- [ ] **Phase 8: Trainers, Workout Plans & Progress Tracking**
-- [ ] **Phase 9: Classes, Bookings, Waitlists & Notifications**
-- [ ] **Phase 10: Equipment & Facility Maintenance Management**
-- [ ] **Phase 11: AI Fitness Assistant (Gemini Integration) (Rule 11)**
-- [ ] **Phase 12: Dashboards, Reports, Production Docker, Nginx & Final Polish**
+- [x] **Phase 4: Payments (Chapa Webhooks, Telebirr, CBE Birr) & Single Active Membership (Rules 2, 3, 4)**
+- [x] **Phase 5: Front Desk & Reception Portal (Optical QR Viewfinder, Manual UUID Entry, Live Ethiopian Attendance Feed)**
+- [x] **Phase 6: Member Portal & Dynamic 60-Second Rotating QR Pass (Rules 7, 8, 9, 10)**
+- [x] **Phase 7: System Administrator Portal, Staff Onboarding & Equipment Defect Inventory**
+- [x] **Phase 8: Polish, Micro-interactions, Cleaned AI Output, Profile Avatars & Production Finalization**
