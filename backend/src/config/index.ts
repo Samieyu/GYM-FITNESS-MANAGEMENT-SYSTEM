@@ -12,12 +12,13 @@ export const config = {
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
 
   db: {
+    connectionString: process.env.DATABASE_URL,
     host: process.env.DB_HOST || '127.0.0.1',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     user: process.env.DB_USER || 'gym_user',
     password: process.env.DB_PASSWORD || 'gym_password',
     database: process.env.DB_NAME || 'gym_db',
-    ssl: process.env.DB_SSL === 'true',
+    ssl: process.env.DB_SSL === 'true' || !!process.env.DATABASE_URL,
   },
 
   jwt: {

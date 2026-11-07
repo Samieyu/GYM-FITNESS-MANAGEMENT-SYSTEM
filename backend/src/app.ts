@@ -27,9 +27,21 @@ app.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
+const allowedOrigins = config.corsOrigin.split(',').map((o) => o.trim());
+
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes('*') ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.pages.dev')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive in production to avoid blocking Cloudflare Pages
+    },
     credentials: true,
   })
 );
