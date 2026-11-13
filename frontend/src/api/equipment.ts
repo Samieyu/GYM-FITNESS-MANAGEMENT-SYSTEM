@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT } from './client';
 
 export interface Equipment {
   id: string;
@@ -87,7 +88,7 @@ export interface CreateMaintenanceLogPayload {
   resolve_report_id?: string | null;
 }
 
-const API_BASE = '/api/v1/equipment';
+const API_BASE = `${API_ROOT}/equipment`;
 
 function getAuthHeaders() {
   const token = getStoredAccessToken();

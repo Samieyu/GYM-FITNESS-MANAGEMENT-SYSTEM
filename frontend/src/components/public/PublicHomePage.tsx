@@ -28,7 +28,7 @@ import { formatEthiopianDateTime } from '../../utils/ethiopianCalendar';
 const DEFAULT_PLAN_IMAGE = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80';
 const HERO_BG_IMAGE = 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1600&auto=format&fit=crop&q=80';
 
-// Certified SWEATBOX Trainers showcase with authentic Ethiopian coaches
+// Certified POWERZONE Trainers showcase with authentic Ethiopian coaches
 const TRAINERS = [
   {
     id: 'trn-1',
@@ -70,7 +70,7 @@ const FAQS = [
     a: 'We accept authentic Ethiopian digital payment gateways via Chapa: Telebirr (instant STK push prompt), CBE Birr, and Visa/Mastercard bank cards. Front desk reception also accepts cash payments with immediate digital activation.',
   },
   {
-    q: 'Does SWEATBOX support Ethiopian Calendar (E.C.) dates?',
+    q: 'Does POWERZONE support Ethiopian Calendar (E.C.) dates?',
     a: 'Yes! Every timestamp, membership expiry notification, class schedule, and billing receipt is automatically formatted in the certified Ethiopian Calendar alongside standard Gregorian dates for full local convenience.',
   },
   {
@@ -78,7 +78,7 @@ const FAQS = [
     a: 'Members with active plans can reserve spots in HIIT, Olympic Lifting, Boxing, and Mobility classes directly from their dashboard. If a class reaches maximum capacity, an automated waitlist will notify you the moment a spot opens.',
   },
   {
-    q: 'What is SWEATBOX AI Coaching and how does it help my training?',
+    q: 'What is POWERZONE AI Coaching and how does it help my training?',
     a: 'Our integrated Gemini AI Fitness Coach analyzes your personal goals, calculates target progressive overload, reviews workout splits, and suggests high-protein Ethiopian meal plans (shuro, lentils, teff, lean beef) tailored to your daily schedule.',
   },
 ];
@@ -132,7 +132,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
         <div className="absolute inset-0 z-0">
           <img
             src={HERO_BG_IMAGE}
-            alt="SWEATBOX Athletic Training Floor"
+            alt="POWERZONE Athletic Training Floor"
             loading="lazy"
             className="w-full h-full object-cover object-center opacity-15 dark:opacity-25 filter grayscale contrast-125 scale-105"
           />
@@ -147,7 +147,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
           </div>
 
           {/* Value proposition headline with typewriter animation */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-text uppercase tracking-tight leading-[1.05] max-w-5xl min-h-[1.1em]">
+          <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-black text-text uppercase tracking-tight leading-[1.08] max-w-5xl min-h-[1.1em] break-words">
             {displayedHeadline.length <= 17 ? (
               <span>{displayedHeadline}</span>
             ) : (
@@ -174,7 +174,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
               onClick={onJoinNow}
               className="w-full sm:w-auto min-w-[220px] justify-center text-base font-black uppercase tracking-wide shadow-xl shadow-primary/25"
             >
-              <span>Join SWEATBOX</span>
+              <span>Join POWERZONE</span>
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
 
@@ -217,7 +217,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
             Streamlined Onboarding
           </Badge>
           <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text">
-            How SWEATBOX Works
+            How POWERZONE Works
           </h2>
           <p className="text-text-muted text-sm sm:text-base mt-3">
             Zero paperwork, no physical plastic card delays. From registration to lifting in under 2 minutes.
@@ -468,7 +468,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
                       </p>
                       <p>
                         Instructor:{' '}
-                        <span className="text-text font-bold">{cls.trainer_name || 'SWEATBOX Coach'}</span>
+                        <span className="text-text font-bold">{cls.trainer_name || 'POWERZONE Coach'}</span>
                         {cls.trainer_specialization && (
                           <span className="text-text-muted"> ({cls.trainer_specialization})</span>
                         )}
@@ -520,7 +520,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
             Elite Coaching Staff
           </Badge>
           <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-text">
-            Meet the SWEATBOX Trainers
+            Meet the POWERZONE Trainers
           </h2>
           <p className="text-text-muted text-sm sm:text-base mt-3">
             Certified coaches dedicated to safe biomechanics, athletic hypertrophy, and personalized accountability in Addis Ababa.
@@ -590,7 +590,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
                 className="digital-member-access-desc text-sm sm:text-base font-bold leading-relaxed text-slate-950 dark:text-slate-100"
                 style={{ color: 'var(--text-primary, #0F172A)' }}
               >
-                Experience SWEATBOX on any mobile browser or smartphone. Instant 60-second dynamic QR check-ins, workout routine tracking with set logging, class reservation reminders, and direct Telebirr membership renewal.
+                Experience POWERZONE on any mobile browser or smartphone. Instant 60-second dynamic QR check-ins, workout routine tracking with set logging, class reservation reminders, and direct Telebirr membership renewal.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
@@ -634,7 +634,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
                     <span>ROTATING 60s TOTP</span>
                   </div>
 
-                  <h4 className="text-xs font-black text-text uppercase tracking-wider">SWEATBOX PASS</h4>
+                  <h4 className="text-xs font-black text-text uppercase tracking-wider">POWERZONE PASS</h4>
 
                   {/* QR code box */}
                   <div className="w-44 h-44 mx-auto p-3.5 rounded-2xl bg-white flex items-center justify-center shadow-lg border border-border">
@@ -666,7 +666,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
             Frequently Asked Questions
           </h2>
           <p className="text-text-muted text-sm sm:text-base mt-3">
-            Everything you need to know about SWEATBOX memberships, payments, and facilities.
+            Everything you need to know about POWERZONE memberships, payments, and facilities.
           </p>
         </div>
 
@@ -710,13 +710,13 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
               <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-slate-950 font-black shadow-md shadow-primary/20">
                 <Dumbbell className="w-4 h-4" />
               </div>
-              <span className="text-xl font-black text-text tracking-wider uppercase">SWEATBOX</span>
+              <span className="text-xl font-black text-text tracking-wider uppercase">POWERZONE</span>
             </div>
             <p className="text-xs text-text-muted leading-relaxed">
               Addis Ababa's high-performance athletic club. Precision fitness engineering, dynamic QR authentication, and AI-powered transformation.
             </p>
             <div className="text-xs text-text-muted pt-1">
-              © {new Date().getFullYear()} SWEATBOX Club. All rights reserved.
+              © {new Date().getFullYear()} POWERZONE Club. All rights reserved.
             </div>
           </div>
 
@@ -765,7 +765,7 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-text font-medium">contact@sweatbox.et</span>
+                <span className="text-text font-medium">contact@powerzone.et</span>
               </li>
             </ul>
           </div>

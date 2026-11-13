@@ -92,7 +92,7 @@ export class AuthService {
     await authRepository.saveRefreshToken(user.id, refreshHash, refExpiresAt);
 
     return {
-      message: 'Registration successful. Welcome to SWEATBOX Fitness!',
+      message: 'Registration successful. Welcome to POWERZONE Fitness!',
       userId: user.id,
       accessToken,
       refreshToken,
@@ -233,14 +233,22 @@ export class AuthService {
 
   async requestPasswordReset(email: string): Promise<{ message: string }> {
     const user = await authRepository.findUserByEmail(email);
-    if (user && user.is_active) {
-      const resetToken = generateRandomToken(32);
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1);
-
-      await authRepository.savePasswordResetToken(user.id, resetToken, expiresAt);
-      await sendPasswordResetEmail(user.email, user.first_name, resetToken);
+    if (!user) {
+      console.warn(`[Auth] Password reset requested for unknown email: ${email}`);
+      return { message: 'If an account exists with this email, a password reset link has been sent.' };
     }
+    if (!user.is_active) {
+      console.warn(`[Auth] Password reset skipped for inactive account: ${email}`);
+      return { message: 'If an account exists with this email, a password reset link has been sent.' };
+    }
+
+    const resetToken = generateRandomToken(32);
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    await authRepository.savePasswordResetToken(user.id, resetToken, expiresAt);
+    console.log(`[Auth] Generating password reset token for ${user.email}`);
+    await sendPasswordResetEmail(user.email, user.first_name, resetToken);
 
     return { message: 'If an account exists with this email, a password reset link has been sent.' };
   }

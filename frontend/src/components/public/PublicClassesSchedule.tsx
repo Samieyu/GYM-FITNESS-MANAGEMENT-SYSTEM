@@ -73,7 +73,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
           CLASS <span className="text-primary">SCHEDULE</span>
         </h1>
         <p className="text-sm sm:text-base text-text-muted">
-          Dynamic group classes guided by certified SWEATBOX trainers. All sessions feature live capacity tracking and Ethiopian Calendar timestamps.
+          Dynamic group classes guided by certified POWERZONE trainers. All sessions feature live capacity tracking and Ethiopian Calendar timestamps.
         </p>
       </div>
 
@@ -165,7 +165,7 @@ export const PublicClassesSchedule: React.FC<PublicClassesScheduleProps> = ({
                     <p className="flex items-center gap-2">
                       <User className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span>
-                        Coach: <strong className="text-text">{cls.trainer_name || 'SWEATBOX Coach'}</strong>
+                        Coach: <strong className="text-text">{cls.trainer_name || 'POWERZONE Coach'}</strong>
                         {cls.trainer_specialization && (
                           <span className="text-text-muted"> ({cls.trainer_specialization})</span>
                         )}

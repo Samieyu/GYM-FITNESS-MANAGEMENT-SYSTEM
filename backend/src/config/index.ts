@@ -10,6 +10,15 @@ export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
   apiPrefix: process.env.API_PREFIX || '/api/v1',
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  frontendUrl:
+    process.env.FRONTEND_URL ||
+    (process.env.CORS_ORIGIN && process.env.CORS_ORIGIN !== '*'
+      ? process.env.CORS_ORIGIN.split(',')
+          .map((o) => o.trim())
+          .find((o) => o.startsWith('http')) || 'https://sweatbox.pages.dev'
+      : process.env.NODE_ENV === 'production'
+      ? 'https://sweatbox.pages.dev'
+      : 'http://localhost:5173'),
 
   db: {
     connectionString: process.env.DATABASE_URL,
@@ -39,6 +48,18 @@ export const config = {
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
     from: process.env.SMTP_FROM || 'Gym System <no-reply@gymfitness.local>',
+  },
+
+  resend: {
+    apiKey: process.env.RESEND_API_KEY || '',
+    // Never fall back to SMTP_FROM here because Resend rejects unverified domains like @gmail.com or .local
+    from: process.env.RESEND_FROM || 'POWERZONE Fitness <onboarding@resend.dev>',
+  },
+
+  brevo: {
+    apiKey: process.env.BREVO_API_KEY || '',
+    fromEmail: process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || '',
+    fromName: process.env.BREVO_FROM_NAME || 'POWERZONE Fitness',
   },
 
   chapa: {

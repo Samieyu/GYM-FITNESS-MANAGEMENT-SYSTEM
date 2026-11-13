@@ -286,7 +286,7 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
             {/* Digital Entrance Pass Instructions */}
             <div className="p-3.5 rounded-2xl bg-background border border-border text-xs text-text-muted space-y-1 leading-relaxed">
               <div className="flex items-center gap-1.5 text-primary font-semibold text-[11px]">
-                <ShieldCheck className="w-3.5 h-3.5" /> SWEATBOX Digital Entrance Pass
+                <ShieldCheck className="w-3.5 h-3.5" /> POWERZONE Digital Entrance Pass
               </div>
               <p className="text-[11px] text-text-muted">
                 Hold your device up to the front desk optical scanner upon arrival. This dynamic QR pass automatically updates every 60 seconds for secure facility entry.

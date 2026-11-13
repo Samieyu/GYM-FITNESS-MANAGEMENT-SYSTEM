@@ -39,6 +39,7 @@ import {
   resetPasswordApi,
   logoutApi 
 } from './api/auth';
+import { BACKEND_URL, API_ROOT, safeJson } from './api/client';
 import { 
   Plan, 
   fetchPublicPlansApi, 
@@ -221,7 +222,7 @@ export const App: React.FC = () => {
     const user = getStoredUser();
     if (user) setCurrentUser(user);
 
-    fetch('/health')
+    fetch(`${BACKEND_URL}/health`)
       .then((res) => {
         if (res.ok) setBackendStatus('connected');
         else setBackendStatus('disconnected');
@@ -556,7 +557,7 @@ export const App: React.FC = () => {
       // Brief pause to simulate provider handshake
       await new Promise((r) => setTimeout(r, 600));
 
-      const res = await fetch('/api/v1/payments/chapa/webhook', {
+      const res = await fetch(`${API_ROOT}/payments/chapa/webhook`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -572,7 +573,7 @@ export const App: React.FC = () => {
         }),
       });
 
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) {
         throw new Error(data.error?.message || data.message || 'Payment verification failed');
       }
@@ -821,13 +822,15 @@ export const App: React.FC = () => {
           }
         }
       } else {
-        const loginRes = await loginApi(cleanEmail, regPassword);
-        if (loginRes.data?.accessToken && loginRes.data?.user) {
-          setStoredAuth(
-            { accessToken: loginRes.data.accessToken, refreshToken: loginRes.data.refreshToken },
-            loginRes.data.user
-          );
-          setCurrentUser(loginRes.data.user);
+        const loginRes: any = await loginApi(cleanEmail, regPassword);
+        const authedUser = loginRes?.user || loginRes?.data?.user;
+        const authedTokens = {
+          accessToken: loginRes?.accessToken || loginRes?.data?.accessToken,
+          refreshToken: loginRes?.refreshToken || loginRes?.data?.refreshToken || '',
+        };
+        if (authedTokens.accessToken && authedUser) {
+          setStoredAuth(authedTokens, authedUser);
+          setCurrentUser(authedUser);
           setAuthModalMode(null);
           setActiveTab('home');
           setRegFirstName('');
@@ -865,7 +868,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-text flex flex-col justify-between transition-colors duration-200">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-background text-text flex flex-col justify-between transition-colors duration-200">
       {/* Sleek Vertical Navigation Rail (from Design Screenshot) */}
       {currentUser && (
         <>
@@ -949,7 +952,7 @@ export const App: React.FC = () => {
           }}
         />
       ) : (
-        <header className="border-b border-border bg-surface/95 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between lg:pl-28 transition-all">
+        <header className="border-b border-border bg-surface/95 backdrop-blur-md fixed top-0 left-0 right-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between lg:pl-28 transition-all">
           <div 
             className="flex items-center gap-3 cursor-pointer select-none"
             onClick={() => setActiveTab(currentUser.role === 'member' && !(myMembership && myMembership.status === 'active') ? 'plans' : 'home')}
@@ -958,8 +961,8 @@ export const App: React.FC = () => {
               <Dumbbell className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-lg tracking-tight text-content-primary flex items-center gap-1.5 leading-none">
-                SWEATBOX <span className="text-[#FF6B00]">FITNESS</span>
+              <h1 className="font-display font-bold text-lg tracking-tight flex items-center gap-1.5 leading-none">
+                <span className="text-slate-900 dark:text-white" style={{ color: 'var(--text-primary)' }}>POWERZONE</span> <span className="text-[#FF6B00]">FITNESS</span>
               </h1>
               <p className="text-[10px] uppercase font-bold tracking-wider text-content-secondary mt-0.5">
                 {currentUser.role.toUpperCase()} PORTAL
@@ -986,7 +989,7 @@ export const App: React.FC = () => {
                       ? 'Management AI Consultant'
                       : currentUser.role === 'trainer'
                       ? 'Trainer Coaching Co-Pilot'
-                      : 'SWEATBOX AI Fitness Coach'
+                      : 'POWERZONE AI Fitness Coach'
                   }
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
@@ -1092,7 +1095,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Container */}
-      <main className={currentUser ? "mx-auto px-4 sm:px-6 py-8 pb-24 lg:pb-12 flex-1 w-full flex flex-col justify-center max-w-7xl lg:pl-24" : "w-full flex-1 flex flex-col p-0 m-0"}>
+      <main className={currentUser ? "mx-auto px-3 sm:px-6 py-8 pt-20 pb-24 lg:pb-12 flex-1 w-full max-w-7xl flex flex-col justify-center overflow-x-hidden lg:pl-24" : "w-full max-w-full flex-1 flex flex-col p-0 m-0 overflow-x-hidden pt-16"}>
 
 
         {/* VIEW A: AUTHENTICATED ROLE DASHBOARD */}
@@ -2132,7 +2135,7 @@ export const App: React.FC = () => {
                                 <MapPin className="w-3.5 h-3.5 text-primary" /> {cls.location}
                               </p>
                               <p>
-                                Instructor: <span className="text-text font-bold">{cls.trainer_name || 'SWEATBOX Coach'}</span>
+                                Instructor: <span className="text-text font-bold">{cls.trainer_name || 'POWERZONE Coach'}</span>
                                 {cls.trainer_specialization && (
                                   <span className="text-text-muted"> ({cls.trainer_specialization})</span>
                                 )}
@@ -2693,7 +2696,7 @@ export const App: React.FC = () => {
             setPaymentSuccessDetails(null);
             setAuthModalMode(null);
             setActiveTab('home');
-            setSuccessMessage('Payment confirmed! Welcome to SWEATBOX with full member access.');
+            setSuccessMessage('Payment confirmed! Welcome to POWERZONE with full member access.');
             await loadMemberMembershipAndPayments();
           }}
           onRetreatToBranchPlans={() => {
@@ -2985,7 +2988,7 @@ export const App: React.FC = () => {
         />
       )}
 
-            {/* SWEATBOX AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
+            {/* POWERZONE AI ASSISTANT MODAL (Workout Coach, Biomechanics, Progress) */}
 
       {currentUser && (
 
@@ -3005,7 +3008,7 @@ export const App: React.FC = () => {
 
 
 
-      {/* SWEATBOX ANALYTICS & CSV REPORTING MODAL */}
+      {/* POWERZONE ANALYTICS & CSV REPORTING MODAL */}
 
       <AnalyticsModal
 
@@ -3032,7 +3035,7 @@ export const App: React.FC = () => {
               <LogOut className="w-6 h-6" />
             </div>
             <h3 id="logout-dialog-title" className="text-lg font-black text-text tracking-tight">
-              Sign Out of SWEATBOX?
+              Sign Out of POWERZONE?
             </h3>
             <p className="text-xs text-text-muted mt-2 leading-relaxed">
               Are you sure you want to end your current session? You will need to sign in again to access your passes, workouts, and portal features.
@@ -3062,7 +3065,7 @@ export const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-border-subtle py-6 px-6 text-center text-xs text-content-secondary flex flex-wrap items-center justify-center gap-4">
-        <span>&copy; {new Date().getFullYear()} SWEATBOX Fitness Systems. All rights reserved.</span>
+        <span>&copy; {new Date().getFullYear()} POWERZONE Fitness Systems. All rights reserved.</span>
       </footer>
     </div>
   );

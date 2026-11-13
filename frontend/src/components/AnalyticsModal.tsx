@@ -107,7 +107,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h2 id="analytics-modal-title" className="text-lg sm:text-xl font-black text-text tracking-tight">
-                  SWEATBOX Intelligence & Analytics
+                  POWERZONE Intelligence & Analytics
                 </h2>
                 <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25">
                   {todayEth} E.C.
@@ -646,7 +646,7 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({
 
         {/* Footer */}
         <div className="px-5 sm:px-7 py-3.5 border-t border-border bg-surface-elevated/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-          <span>SWEATBOX Fitness Intelligence Engine • Ethiopian Calendar (ዓ.ም)</span>
+          <span>POWERZONE Fitness Intelligence Engine • Ethiopian Calendar (ዓ.ም)</span>
           <button
             type="button"
             onClick={onClose}

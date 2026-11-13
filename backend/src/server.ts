@@ -2,6 +2,9 @@ import app from './app';
 import { config } from './config';
 import { pool } from './db/pool';
 import { CronService } from './modules/cron/cron.service';
+import { runMigrations } from './db/migrator';
+import { seedDatabase } from './db/seed';
+import { verifySmtpConnection } from './shared/services/emailService';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -16,6 +19,24 @@ const startServer = async () => {
       client.release();
       console.log(`[Database] PostgreSQL connected successfully at ${res.rows[0].now}`);
       connected = true;
+
+      // Automatically run schema migrations and fresh database seeding
+      try {
+        console.log('[Server] Checking and applying database schema migrations...');
+        await runMigrations();
+
+        const userCheck = await pool.query('SELECT COUNT(*) FROM users;');
+        if (parseInt(userCheck.rows[0].count, 10) === 0) {
+          console.log('[Server] Fresh database detected. Auto-seeding admin account, plans, and exercises...');
+          await seedDatabase();
+          console.log('[Server] Auto-seeding completed successfully.');
+        }
+
+        // Verify SMTP / Gmail email dispatch connection
+        await verifySmtpConnection().catch(() => {});
+      } catch (dbInitErr) {
+        console.error('[Server] Automatic database migration/seed warning:', dbInitErr);
+      }
     } catch (err: any) {
       retries--;
       console.warn(`[Database] Connection attempt failed: ${err.message}. Retries remaining: ${retries}`);

@@ -1,6 +1,7 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT } from './client';
 
-const API_BASE = '/api/v1/ai';
+const API_BASE = `${API_ROOT}/ai`;
 
 function getAuthHeaders() {
   const token = getStoredAccessToken();

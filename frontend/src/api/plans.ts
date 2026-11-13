@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface Plan {
   id: string;
@@ -12,7 +13,7 @@ export interface Plan {
   updatedAt?: string;
 }
 
-const API_BASE = '/api/v1/plans';
+const API_BASE = `${API_ROOT}/plans`;
 
 const getAuthHeaders = () => {
   const token = getStoredAccessToken();
@@ -24,7 +25,7 @@ const getAuthHeaders = () => {
 
 export const fetchPublicPlansApi = async (): Promise<Plan[]> => {
   const res = await fetch(API_BASE);
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to fetch membership plans');
   return json.data;
 };
@@ -33,7 +34,7 @@ export const fetchAllAdminPlansApi = async (): Promise<Plan[]> => {
   const res = await fetch(`${API_BASE}/admin/all`, {
     headers: getAuthHeaders(),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to fetch admin plans');
   return json.data;
 };
@@ -53,7 +54,7 @@ export const createPlanApi = async (data: {
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to create plan');
   return json.data;
 };
@@ -76,7 +77,7 @@ export const updatePlanApi = async (
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to update plan');
   return json.data;
 };
@@ -90,7 +91,7 @@ export const uploadPlanImageApi = async (
     headers: getAuthHeaders(),
     body: JSON.stringify({ imageBase64, imageName }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to upload plan image');
   return json.data;
 };

@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface QrPassData {
   token: string;
@@ -74,12 +75,12 @@ const getAuthHeaders = () => {
  * Fetch dynamic 60s rotating QR pass for current logged-in member
  */
 export const fetchMyQrPassApi = async (): Promise<QrPassData> => {
-  const res = await fetch('/api/v1/checkins/my-qr', {
+  const res = await fetch(`${API_ROOT}/checkins/my-qr`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch QR pass');
   }
@@ -95,13 +96,13 @@ export const scanCheckinApi = async (params: {
   checkinType?: 'reception_qr' | 'reception_manual' | 'self_qr';
   allowOverride?: boolean;
 }): Promise<ScanResultData> => {
-  const res = await fetch('/api/v1/checkins/scan', {
+  const res = await fetch(`${API_ROOT}/checkins/scan`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(params),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Scan check-in failed');
   }
@@ -113,12 +114,12 @@ export const scanCheckinApi = async (params: {
  * Get recent check-ins log for reception/admin
  */
 export const fetchRecentCheckinsApi = async (limit = 30): Promise<CheckinRecordItem[]> => {
-  const res = await fetch(`/api/v1/checkins/recent?limit=${limit}`, {
+  const res = await fetch(`${API_ROOT}/checkins/recent?limit=${limit}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch recent check-ins');
   }
@@ -130,12 +131,12 @@ export const fetchRecentCheckinsApi = async (limit = 30): Promise<CheckinRecordI
  * Get member's personal attendance history
  */
 export const fetchMyCheckinHistoryApi = async (limit = 30): Promise<CheckinRecordItem[]> => {
-  const res = await fetch(`/api/v1/checkins/my-history?limit=${limit}`, {
+  const res = await fetch(`${API_ROOT}/checkins/my-history?limit=${limit}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch check-in history');
   }

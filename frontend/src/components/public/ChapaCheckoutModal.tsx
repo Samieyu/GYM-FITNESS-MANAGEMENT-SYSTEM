@@ -122,7 +122,7 @@ export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
                       VERIFIED
                     </span>
                   </div>
-                  <p className="text-xs text-text-muted">SWEATBOX Fitness Club • Addis Ababa, Ethiopia</p>
+                  <p className="text-xs text-text-muted">POWERZONE Fitness Club • Addis Ababa, Ethiopia</p>
                 </div>
               </div>
             </div>
@@ -446,7 +446,7 @@ export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
             <div className="p-3.5 rounded-xl bg-charcoal-900 border border-border flex items-center gap-3 text-xs text-text-muted text-left">
               <Mail className="w-5 h-5 text-primary shrink-0" />
               <span>
-                A payment receipt has been dispatched to your email address. Mailpit is running at port 8025.
+                A payment receipt and confirmation have been dispatched to your email inbox.
               </span>
             </div>
 

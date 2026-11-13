@@ -295,8 +295,8 @@ export const AthleteDashboardView: React.FC<AthleteDashboardViewProps> = ({
             type="button"
             onClick={onOpenAiCoach}
             className="p-2.5 rounded-full bg-surface border border-border hover:border-primary/40 text-text transition hover:bg-background"
-            title="Consult SWEATBOX AI Coach"
-            aria-label="SWEATBOX AI Coach"
+            title="Consult POWERZONE AI Coach"
+            aria-label="POWERZONE AI Coach"
           >
             <Sparkles className="w-4 h-4 text-primary" />
           </button>

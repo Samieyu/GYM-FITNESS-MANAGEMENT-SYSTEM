@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface Membership {
   id: string;
@@ -49,13 +50,13 @@ export const initializeChapaApi = async (
   planId: string,
   returnUrl?: string
 ): Promise<{ checkoutUrl: string | null; txRef: string; amount: number; planName: string; isLiveGateway: boolean }> => {
-  const res = await fetch('/api/v1/payments/chapa/initialize', {
+  const res = await fetch(`${API_ROOT}/payments/chapa/initialize`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ planId, returnUrl }),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to initialize payment');
   }
@@ -67,12 +68,12 @@ export const initializeChapaApi = async (
  * Directly verify a transaction with Chapa API by reference
  */
 export const verifyChapaTransactionApi = async (txRef: string): Promise<any> => {
-  const res = await fetch(`/api/v1/payments/chapa/verify/${encodeURIComponent(txRef)}`, {
+  const res = await fetch(`${API_ROOT}/payments/chapa/verify/${encodeURIComponent(txRef)}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Payment verification failed');
   }
@@ -84,12 +85,12 @@ export const verifyChapaTransactionApi = async (txRef: string): Promise<any> => 
  * Fetch currently active membership for logged-in member
  */
 export const fetchMyActiveMembershipApi = async (): Promise<Membership | null> => {
-  const res = await fetch('/api/v1/memberships/my-active', {
+  const res = await fetch(`${API_ROOT}/memberships/my-active`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || 'Failed to fetch membership details');
   }
@@ -101,12 +102,12 @@ export const fetchMyActiveMembershipApi = async (): Promise<Membership | null> =
  * Fetch payment history for logged-in member
  */
 export const fetchMyPaymentHistoryApi = async (): Promise<Payment[]> => {
-  const res = await fetch('/api/v1/payments/my-history', {
+  const res = await fetch(`${API_ROOT}/payments/my-history`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || 'Failed to fetch payment history');
   }
@@ -124,13 +125,13 @@ export const recordManualPaymentApi = async (payload: {
   amount: number;
   referenceNote?: string;
 }): Promise<{ payment: Payment; membership: Membership }> => {
-  const res = await fetch('/api/v1/payments/manual', {
+  const res = await fetch(`${API_ROOT}/payments/manual`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to record manual payment');
   }
@@ -153,12 +154,12 @@ export const fetchAllPaymentsAdminApi = async (params?: {
   if (params?.status) query.set('status', params.status);
   if (params?.paymentMethod) query.set('paymentMethod', params.paymentMethod);
 
-  const res = await fetch(`/api/v1/payments/admin/all?${query.toString()}`, {
+  const res = await fetch(`${API_ROOT}/payments/admin/all?${query.toString()}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || 'Failed to load payments list');
   }

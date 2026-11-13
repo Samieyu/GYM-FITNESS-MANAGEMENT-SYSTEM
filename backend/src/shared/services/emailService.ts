@@ -1,17 +1,176 @@
 import nodemailer from 'nodemailer';
 import { config } from '../../config';
 
-const transporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.port === 465, // true for 465 (SSL), false for 587 (STARTTLS) or 1025 (Mailpit)
-  auth: config.smtp.user
-    ? {
+const createMailTransporter = () => {
+  const isGmail =
+    config.smtp.host === 'smtp.gmail.com' ||
+    (Boolean(config.smtp.user) && config.smtp.user.toLowerCase().includes('@gmail.com'));
+
+  if (isGmail && config.smtp.user && config.smtp.pass) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
         user: config.smtp.user,
         pass: config.smtp.pass,
+      },
+    });
+  }
+
+  return nodemailer.createTransport({
+    host: config.smtp.host,
+    port: config.smtp.port,
+    secure: config.smtp.port === 465, // true for 465 (SSL), false for 587 (STARTTLS) or 1025 (Mailpit)
+    auth: config.smtp.user
+      ? {
+          user: config.smtp.user,
+          pass: config.smtp.pass,
+        }
+      : undefined,
+  });
+};
+
+const transporter = createMailTransporter();
+
+interface SendMailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}
+
+/**
+ * Universal email dispatcher (HTTPS Port 443 priority to bypass Render free tier port 25/465/587 blocks):
+ * 1. Brevo HTTP REST API (if BREVO_API_KEY is configured — sends to ANY recipient via single verified Gmail)
+ * 2. Resend HTTPS REST API (if RESEND_API_KEY is configured — auto-falls back to onboarding@resend.dev if custom from is unverified)
+ * 3. SMTP / Nodemailer (for local Mailpit dev or unrestricted VPS)
+ */
+export const dispatchEmail = async (opts: SendMailOptions): Promise<{ success: boolean; id?: string }> => {
+  // 1. Brevo HTTP REST API (Port 443 HTTPS)
+  if (config.brevo.apiKey && config.brevo.fromEmail) {
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': config.brevo.apiKey,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          sender: { name: config.brevo.fromName, email: config.brevo.fromEmail },
+          to: [{ email: opts.to }],
+          subject: opts.subject,
+          htmlContent: opts.html,
+        }),
+      });
+
+      const data: any = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `Brevo API returned HTTP ${response.status}`);
       }
-    : undefined,
-});
+
+      console.log(`[Email / Brevo] Successfully dispatched "${opts.subject}" to ${opts.to} (MessageId: ${data.messageId})`);
+      return { success: true, id: data.messageId };
+    } catch (brevoErr: any) {
+      console.error(`[Email / Brevo] Delivery failed for ${opts.to}:`, brevoErr.message);
+    }
+  }
+
+  // 2. Resend HTTPS REST API (Port 443 HTTPS)
+  if (config.resend.apiKey) {
+    const defaultSandboxSender = 'POWERZONE Fitness <onboarding@resend.dev>';
+    const primarySender = opts.from || config.resend.from || defaultSandboxSender;
+
+    const sendWithResend = async (sender: string) => {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.resend.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: sender,
+          to: [opts.to],
+          subject: opts.subject,
+          html: opts.html,
+        }),
+      });
+      const data: any = await response.json();
+      return { ok: response.ok, status: response.status, data };
+    };
+
+    try {
+      let attempt = await sendWithResend(primarySender);
+
+      // If rejected due to unverified custom/SMTP domain, retry automatically with onboarding@resend.dev
+      if (
+        !attempt.ok &&
+        !primarySender.includes('onboarding@resend.dev') &&
+        (attempt.status === 403 || attempt.status === 422 || String(attempt.data?.message || '').toLowerCase().includes('domain'))
+      ) {
+        console.warn(`[Email / Resend] Sender "${primarySender}" rejected (${attempt.data?.message}). Retrying with "${defaultSandboxSender}"...`);
+        attempt = await sendWithResend(defaultSandboxSender);
+      }
+
+      if (!attempt.ok) {
+        throw new Error(attempt.data?.message || `Resend API returned HTTP ${attempt.status}`);
+      }
+
+      console.log(`[Email / Resend] Successfully dispatched "${opts.subject}" to ${opts.to} (ID: ${attempt.data.id})`);
+      return { success: true, id: attempt.data.id };
+    } catch (resendErr: any) {
+      console.error(`[Email / Resend] Delivery FAILED for ${opts.to}: ${resendErr.message}`);
+      if (resendErr.message && resendErr.message.includes('testing emails')) {
+        console.warn('[Email / Resend Hint] Resend free tier without a verified domain only sends to your own Resend account email. Verify a domain in Resend OR set BREVO_API_KEY to send to any member email.');
+      }
+      // If we are in production without a real external SMTP configured, throw directly instead of trying localhost:1025
+      if (config.env === 'production' && config.smtp.host === '127.0.0.1') {
+        throw resendErr;
+      }
+    }
+  }
+
+  // 3. Secondary Fallback: SMTP / Nodemailer (local Mailpit or VPS)
+  if (config.env === 'production' && config.smtp.host === '127.0.0.1') {
+    throw new Error('Email failed to send via HTTPS providers and local SMTP (127.0.0.1) is unavailable in production.');
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: opts.from || config.smtp.from,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+    });
+    console.log(`[Email / SMTP] Successfully sent "${opts.subject}" to ${opts.to}`);
+    return { success: true, id: info.messageId };
+  } catch (smtpErr: any) {
+    console.error(`[Email / SMTP] Failed sending "${opts.subject}" to ${opts.to}:`, smtpErr.message);
+    throw smtpErr;
+  }
+};
+
+export const verifySmtpConnection = async (): Promise<boolean> => {
+  if (config.brevo.apiKey && config.brevo.fromEmail) {
+    console.log(`[Email] Brevo HTTP API configured (Sender: ${config.brevo.fromEmail}). Emails will route via HTTPS port 443.`);
+    return true;
+  }
+
+  if (config.resend.apiKey) {
+    console.log(`[Email] Resend API key detected (Sender: ${config.resend.from}). Outbound emails will route via HTTPS port 443 (Render free tier ports 25, 465, 587 bypassed).`);
+    return true;
+  }
+
+  try {
+    await transporter.verify();
+    console.log('[Email] SMTP transport connected successfully and ready to dispatch emails.');
+    return true;
+  } catch (err: any) {
+    console.warn(
+      `[Email] Outbound email notice: No RESEND_API_KEY or BREVO_API_KEY detected and unable to reach SMTP server (${err.message}). On Render free tier, SMTP ports 25, 465, 587 are blocked.`
+    );
+    return false;
+  }
+};
 
 /**
  * Reusable, responsive branded HTML email shell
@@ -116,7 +275,7 @@ const renderEmailShell = (opts: EmailShellOptions): string => {
                 <tr>
                   <td align="center">
                     <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #F1F5F9; text-transform: uppercase;">
-                      SWEATBOX <span style="color: #FF6B00;">FITNESS</span>
+                      POWERZONE <span style="color: #FF6B00;">FITNESS</span>
                     </span>
                   </td>
                 </tr>
@@ -191,7 +350,7 @@ const renderEmailShell = (opts: EmailShellOptions): string => {
                 <tr>
                   <td align="center" style="padding-bottom: 8px;">
                     <p style="margin: 0; font-size: 11px; color: #64748B; font-weight: 600;">
-                      SWEATBOX FITNESS CLUB • BOLE MEDHANIALEM, ADDIS ABABA, ETHIOPIA
+                      POWERZONE FITNESS CLUB • BOLE MEDHANIALEM, ADDIS ABABA, ETHIOPIA
                     </p>
                   </td>
                 </tr>
@@ -205,7 +364,7 @@ const renderEmailShell = (opts: EmailShellOptions): string => {
                 <tr>
                   <td align="center" style="padding-top: 12px;">
                     <p style="margin: 0; font-size: 10px; color: #334155;">
-                      This is an automated system notification. If you did not request this, please contact support@sweatboxfitness.et
+                      This is an automated system notification. If you did not request this, please contact support@powerzonefitness.et
                     </p>
                   </td>
                 </tr>
@@ -225,17 +384,17 @@ export const sendVerificationEmail = async (
   firstName: string,
   token: string
 ): Promise<void> => {
-  const verificationUrl = `${config.corsOrigin}/verify-email?token=${token}`;
+  const verificationUrl = `${config.frontendUrl}/verify-email?token=${token}`;
 
   const html = renderEmailShell({
-    preheader: `Verify your account to activate your SWEATBOX membership.`,
+    preheader: `Verify your account to activate your POWERZONE membership.`,
     badgeText: 'Account Verification',
     badgeColor: '#FF6B00',
-    headline: 'Activate Your SWEATBOX Account',
+    headline: 'Activate Your POWERZONE Account',
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
-        Thank you for joining <strong>SWEATBOX Fitness</strong>. We are thrilled to welcome you to our athletic community.
+        Thank you for joining <strong>POWERZONE Fitness</strong>. We are thrilled to welcome you to our athletic community.
       </p>
       <p style="margin: 0 0 14px 0;">
         Please confirm your email address by clicking the button below. Once verified, your membership profile will be unlocked for facility entry, biometric logs, and group class reservations.
@@ -248,15 +407,15 @@ export const sendVerificationEmail = async (
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: 'Verify Your SWEATBOX Account',
+      subject: 'Verify Your POWERZONE Account',
       html,
     });
     console.log(`[Email] Verification email sent to ${email}`);
   } catch (error) {
     console.error(`[Email] Failed to send verification email to ${email}:`, error);
+    console.log(`[Email Fallback URL] Account verification URL: ${verificationUrl}`);
   }
 };
 
@@ -265,17 +424,17 @@ export const sendPasswordResetEmail = async (
   firstName: string,
   token: string
 ): Promise<void> => {
-  const resetUrl = `${config.corsOrigin}/reset-password?token=${token}`;
+  const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
 
   const html = renderEmailShell({
-    preheader: `Reset your SWEATBOX account password.`,
+    preheader: `Reset your POWERZONE account password.`,
     badgeText: 'Security Notice',
     badgeColor: '#EF4444',
     headline: 'Password Reset Request',
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
-        We received a request to reset the password for your SWEATBOX account.
+        We received a request to reset the password for your POWERZONE account.
       </p>
       <p style="margin: 0 0 14px 0;">
         Click the button below to choose a new password. If you did not make this request, your account remains secure and you can safely ignore this message.
@@ -288,15 +447,15 @@ export const sendPasswordResetEmail = async (
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: 'Password Reset Request — SWEATBOX Fitness',
+      subject: 'Password Reset Request — POWERZONE Fitness',
       html,
     });
     console.log(`[Email] Password reset email sent to ${email}`);
   } catch (error) {
     console.error(`[Email] Failed to send password reset email to ${email}:`, error);
+    console.log(`[Email Fallback URL] Password reset URL: ${resetUrl}`);
   }
 };
 
@@ -305,13 +464,13 @@ export const sendWalkinInvitationEmail = async (
   firstName: string,
   token: string
 ): Promise<void> => {
-  const setPasswordUrl = `${config.corsOrigin}/set-password?token=${token}`;
+  const setPasswordUrl = `${config.frontendUrl}/set-password?token=${token}`;
 
   const html = renderEmailShell({
-    preheader: `Welcome to SWEATBOX! Set your password to access your digital member pass.`,
+    preheader: `Welcome to POWERZONE! Set your password to access your digital member pass.`,
     badgeText: 'Front Desk Registration',
     badgeColor: '#10B981',
-    headline: 'Welcome to SWEATBOX Fitness Club',
+    headline: 'Welcome to POWERZONE Fitness Club',
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
@@ -328,15 +487,15 @@ export const sendWalkinInvitationEmail = async (
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: 'Welcome to SWEATBOX Fitness — Set Your Password',
+      subject: 'Welcome to POWERZONE Fitness — Set Your Password',
       html,
     });
     console.log(`[Email] Walk-in invitation sent to ${email}`);
   } catch (error) {
     console.error(`[Email] Failed to send walk-in invitation to ${email}:`, error);
+    console.log(`[Email Fallback URL] Set Password URL: ${setPasswordUrl}`);
   }
 };
 
@@ -347,7 +506,7 @@ export const sendStaffInvitationEmail = async (
   token: string,
   initialPassword?: string
 ): Promise<void> => {
-  const setPasswordUrl = `${config.corsOrigin}/set-password?token=${token}`;
+  const setPasswordUrl = `${config.frontendUrl}/set-password?token=${token}`;
   const roleTitle = role === 'trainer' ? 'Certified Fitness Trainer' : 'Front Desk Receptionist';
 
   const credentialCard = initialPassword
@@ -359,14 +518,14 @@ export const sendStaffInvitationEmail = async (
     : '';
 
   const html = renderEmailShell({
-    preheader: `You have been provisioned as a ${roleTitle} at SWEATBOX Fitness.`,
+    preheader: `You have been provisioned as a ${roleTitle} at POWERZONE Fitness.`,
     badgeText: 'Staff Provisioning',
     badgeColor: '#3B82F6',
     headline: `Welcome to the Team, ${firstName}!`,
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
-        You have been officially provisioned as a <strong>${roleTitle}</strong> on the SWEATBOX Staff Operating Portal by the System Administrator.
+        You have been officially provisioned as a <strong>${roleTitle}</strong> on the POWERZONE Staff Operating Portal by the System Administrator.
       </p>
       ${credentialCard}
       <p style="margin: 0 0 14px 0;">
@@ -380,15 +539,15 @@ export const sendStaffInvitationEmail = async (
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: `Welcome to SWEATBOX Fitness — Your Staff Account (${roleTitle})`,
+      subject: `Welcome to POWERZONE Fitness — Your Staff Account (${roleTitle})`,
       html,
     });
     console.log(`[Email] Staff invitation sent to ${email} for role ${role}`);
   } catch (error) {
     console.error(`[Email] Failed to send staff invitation to ${email}:`, error);
+    console.log(`[Email Fallback URL] Staff Setup URL: ${setPasswordUrl}`);
   }
 };
 
@@ -439,7 +598,7 @@ export const sendPaymentConfirmationEmail = async (
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
-        We have successfully confirmed your transaction. Your SWEATBOX membership is officially <strong>ACTIVE</strong>.
+        We have successfully confirmed your transaction. Your POWERZONE membership is officially <strong>ACTIVE</strong>.
       </p>
       ${receiptCard}
       <p style="margin: 0 0 14px 0;">
@@ -447,13 +606,12 @@ export const sendPaymentConfirmationEmail = async (
       </p>
     `,
     ctaText: 'Open Member Portal & QR Pass',
-    ctaUrl: config.corsOrigin,
+    ctaUrl: config.frontendUrl,
     footerNote: 'Official payment receipt. Please retain this email for your tax or corporate reimbursement records.',
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
       subject: `Payment Receipt & Membership Activated — ${paymentDetails.planName}`,
       html,
@@ -474,7 +632,7 @@ export const sendExpiryReminderEmail = async (
     endDateEc: string;
   }
 ): Promise<void> => {
-  const renewUrl = `${config.corsOrigin}/plans`;
+  const renewUrl = `${config.frontendUrl}/plans`;
   const isUrgent = details.daysRemaining <= 1;
 
   const warningCard = `
@@ -510,7 +668,7 @@ export const sendExpiryReminderEmail = async (
     greetingName: firstName,
     bodyHtml: `
       <p style="margin: 0 0 14px 0;">
-        Your <strong>${details.planName}</strong> subscription at SWEATBOX Fitness is nearing expiration.
+        Your <strong>${details.planName}</strong> subscription at POWERZONE Fitness is nearing expiration.
       </p>
       ${warningCard}
       <p style="margin: 0 0 14px 0;">
@@ -523,10 +681,9 @@ export const sendExpiryReminderEmail = async (
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: `${isUrgent ? '🚨 URGENT: Membership Expires Tomorrow' : 'Membership Expiring Soon (7 Days)'} — SWEATBOX Fitness`,
+      subject: `${isUrgent ? '🚨 URGENT: Membership Expires Tomorrow' : 'Membership Expiring Soon (7 Days)'} — POWERZONE Fitness`,
       html,
     });
     console.log(`[Email] Expiry reminder (${details.daysRemaining}d) sent to ${email}`);
@@ -603,15 +760,14 @@ export const sendClassBookingConfirmationEmail = async (
       </p>
     `,
     ctaText: 'View Schedule on Portal',
-    ctaUrl: `${config.corsOrigin}/classes`,
+    ctaUrl: `${config.frontendUrl}/classes`,
     footerNote: 'Need to cancel? Please cancel at least 2 hours prior to allow waitlisted members to attend.',
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
-      subject: `${isBooked ? '✅ Confirmed: ' : '📋 Waitlisted: '}${classDetails.title} — SWEATBOX Fitness`,
+      subject: `${isBooked ? '✅ Confirmed: ' : '📋 Waitlisted: '}${classDetails.title} — POWERZONE Fitness`,
       html,
     });
     console.log(`[Email] Class ${classDetails.status} email sent to ${email}`);
@@ -674,13 +830,12 @@ export const sendWaitlistPromotionEmail = async (
       </p>
     `,
     ctaText: 'View My Classes',
-    ctaUrl: `${config.corsOrigin}/classes`,
+    ctaUrl: `${config.frontendUrl}/classes`,
     footerNote: 'Please arrive 10 minutes early so our coaching staff can get you prepped.',
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
       subject: `🎉 Waitlist Promoted: You are confirmed for ${classDetails.title}!`,
       html,
@@ -728,13 +883,12 @@ export const sendTrainerFeedbackEmail = async (
       </p>
     `,
     ctaText: 'Open Transformation Dashboard',
-    ctaUrl: config.corsOrigin,
-    footerNote: 'SWEATBOX Coaching Staff • Personalized Fitness & Nutrition Analytics',
+    ctaUrl: config.frontendUrl,
+    footerNote: 'POWERZONE Coaching Staff • Personalized Fitness & Nutrition Analytics',
   });
 
   try {
-    await transporter.sendMail({
-      from: config.smtp.from,
+    await dispatchEmail({
       to: email,
       subject: `Coach Feedback: New note from ${feedbackDetails.trainerName}`,
       html,

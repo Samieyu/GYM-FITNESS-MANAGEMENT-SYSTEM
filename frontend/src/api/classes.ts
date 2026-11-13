@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface FitnessClass {
   id: string;
@@ -68,51 +69,51 @@ const getAuthHeaders = () => {
 };
 
 export const fetchUpcomingClassesApi = async (): Promise<FitnessClass[]> => {
-  const res = await fetch('/api/v1/classes', {
+  const res = await fetch(`${API_ROOT}/classes`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to load classes');
   return data.data || [];
 };
 
 export const bookClassApi = async (classId: string): Promise<any> => {
-  const res = await fetch(`/api/v1/classes/${classId}/book`, {
+  const res = await fetch(`${API_ROOT}/classes/${classId}/book`, {
     method: 'POST',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || data.message || 'Failed to book class');
   return data;
 };
 
 export const cancelClassBookingApi = async (classId: string): Promise<any> => {
-  const res = await fetch(`/api/v1/classes/${classId}/cancel`, {
+  const res = await fetch(`${API_ROOT}/classes/${classId}/cancel`, {
     method: 'POST',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to cancel booking');
   return data;
 };
 
 export const fetchMyBookingsApi = async (): Promise<ClassBooking[]> => {
-  const res = await fetch('/api/v1/classes/my/bookings', {
+  const res = await fetch(`${API_ROOT}/classes/my/bookings`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to load bookings');
   return data.data || [];
 };
 
 export const fetchClassRosterApi = async (classId: string): Promise<RosterAttendee[]> => {
-  const res = await fetch(`/api/v1/classes/${classId}/roster`, {
+  const res = await fetch(`${API_ROOT}/classes/${classId}/roster`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to load class roster');
   return data.data || [];
 };
@@ -122,12 +123,12 @@ export const updateAttendanceApi = async (
   memberId: string,
   status: 'attended' | 'booked' | 'cancelled'
 ): Promise<any> => {
-  const res = await fetch(`/api/v1/classes/${classId}/attendance/${memberId}`, {
+  const res = await fetch(`${API_ROOT}/classes/${classId}/attendance/${memberId}`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ status }),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to update attendance');
   return data;
 };
@@ -141,22 +142,22 @@ export const createClassApi = async (payload: {
   endTime: string;
   location?: string;
 }): Promise<FitnessClass> => {
-  const res = await fetch('/api/v1/classes', {
+  const res = await fetch(`${API_ROOT}/classes`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to create class');
   return data.data;
 };
 
 export const fetchTrainersApi = async (): Promise<TrainerOption[]> => {
-  const res = await fetch('/api/v1/classes/trainers', {
+  const res = await fetch(`${API_ROOT}/classes/trainers`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to load trainers');
   return data.data || [];
 };

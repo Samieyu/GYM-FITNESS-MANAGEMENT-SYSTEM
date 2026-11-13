@@ -110,7 +110,7 @@ export class PaymentsService {
               ? (returnUrl.includes('tx_ref=') ? returnUrl : `${returnUrl}${returnUrl.includes('?') ? '&' : '?'}tx_ref=${txRef}`)
               : `${config.corsOrigin}/?tx_ref=${txRef}&payment=success`,
             customization: {
-              title: 'SWEATBOX Fitness',
+              title: 'POWERZONE Fitness',
               description: `Payment for ${plan.name}`,
             },
           }),
@@ -235,6 +235,8 @@ export class PaymentsService {
     paymentId?: string;
     membershipId?: string;
     isCompleted: boolean;
+    membership?: any;
+    payment?: any;
   }> {
     if (!txRef) {
       throw new BadRequestError('Transaction reference (tx_ref) is required');
@@ -245,13 +247,19 @@ export class PaymentsService {
       throw new NotFoundError(`Payment with reference "${txRef}" not found`);
     }
 
-    if (payment.status === 'completed') {
+    if (payment.status === 'completed' || (payment.status as string) === 'successful') {
+      const activeMem = payment.membership_id
+        ? await this.repo.findMembershipById(payment.membership_id)
+        : await this.repo.findActiveMembershipByMemberId(payment.member_id);
+
       return {
         status: 'success',
         message: 'Payment has already been verified and processed',
         paymentId: payment.id,
         membershipId: payment.membership_id || undefined,
         isCompleted: true,
+        membership: activeMem || undefined,
+        payment,
       };
     }
 
@@ -330,7 +338,7 @@ export class PaymentsService {
     payment: PaymentRecord,
     transactionId: string | null,
     rawPayload: any
-  ): Promise<{ status: string; message: string; paymentId: string; membershipId: string }> {
+  ): Promise<{ status: string; message: string; paymentId: string; membershipId: string; membership: MembershipRecord; payment: PaymentRecord }> {
     if (!payment.membership_id) {
       throw new UnprocessableEntityError('Payment is not linked to a membership record');
     }
@@ -410,6 +418,8 @@ export class PaymentsService {
       message: 'Payment verified and membership activated successfully',
       paymentId: payment.id,
       membershipId: membership.id,
+      membership: activatedMembership,
+      payment,
     };
   }
 

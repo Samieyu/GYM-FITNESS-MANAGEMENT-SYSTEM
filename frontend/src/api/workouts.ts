@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface ExerciseItem {
   id: string;
@@ -68,12 +69,12 @@ const getAuthHeaders = () => {
  * Fetch list of all exercises from the gym library
  */
 export const fetchExerciseLibraryApi = async (): Promise<ExerciseItem[]> => {
-  const res = await fetch('/api/v1/workouts/exercises', {
+  const res = await fetch(`${API_ROOT}/workouts/exercises`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch exercise library');
   }
@@ -85,12 +86,12 @@ export const fetchExerciseLibraryApi = async (): Promise<ExerciseItem[]> => {
  * Fetch member's current active approved workout plan
  */
 export const fetchMyActiveWorkoutApi = async (): Promise<WorkoutPlanItem | null> => {
-  const res = await fetch('/api/v1/workouts/my-active', {
+  const res = await fetch(`${API_ROOT}/workouts/my-active`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch active workout');
   }
@@ -102,12 +103,12 @@ export const fetchMyActiveWorkoutApi = async (): Promise<WorkoutPlanItem | null>
  * Fetch member's workout plan history (drafts + completed)
  */
 export const fetchMyWorkoutHistoryApi = async (): Promise<WorkoutPlanItem[]> => {
-  const res = await fetch('/api/v1/workouts/my-plans', {
+  const res = await fetch(`${API_ROOT}/workouts/my-plans`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch workout history');
   }
@@ -121,13 +122,13 @@ export const fetchMyWorkoutHistoryApi = async (): Promise<WorkoutPlanItem[]> => 
 export const requestAiWorkoutPlanApi = async (
   params: AiWorkoutRequestParams
 ): Promise<WorkoutPlanItem> => {
-  const res = await fetch('/api/v1/workouts/request-ai', {
+  const res = await fetch(`${API_ROOT}/workouts/request-ai`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(params),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'AI workout generation failed');
   }
@@ -139,12 +140,12 @@ export const requestAiWorkoutPlanApi = async (
  * Trainer / Admin view of pending draft workout plans awaiting review
  */
 export const fetchTrainerPendingDraftsApi = async (): Promise<WorkoutPlanItem[]> => {
-  const res = await fetch('/api/v1/workouts/trainer/pending', {
+  const res = await fetch(`${API_ROOT}/workouts/trainer/pending`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to fetch pending workout plans');
   }
@@ -156,12 +157,12 @@ export const fetchTrainerPendingDraftsApi = async (): Promise<WorkoutPlanItem[]>
  * Trainer / Admin approve and activate draft workout routine (Business Rule 11)
  */
 export const approveWorkoutPlanApi = async (planId: string): Promise<WorkoutPlanItem> => {
-  const res = await fetch(`/api/v1/workouts/${planId}/approve`, {
+  const res = await fetch(`${API_ROOT}/workouts/${planId}/approve`, {
     method: 'PUT',
     headers: getAuthHeaders(),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to approve workout plan');
   }
@@ -186,13 +187,13 @@ export const createCustomWorkoutPlanApi = async (payload: {
     orderIndex: number;
   }>;
 }): Promise<WorkoutPlanItem> => {
-  const res = await fetch('/api/v1/workouts/trainer/custom', {
+  const res = await fetch(`${API_ROOT}/workouts/trainer/custom`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to create custom workout plan');
   }

@@ -50,13 +50,6 @@ npm run migrate
 npm run seed
 ```
 
-Default seeded accounts:
-- **Admin:** `admin@gymfitness.local` / `Admin@123456`
-- **Reception:** `reception@gymfitness.local` / `Reception@123456`
-- **Trainer:** `trainer@gymfitness.local` / `Trainer@123456`
-- **Member:** `member@gymfitness.local` / `Member@123456`
-
----
 
 ## 4. Development Quickstart
 

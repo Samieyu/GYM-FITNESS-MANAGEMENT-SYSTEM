@@ -7,77 +7,22 @@ export const seedDatabase = async () => {
     console.log('[Seed] Seeding initial data...');
     await client.query('BEGIN');
 
-    // 1. Seed Roles/Users
-    const passwordHash = await bcrypt.hash('Admin@123456', 10);
-    const trainerPassHash = await bcrypt.hash('Trainer@123456', 10);
-    const receptionPassHash = await bcrypt.hash('Reception@123456', 10);
-    const memberPassHash = await bcrypt.hash('Member@123456', 10);
+    // 1. Seed Sole Admin Account (no default reception/trainer/member/.local demo accounts)
+    const adminEmail = (process.env.ADMIN_EMAIL || 'samiwm63@gmail.com').toLowerCase().trim();
+    const adminPasswordHash = process.env.ADMIN_PASSWORD
+      ? await bcrypt.hash(process.env.ADMIN_PASSWORD, 12)
+      : '$2a$12$Ob3kUsyqnP2YlYFfT4peVO3trneUvSRaznFtG1Ao8WPp.BYZQQ3G2';
 
-    // Admin
     const adminRes = await client.query(
       `
       INSERT INTO users (email, password_hash, role, first_name, last_name, is_verified, is_active)
       VALUES ($1, $2, 'admin', 'System', 'Administrator', true, true)
-      ON CONFLICT (email) DO UPDATE SET is_active = true
+      ON CONFLICT (email) DO UPDATE SET role = 'admin', is_verified = true, is_active = true
       RETURNING id;
     `,
-      ['admin@gymfitness.local', passwordHash]
+      [adminEmail, adminPasswordHash]
     );
     const adminId = adminRes.rows[0].id;
-
-    // Receptionist
-    await client.query(
-      `
-      INSERT INTO users (email, password_hash, role, first_name, last_name, is_verified, is_active)
-      VALUES ($1, $2, 'reception', 'Front', 'Desk', true, true)
-      ON CONFLICT (email) DO NOTHING;
-    `,
-      ['reception@gymfitness.local', receptionPassHash]
-    );
-
-    // Trainer
-    const trainerUserRes = await client.query(
-      `
-      INSERT INTO users (email, password_hash, role, first_name, last_name, is_verified, is_active)
-      VALUES ($1, $2, 'trainer', 'Alex', 'Strong', true, true)
-      ON CONFLICT (email) DO UPDATE SET is_active = true
-      RETURNING id;
-    `,
-      ['trainer@gymfitness.local', trainerPassHash]
-    );
-    const trainerUserId = trainerUserRes.rows[0].id;
-
-    const trainerProfileRes = await client.query(
-      `
-      INSERT INTO trainers (user_id, bio, specialization, is_available)
-      VALUES ($1, 'Certified Strength & Conditioning Specialist with 8 years coaching experience.', 'Strength & Bodybuilding', true)
-      ON CONFLICT (user_id) DO UPDATE SET is_available = true
-      RETURNING id;
-    `,
-      [trainerUserId]
-    );
-    const trainerId = trainerProfileRes.rows[0].id;
-
-    // Demo Member
-    const memberUserRes = await client.query(
-      `
-      INSERT INTO users (email, password_hash, role, first_name, last_name, phone, is_verified, is_active)
-      VALUES ($1, $2, 'member', 'John', 'Athlete', '+251911223344', true, true)
-      ON CONFLICT (email) DO UPDATE SET is_active = true
-      RETURNING id;
-    `,
-      ['member@gymfitness.local', memberPassHash]
-    );
-    const memberUserId = memberUserRes.rows[0].id;
-
-    await client.query(
-      `
-      INSERT INTO member_profiles (user_id, member_code, fitness_goals, assigned_trainer_id)
-      VALUES ($1, 'MEM-0001', 'Build lean muscle and improve cardio stamina.', $2)
-      ON CONFLICT (user_id) DO NOTHING;
-    `,
-      [memberUserId, trainerId]
-    );
 
     // 2. Seed Membership Plans
     await client.query(

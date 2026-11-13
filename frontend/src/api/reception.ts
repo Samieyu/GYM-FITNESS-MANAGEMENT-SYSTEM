@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface WalkinRegistrationInput {
   firstName: string;
@@ -36,7 +37,7 @@ export const registerWalkinMemberApi = async (
   payload: WalkinRegistrationInput
 ): Promise<WalkinRegistrationResponse> => {
   const token = getStoredAccessToken();
-  const res = await fetch('/api/v1/reception/walk-in', {
+  const res = await fetch(`${API_ROOT}/reception/walk-in`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ export const registerWalkinMemberApi = async (
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to register walk-in member');
   }
@@ -58,7 +59,7 @@ export const registerWalkinMemberApi = async (
  */
 export const triggerManualExpiryCheckApi = async (): Promise<any> => {
   const token = getStoredAccessToken();
-  const res = await fetch('/api/v1/cron/admin/run-expiry-check', {
+  const res = await fetch(`${API_ROOT}/cron/admin/run-expiry-check`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export const triggerManualExpiryCheckApi = async (): Promise<any> => {
     },
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(data.error?.message || data.message || 'Failed to run expiration check');
   }

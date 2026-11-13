@@ -103,7 +103,7 @@ export const DevComponentGallery: React.FC<{ onClose: () => void }> = ({ onClose
                   SB
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold tracking-tight">SWEATBOX Design System Gallery</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">POWERZONE Design System Gallery</h1>
                   <p className="text-xs text-content-secondary">
                     Phase 1 Component Library • Accessible WCAG 2.2 AA Primitives & Design Tokens
                   </p>
@@ -297,7 +297,7 @@ export const DevComponentGallery: React.FC<{ onClose: () => void }> = ({ onClose
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <span className="text-xs text-content-muted">SWEATBOX Gym System</span>
+                  <span className="text-xs text-content-muted">POWERZONE Gym System</span>
                   <Button variant="outline" size="sm">Action</Button>
                 </CardFooter>
               </Card>
@@ -481,7 +481,7 @@ export const DevComponentGallery: React.FC<{ onClose: () => void }> = ({ onClose
               </Tooltip>
 
               {/* Toast Triggers */}
-              <Button variant="outline" onClick={() => toast.success('Check-in Approved', 'Welcome to SWEATBOX, John!')}>
+              <Button variant="outline" onClick={() => toast.success('Check-in Approved', 'Welcome to POWERZONE, John!')}>
                 Success Toast
               </Button>
               <Button variant="outline" onClick={() => toast.error('Pass Expired', 'Please renew your subscription at front desk.')}>
@@ -569,7 +569,7 @@ export const DevComponentGallery: React.FC<{ onClose: () => void }> = ({ onClose
                 icon={<Dumbbell className="w-8 h-8" />}
                 title="No Active Workout Routine"
                 description="You don't have a routine formulated yet. Generate one instantly with our AI Coach."
-                actionLabel="Formulate with SWEATBOX AI"
+                actionLabel="Formulate with POWERZONE AI"
                 onAction={() => toast.info('AI Routine Formulator', 'Opening workout engine...')}
               />
             </div>

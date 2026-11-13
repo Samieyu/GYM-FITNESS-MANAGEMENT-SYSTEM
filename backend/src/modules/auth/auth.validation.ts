@@ -70,7 +70,7 @@ export const registerStaffSchema = z.object({
   }),
   phone: z
     .string({ required_error: 'Ethiopian phone number is required' })
-    .transform((p) => (p || '').replace(/[s-]/g, ''))
+    .transform((p) => (p || '').replace(/[\s-]/g, ''))
     .refine((val) => ETHIOPIAN_PHONE_REGEX.test(val), {
       message: 'Must be a valid Ethiopian phone number (+251 9..., +251 7..., 09..., or 07...)',
     }),

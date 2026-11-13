@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   UserPlus,
@@ -48,7 +48,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [specialization, setSpecialization] = useState('Strength & Functional Conditioning');
-  const [bio, setBio] = useState('Certified SWEATBOX Trainer');
+  const [bio, setBio] = useState('Certified POWERZONE Trainer');
 
   // Execution states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +58,13 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
     inviteSent: boolean;
     temporaryPassword?: string;
   } | null>(null);
+
+  const modalContainerRef = useRef<HTMLDivElement>(null);
+
+  const triggerError = (msg: string) => {
+    setErrorMessage(msg);
+    modalContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -81,7 +88,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
   const generateRandomPassword = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
-    let pwd = 'Sweatbox@';
+    let pwd = 'Powerzone@';
     for (let i = 0; i < 6; i++) {
       pwd += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -94,20 +101,20 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
     const cleanEmail = email.trim().toLowerCase();
     if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(cleanEmail)) {
-      setErrorMessage('Only valid @gmail.com addresses are permitted (e.g. staff@gmail.com).');
+      triggerError('Only valid @gmail.com addresses are permitted (e.g. staff@gmail.com).');
       return;
     }
 
     const cleanPhone = phone.replace(/[\s-]/g, '');
     if (!/^(\+251|0)[79]\d{8}$/.test(cleanPhone)) {
-      setErrorMessage(
+      triggerError(
         'Please enter a valid Ethiopian phone number (+251 9..., +251 7..., 09..., or 07...).'
       );
       return;
     }
 
     if (password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
+      triggerError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -131,10 +138,11 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
         inviteSent: res.inviteSent,
         temporaryPassword: password,
       });
+      modalContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
       // Refresh the staff list in background
       loadStaff();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to register staff member.');
+      triggerError(err.message || 'Failed to register staff member.');
     } finally {
       setIsSubmitting(false);
     }
@@ -154,7 +162,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200 text-text">
+      <div ref={modalContainerRef} className="bg-surface border border-border w-full max-w-2xl rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200 text-text">
         {/* Close Button */}
         <button
           type="button"
@@ -291,7 +299,7 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                     </div>
                     <p className="text-[11px] leading-relaxed">
                       An official invitation email with the secure "Set Your Password" link has been sent to{' '}
-                      <strong className="text-text">{successResult.staff.email}</strong> (captured in Mailpit at http://localhost:8025). The staff member can also immediately log in with their assigned password.
+                      <strong className="text-text">{successResult.staff.email}</strong>. The staff member can also immediately log in with their assigned password.
                     </p>
                   </div>
                 )}
@@ -496,6 +504,23 @@ export const StaffManagementModal: React.FC<StaffManagementModalProps> = ({
                         className="w-full px-3 py-2 rounded-lg bg-surface border border-border focus:border-primary text-text text-xs focus:outline-none transition"
                       />
                     </div>
+                  </div>
+                )}
+
+                {/* Inline Error Notice before submit button */}
+                {errorMessage && (
+                  <div className="p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-center justify-between gap-2 shadow-sm animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-danger" />
+                      <span>{errorMessage}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setErrorMessage(null)}
+                      className="text-danger hover:opacity-80 p-0.5"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
                 )}
 

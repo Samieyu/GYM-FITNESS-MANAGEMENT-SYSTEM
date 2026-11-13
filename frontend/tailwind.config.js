@@ -4,9 +4,11 @@ export default {
   darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
+      screens: {
+        xs: '375px',
+      },
       colors: {
-        base: 'var(--bg-base)',
-        background: 'var(--bg-base)',
+                background: 'var(--bg-base)',
         surface: {
           DEFAULT: 'var(--bg-surface)',
           elevated: 'var(--bg-surface-elevated)',

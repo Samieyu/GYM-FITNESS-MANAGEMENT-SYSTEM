@@ -1,6 +1,7 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT } from './client';
 
-const API_BASE = '/api/v1/analytics';
+const API_BASE = `${API_ROOT}/analytics`;
 
 function getAuthHeaders() {
   const token = getStoredAccessToken();
@@ -74,7 +75,7 @@ export async function downloadAttendanceCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'sweatbox_attendance_logs.csv';
+  a.download = 'powerzone_attendance_logs.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -91,7 +92,7 @@ export async function downloadMembersCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'sweatbox_members_roster.csv';
+  a.download = 'powerzone_members_roster.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -108,7 +109,7 @@ export async function downloadFinancialCsv(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'sweatbox_financial_report.csv';
+  a.download = 'powerzone_financial_report.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();

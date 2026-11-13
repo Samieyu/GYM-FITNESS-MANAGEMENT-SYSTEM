@@ -71,7 +71,7 @@ export function toEthiopianDate(dateInput?: string | number | Date | null): Ethi
     31,
     30,
     31,
-    33,
+    31,
     30,
     31,
     30,

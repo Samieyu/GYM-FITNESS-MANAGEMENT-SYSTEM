@@ -130,7 +130,7 @@ export const PublicPlansCatalog: React.FC<PublicPlansCatalogProps> = ({
                     )}
                     {p.durationMonths >= 6 && (
                       <li className="flex items-center gap-2.5 text-text">
-                        <Check className="w-4 h-4 text-primary shrink-0" /> SWEATBOX Gemini AI Workout Coach
+                        <Check className="w-4 h-4 text-primary shrink-0" /> POWERZONE Gemini AI Workout Coach
                       </li>
                     )}
                     {p.durationMonths >= 12 && (

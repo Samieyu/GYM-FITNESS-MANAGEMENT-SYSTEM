@@ -31,7 +31,7 @@ async function request(method, path, body = null, headers = {}) {
 
 async function runAllTests() {
   console.log('========================================================================');
-  console.log('SWEATBOX FITNESS MANAGEMENT SYSTEM - FULL FUNCTIONALITY & E2E VERIFICATION');
+  console.log('POWERZONE FITNESS MANAGEMENT SYSTEM - FULL FUNCTIONALITY & E2E VERIFICATION');
   console.log('========================================================================\n');
 
   let passed = 0;

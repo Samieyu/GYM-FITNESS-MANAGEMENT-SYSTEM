@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from './auth';
+import { API_ROOT, safeJson } from './client';
 
 export interface ProgressMetric {
   id: string;
@@ -72,53 +73,53 @@ const getAuthHeaders = () => {
 };
 
 export const logProgressMetricApi = async (payload: LogMetricPayload): Promise<ProgressMetric> => {
-  const res = await fetch('/api/v1/progress', {
+  const res = await fetch(`${API_ROOT}/progress`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to log progress metric');
   return data.data;
 };
 
 export const fetchMyProgressMetricsApi = async (): Promise<MemberProgressData> => {
-  const res = await fetch('/api/v1/progress/my', {
+  const res = await fetch(`${API_ROOT}/progress/my`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch progress metrics');
   return data.data;
 };
 
 export const fetchMemberProgressMetricsApi = async (memberId: string): Promise<MemberProgressData> => {
-  const res = await fetch(`/api/v1/progress/member/${memberId}`, {
+  const res = await fetch(`${API_ROOT}/progress/member/${memberId}`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch member progress metrics');
   return data.data;
 };
 
 export const submitTrainerCommentApi = async (metricId: string, comment: string): Promise<ProgressMetric> => {
-  const res = await fetch(`/api/v1/progress/${metricId}/comment`, {
+  const res = await fetch(`${API_ROOT}/progress/${metricId}/comment`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ comment }),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to submit trainer feedback');
   return data.data;
 };
 
 export const fetchAssignedMembersProgressApi = async (): Promise<AssignedMemberSummary[]> => {
-  const res = await fetch('/api/v1/progress/members', {
+  const res = await fetch(`${API_ROOT}/progress/members`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok) throw new Error(data.error?.message || 'Failed to fetch assigned members');
   return data.data || [];
 };

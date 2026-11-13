@@ -23,7 +23,7 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
-    CREATE TYPE payment_status AS ENUM ('pending', 'successful', 'failed');
+    CREATE TYPE payment_status AS ENUM ('pending', 'completed', 'successful', 'failed', 'refunded');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;

@@ -74,7 +74,7 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
       ? 'Management AI Consultant'
       : role === 'trainer'
       ? 'Trainer Coaching Co-Pilot'
-      : 'SWEATBOX AI Fitness Coach';
+      : 'POWERZONE AI Fitness Coach';
 
   // Navigation Items Definitions
   const navItems = [
@@ -230,7 +230,7 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
               type="button"
               onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
               className={clsx('flex items-center overflow-hidden focus:outline-none group', isExpanded ? 'gap-3' : 'justify-center')}
-              title="SWEATBOX Fitness"
+              title="POWERZONE Fitness"
             >
               <div className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-black shrink-0 shadow-sm group-hover:scale-105 transition">
                 <Dumbbell className="w-5 h-5 stroke-[2.5]" />
@@ -238,7 +238,7 @@ export const StaffNavigation: React.FC<StaffNavigationProps> = ({
               {isExpanded && (
                 <div className="truncate">
                   <span className="font-display text-lg font-black tracking-tight text-text block leading-none">
-                    SWEATBOX
+                    POWERZONE
                   </span>
                   <span className="text-[10px] uppercase font-bold tracking-wider text-primary">
                     {role.toUpperCase()}

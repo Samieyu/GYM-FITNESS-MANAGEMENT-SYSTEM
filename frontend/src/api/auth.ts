@@ -33,13 +33,15 @@ export const setStoredAuth = (tokens: AuthTokens, user: User): void => {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
+import { API_ROOT, safeJson } from './client';
+
 export const clearStoredAuth = (): void => {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 };
 
-const API_BASE = '/api/v1/auth';
+const API_BASE = `${API_ROOT}/auth`;
 
 export const registerMemberApi = async (data: {
   email: string;
@@ -55,7 +57,7 @@ export const registerMemberApi = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Registration failed');
   if (json.data?.accessToken && json.data?.user) {
     setStoredAuth(
@@ -72,7 +74,7 @@ export const loginApi = async (email: string, password: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Login failed');
   setStoredAuth(
     { accessToken: json.data.accessToken, refreshToken: json.data.refreshToken },
@@ -87,7 +89,7 @@ export const verifyEmailApi = async (token: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Verification failed');
   return json;
 };
@@ -98,7 +100,7 @@ export const resendVerificationApi = async (email: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to resend verification email');
   return json;
 };
@@ -109,7 +111,7 @@ export const requestPasswordResetApi = async (email: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Failed to request password reset');
   return json;
 };
@@ -120,7 +122,7 @@ export const resetPasswordApi = async (token: string, newPassword: string) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token, newPassword }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || 'Password reset failed');
   return json;
 };
@@ -151,7 +153,7 @@ export const updateProfilePhotoApi = async (photoUrl: string | null): Promise<Us
     },
     body: JSON.stringify({ photoUrl }),
   });
-  const json = await res.json();
+  const json = await safeJson(res);
   if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to update profile photo');
   const user: User = json.data;
   const stored = getStoredUser();
@@ -186,17 +188,69 @@ export interface RegisterStaffPayload {
   bio?: string;
 }
 
+export const refreshTokensApi = async (): Promise<boolean> => {
+  const refreshToken = getStoredRefreshToken();
+  if (!refreshToken) return false;
+  try {
+    const res = await fetch(`${API_BASE}/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+    if (!res.ok) return false;
+    const json = await safeJson(res);
+    if (json.data?.accessToken) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, json.data.accessToken);
+      if (json.data.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, json.data.refreshToken);
+      }
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+export const authenticatedFetch = async (
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> => {
+  let token = getStoredAccessToken();
+  const headers = new Headers(options.headers || {});
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  let res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401) {
+    const refreshed = await refreshTokensApi();
+    if (refreshed) {
+      token = getStoredAccessToken();
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      res = await fetch(url, { ...options, headers });
+    }
+  }
+
+  return res;
+};
+
 export const fetchStaffMembersApi = async (): Promise<StaffMember[]> => {
-  const token = getStoredAccessToken();
-  const res = await fetch(`${API_BASE}/admin/staff`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to fetch staff members');
-  return json.data;
+  const res = await authenticatedFetch(`${API_BASE}/admin/staff`);
+  const json = await safeJson(res);
+  if (!res.ok) {
+    const detailMsg = Array.isArray(json.error?.details) && json.error.details.length > 0
+      ? json.error.details.map((d: any) => d.message || d.field).join(' • ')
+      : null;
+    throw new Error(detailMsg || json.error?.message || json.message || 'Failed to fetch staff members');
+  }
+  return json.data || [];
 };
 
 export const registerStaffApi = async (data: RegisterStaffPayload): Promise<{
@@ -204,16 +258,16 @@ export const registerStaffApi = async (data: RegisterStaffPayload): Promise<{
   staff: StaffMember;
   inviteSent: boolean;
 }> => {
-  const token = getStoredAccessToken();
-  const res = await fetch(`${API_BASE}/admin/register-staff`, {
+  const res = await authenticatedFetch(`${API_BASE}/admin/register-staff`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     body: JSON.stringify(data),
   });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error?.message || json.message || 'Failed to register staff');
+  const json = await safeJson(res);
+  if (!res.ok) {
+    const detailMsg = Array.isArray(json.error?.details) && json.error.details.length > 0
+      ? json.error.details.map((d: any) => d.message || d.field).join(' • ')
+      : null;
+    throw new Error(detailMsg || json.error?.message || json.message || 'Failed to register staff');
+  }
   return json.data;
 };

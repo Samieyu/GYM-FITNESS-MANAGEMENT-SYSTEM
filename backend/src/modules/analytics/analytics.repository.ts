@@ -38,11 +38,11 @@ export class AnalyticsRepository {
     // 1. Revenue metrics (Include both 'completed' and 'successful' statuses)
     const revQuery = `
       SELECT 
-        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful')), 0)::numeric as total_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'chapa'), 0)::numeric as chapa_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'cash'), 0)::numeric as cash_revenue,
-        COALESCE(SUM(amount) FILTER (WHERE status IN ('completed', 'successful') AND payment_method = 'bank_transfer'), 0)::numeric as bank_revenue,
-        COUNT(*) FILTER (WHERE status IN ('completed', 'successful'))::int as successful_transactions
+        COALESCE(SUM(amount) FILTER (WHERE status::text IN ('completed', 'successful')), 0)::numeric as total_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status::text IN ('completed', 'successful') AND payment_method::text = 'chapa'), 0)::numeric as chapa_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status::text IN ('completed', 'successful') AND payment_method::text = 'cash'), 0)::numeric as cash_revenue,
+        COALESCE(SUM(amount) FILTER (WHERE status::text IN ('completed', 'successful') AND payment_method::text = 'bank_transfer'), 0)::numeric as bank_revenue,
+        COUNT(*) FILTER (WHERE status::text IN ('completed', 'successful'))::int as successful_transactions
       FROM payments
     `;
     const revRes = await pool.query(revQuery);
@@ -65,7 +65,7 @@ export class AnalyticsRepository {
         COALESCE(SUM(amount), 0)::numeric as amount,
         COUNT(*)::int as transactions
       FROM payments
-      WHERE status IN ('completed', 'successful')
+      WHERE status::text IN ('completed', 'successful')
       GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       ORDER BY month ASC
       LIMIT 6

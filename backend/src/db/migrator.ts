@@ -20,10 +20,16 @@ export const runMigrations = async (): Promise<string[]> => {
     const res = await client.query('SELECT name FROM migrations ORDER BY id ASC;');
     const executedSet = new Set(res.rows.map((r: { name: string }) => r.name));
 
-    // 3. Find migration files
-    const migrationsDir = path.join(__dirname, 'migrations');
+    // 3. Find migration files (robust lookup for both dev and compiled production dist)
+    let migrationsDir = path.join(__dirname, 'migrations');
     if (!fs.existsSync(migrationsDir)) {
-      console.log('[Migrator] No migrations directory found.');
+      migrationsDir = path.join(process.cwd(), 'src', 'db', 'migrations');
+    }
+    if (!fs.existsSync(migrationsDir)) {
+      migrationsDir = path.join(__dirname, '..', '..', 'src', 'db', 'migrations');
+    }
+    if (!fs.existsSync(migrationsDir)) {
+      console.log('[Migrator] No migrations directory found at:', migrationsDir);
       return [];
     }
 

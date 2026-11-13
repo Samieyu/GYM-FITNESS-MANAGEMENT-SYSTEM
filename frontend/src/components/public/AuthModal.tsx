@@ -222,8 +222,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-surface border border-border w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/80 relative max-h-[92vh] overflow-y-auto animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-surface border border-border w-full max-w-lg rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl shadow-black/80 relative max-h-[94vh] overflow-y-auto animate-scaleUp">
         {/* Close Button */}
         <button
           type="button"
@@ -258,8 +258,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 : mode === 'forgot-password'
                 ? 'Reset Your Password'
                 : mode === 'login'
-                ? 'Sign In to SWEATBOX'
-                : 'Join SWEATBOX'}
+                ? 'Sign In to POWERZONE'
+                : 'Join POWERZONE'}
             </h3>
             <p className="text-xs text-text-muted mt-0.5">
               {mode === 'set-password'
@@ -511,7 +511,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <span>Reset Link Dispatched</span>
                 </div>
                 <p className="leading-relaxed">
-                  Password reset instructions have been delivered to <strong>{forgotEmail}</strong>. In local dev mode, view the email in Mailpit at port 8025.
+                  If an active account matches <strong>{forgotEmail}</strong>, password reset instructions have been sent. Please check your inbox and spam folder (link expires in 1 hour).
                 </p>
                 <Button
                   variant="primary"
