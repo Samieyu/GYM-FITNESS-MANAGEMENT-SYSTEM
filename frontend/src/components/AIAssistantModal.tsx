@@ -12,12 +12,16 @@ import {
   RefreshCw,
   Search,
   Building,
+  Play,
+  ExternalLink,
+  Video,
 } from 'lucide-react';
 import {
   askFitnessCoachApi,
   explainExerciseApi,
   fetchMyAiProgressSummaryApi,
   ExerciseExplanation,
+  YouTubeVideo,
 } from '../api/ai';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
@@ -56,6 +60,7 @@ interface MessageItem {
   sender: 'user' | 'ai';
   text: string;
   time: string;
+  videos?: YouTubeVideo[];
 }
 
 export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
@@ -65,6 +70,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   userRole,
 }) => {
   const [activeTab, setActiveTab] = useState<'chat' | 'exercise' | 'progress'>('chat');
+  const [activePlayingVideoId, setActivePlayingVideoId] = useState<string | null>(null);
 
   // Role persona config
   const isTrainer = userRole === 'trainer';
@@ -86,7 +92,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     ? `Hello ${userName}! I'm POWERZONE Management Consultant AI, your gym business and operations advisory co-pilot. Ask me anything about member retention tactics, off-peak pricing strategy, commercial equipment maintenance lifecycles, or staff scheduling optimization.`
     : isTrainer
     ? `Hello Coach ${userName}! I'm your Coaching Co-Pilot. I assist with exercise progression design, periodized hypertrophy/strength splits, client macronutrient targets during Ethiopian fasting (tsom), and injury regressions. What program are you building today?`
-    : `Hello ${userName}! I'm POWERZONE AI Fitness Coach, your sports science and training assistant. Ask me anything about workout routines, Ethiopian nutrition (teff, fasting diet/tsom), exercise biomechanics, or recovery!`;
+    : `Hello ${userName}! I'm POWERZONE AI Fitness Coach, your sports science and training assistant. Ask me anything about workout routines, Ethiopian nutrition (teff, fasting diet/tsom), exercise biomechanics, or ask for video tutorials for any exercise!`;
 
   // Chat state
   const [messages, setMessages] = useState<MessageItem[]>([]);
@@ -112,16 +118,19 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
       ]
     : isTrainer
     ? [
+        '🎥 Show me a video for Romanian Deadlift form',
+        '🎥 Barbell back squat depth video tutorial',
         'Design a 4-week hypertrophy progression for an intermediate trainee.',
         'What are safe deadlift regression exercises for a client with mild lumbar discomfort?',
         'How should an athlete adjust macros during Ethiopian fasting (tsom) to preserve lean muscle?',
-        'Suggest effective mobility drills to improve deep squat ankle dorsiflexion.',
       ]
     : [
+        '🎥 Show me a video for bench press',
+        '🎥 Squat form video tutorial',
+        '🎥 Deadlift technique video',
+        '🎥 Pull-up form demonstration video',
         'What are the best Ethiopian post-workout foods during fasting season (tsom)?',
         'How do I properly execute progressive overload to break a bench plateau?',
-        'How should I structure a 4-day workout split?',
-        'What are optimal hydration targets for training in Addis Ababa?',
       ];
 
   const popularExercises = [
@@ -165,11 +174,12 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
         : isTrainer
         ? `[Coach Context: You are assisting a certified trainer]: `
         : ``;
-      const answer = await askFitnessCoachApi(`${contextPrefix}${text.trim()}`);
+      const response = await askFitnessCoachApi(`${contextPrefix}${text.trim()}`);
       const aiMsg: MessageItem = {
         sender: 'ai',
-        text: cleanMarkdownText(answer),
+        text: cleanMarkdownText(response.answer),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        videos: response.videos && response.videos.length > 0 ? response.videos : undefined,
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
@@ -318,13 +328,103 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-2xl p-4 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
+                      className={`max-w-[85%] rounded-2xl p-4 text-sm whitespace-pre-wrap leading-relaxed shadow-sm ${
                         m.sender === 'user'
                           ? 'bg-primary text-primary-foreground font-medium'
                           : 'bg-background border border-border text-text'
                       }`}
                     >
                       {cleanMarkdownText(m.text)}
+
+                      {/* Video Demonstrations if present */}
+                      {m.videos && m.videos.length > 0 && (
+                        <div className="mt-3.5 pt-3 border-t border-border/70 not-prose">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-primary mb-2.5">
+                            <Video className="w-3.5 h-3.5" />
+                            <span>Verified Video Tutorials ({m.videos.length})</span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                            {m.videos.map((vid) => (
+                              <div
+                                key={vid.id}
+                                className="bg-surface border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all flex flex-col group shadow-sm text-left"
+                              >
+                                {activePlayingVideoId === vid.id ? (
+                                  <div className="relative aspect-video w-full bg-black">
+                                    <iframe
+                                      src={`https://www.youtube-nocookie.com/embed/${vid.id}?autoplay=1&rel=0`}
+                                      title={vid.title}
+                                      className="w-full h-full border-0"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowFullScreen
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setActivePlayingVideoId(null)}
+                                      className="absolute top-1.5 right-1.5 bg-black/80 hover:bg-black text-white text-[10px] px-2 py-0.5 rounded font-bold shadow"
+                                    >
+                                      ✕ Close
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div
+                                    onClick={() => setActivePlayingVideoId(vid.id)}
+                                    className="relative aspect-video w-full bg-black/20 cursor-pointer overflow-hidden group/thumb"
+                                  >
+                                    <img
+                                      src={vid.thumbnail}
+                                      alt={vid.title}
+                                      className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                      loading="lazy"
+                                    />
+                                    <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/15 transition-colors flex items-center justify-center">
+                                      <div className="w-9 h-9 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
+                                        <Play className="w-4 h-4 fill-white ml-0.5" />
+                                      </div>
+                                    </div>
+                                    <span className="absolute bottom-1.5 right-1.5 bg-black/80 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                      YouTube
+                                    </span>
+                                  </div>
+                                )}
+                                <div className="p-2.5 flex-1 flex flex-col justify-between">
+                                  <div>
+                                    <h4
+                                      className="text-xs font-bold text-text line-clamp-2 leading-snug group-hover:text-primary transition-colors"
+                                      title={vid.title}
+                                    >
+                                      {vid.title}
+                                    </h4>
+                                    <p className="text-[11px] text-text-muted mt-0.5">{vid.author}</p>
+                                  </div>
+                                  <div className="mt-2.5 pt-2 border-t border-border/40 flex items-center justify-between gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setActivePlayingVideoId(activePlayingVideoId === vid.id ? null : vid.id)
+                                      }
+                                      className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1"
+                                    >
+                                      <Play className="w-3 h-3 fill-current" />
+                                      <span>{activePlayingVideoId === vid.id ? 'Close' : 'Watch Here'}</span>
+                                    </button>
+                                    <a
+                                      href={vid.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-[10px] text-text-muted hover:text-text flex items-center gap-0.5"
+                                    >
+                                      <span>YouTube</span>
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <span
                         className={`block text-[10px] mt-1.5 ${
                           m.sender === 'user' ? 'text-primary-foreground/75' : 'text-text-muted'
@@ -454,6 +554,90 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
                   <div className="prose max-w-none text-sm text-text whitespace-pre-wrap leading-relaxed">
                     {cleanMarkdownText(exerciseGuide.aiGuide)}
                   </div>
+
+                  {/* Verified Video Demonstrations */}
+                  {exerciseGuide.videos && exerciseGuide.videos.length > 0 && (
+                    <div className="border-t border-border pt-4 space-y-3 not-prose">
+                      <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                        <Video className="w-4 h-4" />
+                        <span>Recommended YouTube Form Tutorials ({exerciseGuide.videos.length})</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {exerciseGuide.videos.map((vid) => (
+                          <div
+                            key={vid.id}
+                            className="bg-surface border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all flex flex-col shadow-sm"
+                          >
+                            {activePlayingVideoId === vid.id ? (
+                              <div className="relative aspect-video w-full bg-black">
+                                <iframe
+                                  src={`https://www.youtube-nocookie.com/embed/${vid.id}?autoplay=1&rel=0`}
+                                  title={vid.title}
+                                  className="w-full h-full border-0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setActivePlayingVideoId(null)}
+                                  className="absolute top-1.5 right-1.5 bg-black/80 hover:bg-black text-white text-[10px] px-2 py-0.5 rounded font-bold shadow"
+                                >
+                                  ✕ Close
+                                </button>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => setActivePlayingVideoId(vid.id)}
+                                className="relative aspect-video w-full bg-black/20 cursor-pointer overflow-hidden group/thumb"
+                              >
+                                <img
+                                  src={vid.thumbnail}
+                                  alt={vid.title}
+                                  className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/15 transition-colors flex items-center justify-center">
+                                  <div className="w-10 h-10 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
+                                    <Play className="w-4 h-4 fill-white ml-0.5" />
+                                  </div>
+                                </div>
+                                <span className="absolute bottom-1.5 right-1.5 bg-black/80 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                  YouTube
+                                </span>
+                              </div>
+                            )}
+                            <div className="p-3 flex-1 flex flex-col justify-between">
+                              <div>
+                                <h4 className="text-xs font-bold text-text line-clamp-2 leading-snug">{vid.title}</h4>
+                                <p className="text-[11px] text-text-muted mt-0.5">{vid.author}</p>
+                              </div>
+                              <div className="mt-3 pt-2 border-t border-border/40 flex items-center justify-between">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setActivePlayingVideoId(activePlayingVideoId === vid.id ? null : vid.id)
+                                  }
+                                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                                >
+                                  <Play className="w-3.5 h-3.5 fill-current" />
+                                  <span>{activePlayingVideoId === vid.id ? 'Close Player' : 'Play Video'}</span>
+                                </button>
+                                <a
+                                  href={vid.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-text-muted hover:text-text flex items-center gap-1"
+                                >
+                                  <span>Watch on YouTube</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : null}
             </div>

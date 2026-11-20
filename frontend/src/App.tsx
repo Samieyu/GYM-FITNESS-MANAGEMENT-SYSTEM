@@ -109,9 +109,9 @@ export const App: React.FC = () => {
     setIsForgotSubmitting(true);
     setErrorMessage(null);
     try {
-      await requestPasswordResetApi(forgotEmail);
+      const res = await requestPasswordResetApi(forgotEmail);
       setForgotSuccess(true);
-      setSuccessMessage('Password reset link sent! Please check your email inbox.');
+      setSuccessMessage(res?.data?.message || 'Password reset link sent! Please check your email inbox.');
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to request password reset.');
     } finally {

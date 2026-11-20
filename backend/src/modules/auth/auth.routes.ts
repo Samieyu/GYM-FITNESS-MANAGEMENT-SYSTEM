@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import { config } from '../../config';
 import { authController } from './auth.controller';
 import {
   registerMemberSchema,
@@ -69,6 +70,50 @@ router.post(
   validateBody(requestPasswordResetSchema),
   authController.forgotPassword
 );
+
+router.get(
+  '/email-diagnostic',
+  authController.getEmailDiagnostic
+);
+
+router.get('/test-resend', async (req: Request, res: Response) => {
+  const to = (req.query.to as string) || 'samiwm63@gmail.com';
+  if (!config.resend.apiKey) {
+    return res.status(400).json({ error: 'RESEND_API_KEY is not configured on server' });
+  }
+
+  const attempts: any[] = [];
+  const senders = [
+    config.resend.from || 'POWERZONE Fitness <onboarding@resend.dev>',
+    'POWERZONE Fitness <onboarding@resend.dev>',
+    'onboarding@resend.dev',
+  ];
+
+  for (const sender of senders) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.resend.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: sender,
+          to: [to],
+          subject: 'POWERZONE Fitness — Test Email Delivery',
+          html: `<div style="font-family:sans-serif;padding:20px;background:#111;color:#eee;"><h2>POWERZONE Fitness Delivery Test</h2><p>Recipient: ${to}</p><p>Timestamp: ${new Date().toISOString()}</p></div>`,
+        }),
+      });
+      const data = await response.json();
+      attempts.push({ sender, status: response.status, ok: response.ok, data });
+      if (response.ok) break;
+    } catch (e: any) {
+      attempts.push({ sender, error: e.message });
+    }
+  }
+
+  res.status(200).json({ success: true, to, attempts });
+});
 
 router.post(
   '/reset-password',

@@ -1,4 +1,5 @@
 import { authRepository, UserRow } from './auth.repository';
+import { config } from '../../config';
 import { hashPassword, comparePassword } from '../../shared/utils/hash';
 import {
   generateAccessToken,
@@ -235,11 +236,11 @@ export class AuthService {
     const user = await authRepository.findUserByEmail(email);
     if (!user) {
       console.warn(`[Auth] Password reset requested for unknown email: ${email}`);
-      return { message: 'If an account exists with this email, a password reset link has been sent.' };
+      return { message: 'If an active account matches this email, password reset instructions have been sent. Please check your inbox and spam folder (link expires in 1 hour).' };
     }
     if (!user.is_active) {
       console.warn(`[Auth] Password reset skipped for inactive account: ${email}`);
-      return { message: 'If an account exists with this email, a password reset link has been sent.' };
+      return { message: 'If an active account matches this email, password reset instructions have been sent. Please check your inbox and spam folder (link expires in 1 hour).' };
     }
 
     const resetToken = generateRandomToken(32);
@@ -250,7 +251,31 @@ export class AuthService {
     console.log(`[Auth] Generating password reset token for ${user.email}`);
     await sendPasswordResetEmail(user.email, user.first_name, resetToken);
 
-    return { message: 'If an account exists with this email, a password reset link has been sent.' };
+    return {
+      message: 'If an active account matches this email, password reset instructions have been sent. Please check your inbox and spam folder (link expires in 1 hour).',
+    };
+  }
+
+  getEmailDiagnostic() {
+    return {
+      brevo: {
+        configured: Boolean(config.brevo.apiKey && config.brevo.fromEmail),
+        fromEmail: config.brevo.fromEmail || null,
+        fromName: config.brevo.fromName || null,
+      },
+      resend: {
+        configured: Boolean(config.resend.apiKey),
+        sender: config.resend.from || 'POWERZONE Fitness <onboarding@resend.dev>',
+        hasApiKey: Boolean(config.resend.apiKey),
+      },
+      smtp: {
+        host: config.smtp.host,
+        port: config.smtp.port,
+        user: config.smtp.user ? `${config.smtp.user.slice(0, 3)}***` : null,
+      },
+      environment: config.env,
+      renderFreeTierNote: 'Render free tier blocks SMTP ports 25, 465, 587. Brevo and Resend use HTTPS port 443.',
+    };
   }
 
   async resetPassword(token: string, newPasswordPlain: string): Promise<{ message: string }> {

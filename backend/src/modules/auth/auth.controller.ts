@@ -92,6 +92,18 @@ export class AuthController {
     }
   }
 
+  async getEmailDiagnostic(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = authService.getEmailDiagnostic();
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { token, newPassword } = req.body;

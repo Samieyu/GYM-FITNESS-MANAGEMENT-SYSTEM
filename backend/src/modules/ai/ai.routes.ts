@@ -6,6 +6,9 @@ import { roleGuard } from '../../shared/middlewares/roleGuard';
 const router = Router();
 const controller = new AiController();
 
+// 0. AI Status / Diagnostic Endpoint (Public status check)
+router.get('/status', controller.getStatus);
+
 // 1. Fitness Q&A Coach
 router.post('/chat', authGuard, controller.chat);
 

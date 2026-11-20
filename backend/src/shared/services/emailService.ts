@@ -9,6 +9,9 @@ const createMailTransporter = () => {
   if (isGmail && config.smtp.user && config.smtp.pass) {
     return nodemailer.createTransport({
       service: 'gmail',
+      connectionTimeout: 4000,
+      greetingTimeout: 4000,
+      socketTimeout: 5000,
       auth: {
         user: config.smtp.user,
         pass: config.smtp.pass,
@@ -20,6 +23,9 @@ const createMailTransporter = () => {
     host: config.smtp.host,
     port: config.smtp.port,
     secure: config.smtp.port === 465, // true for 465 (SSL), false for 587 (STARTTLS) or 1025 (Mailpit)
+    connectionTimeout: 4000,
+    greetingTimeout: 4000,
+    socketTimeout: 5000,
     auth: config.smtp.user
       ? {
           user: config.smtp.user,
@@ -80,7 +86,7 @@ export const dispatchEmail = async (opts: SendMailOptions): Promise<{ success: b
     const defaultSandboxSender = 'POWERZONE Fitness <onboarding@resend.dev>';
     const primarySender = opts.from || config.resend.from || defaultSandboxSender;
 
-    const sendWithResend = async (sender: string) => {
+    const sendWithResend = async (sender: string, targetTo?: string, customSubject?: string, customHtml?: string) => {
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -89,9 +95,9 @@ export const dispatchEmail = async (opts: SendMailOptions): Promise<{ success: b
         },
         body: JSON.stringify({
           from: sender,
-          to: [opts.to],
-          subject: opts.subject,
-          html: opts.html,
+          to: [targetTo || opts.to],
+          subject: customSubject || opts.subject,
+          html: customHtml || opts.html,
         }),
       });
       const data: any = await response.json();
@@ -112,6 +118,32 @@ export const dispatchEmail = async (opts: SendMailOptions): Promise<{ success: b
       }
 
       if (!attempt.ok) {
+        // Auto-detect Resend sandbox restriction (e.g. can only send to registered owner email)
+        const errMsg = String(attempt.data?.message || '');
+        const match = errMsg.match(/only send testing emails to your own email address \(([^)]+)\)/i);
+        if (match && match[1] && match[1].toLowerCase() !== opts.to.toLowerCase()) {
+          const ownerEmail = match[1].trim();
+          console.warn(`[Email / Resend Sandbox] Recipient ${opts.to} restricted by Resend sandbox. Rerouting to verified Resend account owner: ${ownerEmail}`);
+          const sandboxForwardHtml = `
+            <div style="font-family:sans-serif;padding:12px 16px;background:#2d1b1b;border:1px solid #7f1d1d;color:#fca5a5;font-size:12px;margin-bottom:20px;border-radius:8px;line-height:1.5;">
+              <strong>⚠️ Resend Developer Sandbox Notice:</strong><br/>
+              This transactional message was requested for <strong>${opts.to}</strong>. Because your Resend domain is running in unverified sandbox mode, Resend routes testing emails exclusively to your registered account owner address (<strong>${ownerEmail}</strong>).<br/>
+              <em>To deliver directly to any athlete inbox, verify a domain in your Resend Dashboard (resend.com/domains).</em>
+            </div>
+            ${opts.html}
+          `;
+          const sandboxAttempt = await sendWithResend(
+            defaultSandboxSender,
+            ownerEmail,
+            `[Resend Sandbox for ${opts.to}] ${opts.subject}`,
+            sandboxForwardHtml
+          );
+          if (sandboxAttempt.ok) {
+            console.log(`[Email / Resend Sandbox] Successfully delivered to account owner ${ownerEmail} for ${opts.to} (ID: ${sandboxAttempt.data.id})`);
+            return { success: true, id: sandboxAttempt.data.id };
+          }
+        }
+
         throw new Error(attempt.data?.message || `Resend API returned HTTP ${attempt.status}`);
       }
 
@@ -122,16 +154,16 @@ export const dispatchEmail = async (opts: SendMailOptions): Promise<{ success: b
       if (resendErr.message && resendErr.message.includes('testing emails')) {
         console.warn('[Email / Resend Hint] Resend free tier without a verified domain only sends to your own Resend account email. Verify a domain in Resend OR set BREVO_API_KEY to send to any member email.');
       }
-      // If we are in production without a real external SMTP configured, throw directly instead of trying localhost:1025
-      if (config.env === 'production' && config.smtp.host === '127.0.0.1') {
+      // If we are in production or on Render, throw immediately instead of hanging on SMTP ports 25/465/587
+      if (config.env === 'production' || process.env.RENDER || config.smtp.host === '127.0.0.1') {
         throw resendErr;
       }
     }
   }
 
-  // 3. Secondary Fallback: SMTP / Nodemailer (local Mailpit or VPS)
-  if (config.env === 'production' && config.smtp.host === '127.0.0.1') {
-    throw new Error('Email failed to send via HTTPS providers and local SMTP (127.0.0.1) is unavailable in production.');
+  // 3. Secondary Fallback: SMTP / Nodemailer (local Mailpit or VPS only)
+  if (config.env === 'production' || process.env.RENDER || config.smtp.host === '127.0.0.1') {
+    throw new Error('Email failed to send via HTTPS providers (Brevo / Resend). SMTP ports 25, 465, 587 are blocked on Render free tier.');
   }
 
   try {
@@ -423,8 +455,8 @@ export const sendPasswordResetEmail = async (
   email: string,
   firstName: string,
   token: string
-): Promise<void> => {
-  const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+): Promise<{ success: boolean; resetUrl: string; error?: string }> => {
+  const resetUrl = `${config.frontendUrl}/?mode=reset-password&token=${token}`;
 
   const html = renderEmailShell({
     preheader: `Reset your POWERZONE account password.`,
@@ -453,9 +485,11 @@ export const sendPasswordResetEmail = async (
       html,
     });
     console.log(`[Email] Password reset email sent to ${email}`);
-  } catch (error) {
-    console.error(`[Email] Failed to send password reset email to ${email}:`, error);
+    return { success: true, resetUrl };
+  } catch (error: any) {
+    console.error(`[Email] Failed to send password reset email to ${email}:`, error?.message || error);
     console.log(`[Email Fallback URL] Password reset URL: ${resetUrl}`);
+    return { success: false, resetUrl, error: error?.message || String(error) };
   }
 };
 
@@ -464,7 +498,7 @@ export const sendWalkinInvitationEmail = async (
   firstName: string,
   token: string
 ): Promise<void> => {
-  const setPasswordUrl = `${config.frontendUrl}/set-password?token=${token}`;
+  const setPasswordUrl = `${config.frontendUrl}/?mode=set-password&token=${token}`;
 
   const html = renderEmailShell({
     preheader: `Welcome to POWERZONE! Set your password to access your digital member pass.`,
@@ -506,7 +540,7 @@ export const sendStaffInvitationEmail = async (
   token: string,
   initialPassword?: string
 ): Promise<void> => {
-  const setPasswordUrl = `${config.frontendUrl}/set-password?token=${token}`;
+  const setPasswordUrl = `${config.frontendUrl}/?mode=set-password&token=${token}`;
   const roleTitle = role === 'trainer' ? 'Certified Fitness Trainer' : 'Front Desk Receptionist';
 
   const credentialCard = initialPassword

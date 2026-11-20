@@ -11,8 +11,17 @@ function getAuthHeaders() {
   };
 }
 
+export interface YouTubeVideo {
+  id: string;
+  title: string;
+  author: string;
+  thumbnail: string;
+  url: string;
+}
+
 export interface AiChatResponse {
   answer: string;
+  videos?: YouTubeVideo[];
   timestamp: string;
 }
 
@@ -27,9 +36,10 @@ export interface ExerciseExplanation {
     instructions: string;
   } | null;
   aiGuide: string;
+  videos?: YouTubeVideo[];
 }
 
-export async function askFitnessCoachApi(question: string): Promise<string> {
+export async function askFitnessCoachApi(question: string): Promise<AiChatResponse> {
   const response = await fetch(`${API_BASE}/chat`, {
     method: 'POST',
     credentials: 'omit',
@@ -38,7 +48,7 @@ export async function askFitnessCoachApi(question: string): Promise<string> {
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.message || 'Failed to query AI Coach');
-  return data.data.answer;
+  return data.data;
 }
 
 export async function explainExerciseApi(exerciseName: string): Promise<ExerciseExplanation> {

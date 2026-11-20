@@ -70,6 +70,9 @@ export const config = {
   },
 
   gemini: {
-    apiKey: process.env.GEMINI_API_KEY || '',
+    apiKey: (() => {
+      const raw = (process.env.GEMINI_API_KEY || '').trim().replace(/^['"]|['"]$/g, '');
+      return raw.startsWith('yAQ.') ? raw.slice(1) : raw;
+    })(),
   },
 };

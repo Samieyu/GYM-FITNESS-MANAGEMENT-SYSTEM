@@ -513,6 +513,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <p className="leading-relaxed">
                   If an active account matches <strong>{forgotEmail}</strong>, password reset instructions have been sent. Please check your inbox and spam folder (link expires in 1 hour).
                 </p>
+
                 <Button
                   variant="primary"
                   size="md"

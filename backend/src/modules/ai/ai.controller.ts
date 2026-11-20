@@ -13,7 +13,7 @@ export class AiController {
       }
 
       const user = (req as any).user;
-      const response = await aiService.askFitnessCoach(question.trim(), {
+      const { answer, videos } = await aiService.askFitnessCoach(question.trim(), {
         name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : undefined,
         role: user?.role,
       });
@@ -21,7 +21,8 @@ export class AiController {
       res.status(200).json({
         success: true,
         data: {
-          answer: response,
+          answer,
+          videos: videos || [],
           timestamp: new Date().toISOString(),
         },
       });
@@ -63,6 +64,15 @@ export class AiController {
       }
       const summary = await aiService.generateMemberProgressSummary(memberId);
       res.status(200).json({ success: true, data: { summary } });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const status = await aiService.checkAiStatus();
+      res.status(200).json({ success: true, data: status });
     } catch (err) {
       next(err);
     }
