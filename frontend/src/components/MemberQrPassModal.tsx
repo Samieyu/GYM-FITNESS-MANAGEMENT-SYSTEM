@@ -121,11 +121,11 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-primary text-charcoal-950 shadow-md shadow-primary/25 p-1.5 flex items-center justify-center font-black shrink-0">
             <img
               src="/powerzone-logo.png"
-              alt="POWERZONE Golden Lion Logo"
-              className="w-full h-full object-contain select-none drop-shadow-sm"
+              alt="POWERZONE Lion Logo"
+              className="w-full h-full object-contain select-none"
               loading="eager"
             />
           </div>

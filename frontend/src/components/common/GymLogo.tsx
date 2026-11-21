@@ -24,7 +24,7 @@ export const GymLogo: React.FC<GymLogoProps> = ({
   variant = 'badge',
   className = '',
   imageClassName = '',
-  alt = 'POWERZONE Golden Lion Logo',
+  alt = 'POWERZONE Lion Logo',
   withText = false,
   textSubtitle,
 }) => {
@@ -34,7 +34,7 @@ export const GymLogo: React.FC<GymLogoProps> = ({
     <img
       src="/powerzone-logo.png"
       alt={alt}
-      className={`object-contain select-none drop-shadow-sm transition-transform duration-200 ${currentSize.img} ${imageClassName}`}
+      className={`object-contain select-none transition-transform duration-200 ${currentSize.img} ${imageClassName}`}
       loading="eager"
       decoding="async"
     />
@@ -43,7 +43,7 @@ export const GymLogo: React.FC<GymLogoProps> = ({
   const logoElement =
     variant === 'badge' ? (
       <div
-        className={`flex items-center justify-center shrink-0 bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 ${currentSize.container} ${className}`}
+        className={`flex items-center justify-center shrink-0 bg-primary text-charcoal-950 shadow-md shadow-primary/25 ${currentSize.container} ${className}`}
       >
         {logoImg}
       </div>

@@ -67,13 +67,13 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
       <div className="flex flex-col items-center gap-6">
         <button
           onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
-          className="w-11 h-11 rounded-2xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center hover:scale-105 hover:border-amber-400 transition-all"
+          className="w-11 h-11 rounded-2xl bg-primary text-charcoal-950 shadow-md shadow-primary/25 p-1.5 flex items-center justify-center hover:scale-105 transition-all"
           title="POWERZONE Fitness Management System"
         >
           <img
             src="/powerzone-logo.png"
-            alt="POWERZONE Golden Lion Logo"
-            className="w-full h-full object-contain select-none drop-shadow-sm"
+            alt="POWERZONE Lion Logo"
+            className="w-full h-full object-contain select-none"
             loading="eager"
           />
         </button>

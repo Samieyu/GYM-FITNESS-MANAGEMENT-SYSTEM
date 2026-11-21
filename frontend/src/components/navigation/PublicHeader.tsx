@@ -51,11 +51,11 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
           }}
           className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none group shrink-0 min-w-max"
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black group-hover:scale-105 group-hover:border-amber-400 transition-all shrink-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary text-charcoal-950 shadow-md shadow-primary/25 p-1.5 flex items-center justify-center font-black group-hover:scale-105 transition-all shrink-0">
             <img
               src="/powerzone-logo.png"
-              alt="POWERZONE Golden Lion Logo"
-              className="w-full h-full object-contain select-none drop-shadow-sm"
+              alt="POWERZONE Lion Logo"
+              className="w-full h-full object-contain select-none"
               loading="eager"
             />
           </div>
