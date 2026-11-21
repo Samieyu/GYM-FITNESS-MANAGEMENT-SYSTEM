@@ -107,11 +107,16 @@ export const ChapaCheckoutModal: React.FC<ChapaCheckoutModalProps> = ({
         {/* STEP 1: PAYMENT FORM */}
         {paymentStep === 'form' && (
           <div>
-            {/* Header with Chapa Gateway Branding */}
+            {/* Header with Chapa Gateway Branding & POWERZONE Emblem */}
             <div className="flex items-center justify-between mb-5 pb-4 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 font-black text-lg">
-                  C
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black shrink-0">
+                  <img
+                    src="/powerzone-logo.png"
+                    alt="POWERZONE Golden Lion Logo"
+                    className="w-full h-full object-contain select-none drop-shadow-sm"
+                    loading="eager"
+                  />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">

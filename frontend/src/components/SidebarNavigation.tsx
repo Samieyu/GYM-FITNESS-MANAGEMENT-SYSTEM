@@ -67,13 +67,15 @@ export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
       <div className="flex flex-col items-center gap-6">
         <button
           onClick={() => onSelectTab(role === 'member' && !isPaid ? 'plans' : 'home')}
-          className="w-11 h-11 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-[#B4F82C] shadow-lg shadow-[#B4F82C]/10 hover:scale-105 transition"
+          className="w-11 h-11 rounded-2xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center hover:scale-105 hover:border-amber-400 transition-all"
           title="POWERZONE Fitness Management System"
         >
-          {/* Geometric Triangle Gym Brand Icon */}
-          <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2L2 20h20L12 2zm0 4.5l6.5 11.5h-13L12 6.5z" />
-          </svg>
+          <img
+            src="/powerzone-logo.png"
+            alt="POWERZONE Golden Lion Logo"
+            className="w-full h-full object-contain select-none drop-shadow-sm"
+            loading="eager"
+          />
         </button>
 
         {/* PRIMARY VERTICAL NAV ICONS */}

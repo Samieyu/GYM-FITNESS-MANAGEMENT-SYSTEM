@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dumbbell, Menu, X, ArrowRight, User, Sparkles } from 'lucide-react';
+import { Menu, X, ArrowRight, User, Sparkles } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { clsx } from 'clsx';
@@ -51,8 +51,13 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({
           }}
           className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none group shrink-0 min-w-max"
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#FF6B00] text-[#0E1116] flex items-center justify-center font-black shadow-sm group-hover:scale-105 transition-transform shrink-0">
-            <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black group-hover:scale-105 group-hover:border-amber-400 transition-all shrink-0">
+            <img
+              src="/powerzone-logo.png"
+              alt="POWERZONE Golden Lion Logo"
+              className="w-full h-full object-contain select-none drop-shadow-sm"
+              loading="eager"
+            />
           </div>
           <div className="text-left shrink-0">
             <span className="font-display text-base sm:text-xl font-black tracking-tight flex items-center gap-1.5 leading-none whitespace-nowrap">

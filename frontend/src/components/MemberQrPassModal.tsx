@@ -7,8 +7,7 @@ import {
   AlertTriangle, 
   History, 
   CheckCircle2, 
-  XCircle, 
-  Dumbbell 
+  XCircle 
 } from 'lucide-react';
 import { fetchMyQrPassApi, fetchMyCheckinHistoryApi, QrPassData, CheckinRecordItem } from '../api/checkins';
 import { formatEthiopianDate, formatEthiopianTime } from '../utils/ethiopianCalendar';
@@ -122,8 +121,13 @@ export const MemberQrPassModal: React.FC<MemberQrPassModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Dumbbell className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black shrink-0">
+            <img
+              src="/powerzone-logo.png"
+              alt="POWERZONE Golden Lion Logo"
+              className="w-full h-full object-contain select-none drop-shadow-sm"
+              loading="eager"
+            />
           </div>
           <div>
             <h2 id="qr-modal-title" className="text-lg font-bold text-text flex items-center gap-2">

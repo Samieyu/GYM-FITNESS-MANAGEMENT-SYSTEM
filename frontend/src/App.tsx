@@ -957,8 +957,13 @@ export const App: React.FC = () => {
             className="flex items-center gap-3 cursor-pointer select-none"
             onClick={() => setActiveTab(currentUser.role === 'member' && !(myMembership && myMembership.status === 'active') ? 'plans' : 'home')}
           >
-            <div className="w-10 h-10 bg-[#FF6B00] rounded-xl text-[#0E1116] shadow-sm flex items-center justify-center font-black">
-              <Dumbbell className="w-5 h-5 stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black shrink-0">
+              <img
+                src="/powerzone-logo.png"
+                alt="POWERZONE Golden Lion Logo"
+                className="w-full h-full object-contain select-none drop-shadow-sm"
+                loading="eager"
+              />
             </div>
             <div>
               <h1 className="font-display font-bold text-lg tracking-tight flex items-center gap-1.5 leading-none">

@@ -707,8 +707,13 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
           {/* Brand Info */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-slate-950 font-black shadow-md shadow-primary/20">
-                <Dumbbell className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1 flex items-center justify-center font-black shrink-0">
+                <img
+                  src="/powerzone-logo.png"
+                  alt="POWERZONE Golden Lion Logo"
+                  className="w-full h-full object-contain select-none drop-shadow-sm"
+                  loading="eager"
+                />
               </div>
               <span className="text-xl font-black text-text tracking-wider uppercase">POWERZONE</span>
             </div>

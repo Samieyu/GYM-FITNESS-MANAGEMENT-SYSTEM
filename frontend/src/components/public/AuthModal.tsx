@@ -5,8 +5,6 @@ import {
   Lock,
   Phone,
   Target,
-  ShieldCheck,
-  UserPlus,
   AlertCircle,
   Check,
   Eye,
@@ -240,16 +238,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3.5 mb-6">
-          <div className="p-3 bg-primary/10 border border-primary/25 rounded-2xl text-primary">
-            {mode === 'set-password' ? (
-              <ShieldCheck className="w-6 h-6" />
-            ) : mode === 'login' ? (
-              <Lock className="w-6 h-6" />
-            ) : mode === 'forgot-password' ? (
-              <Mail className="w-6 h-6" />
-            ) : (
-              <UserPlus className="w-6 h-6" />
-            )}
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-charcoal-900 via-charcoal-950 to-black border border-amber-500/35 shadow-md shadow-amber-500/15 p-1.5 flex items-center justify-center shrink-0">
+            <img
+              src="/powerzone-logo.png"
+              alt="POWERZONE Golden Lion Logo"
+              className="w-full h-full object-contain select-none drop-shadow-sm"
+              loading="eager"
+            />
           </div>
           <div>
             <h3 className="text-xl font-black text-text uppercase tracking-tight">
